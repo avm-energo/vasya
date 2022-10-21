@@ -1,0 +1,48 @@
+{
+  "name": "sonicageneration",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "serve": "vue-cli-service serve",
+    "build": "vue-cli-service build"
+  },
+  "dependencies": {
+    "@amcharts/amcharts4": "^4.10.27",
+    "@amcharts/amcharts4-fonts": "^4.0.1",
+    "@amcharts/amcharts4-geodata": "^4.1.23",
+    "@amcharts/amcharts5": "^5.2.19",
+    "@amcharts/amcharts5-fonts": "^5.0.1",
+    "@amcharts/amcharts5-geodata": "^5.0.3",
+    "@vuepic/vue-datepicker": "^3.4.7",
+    "apexcharts": "^3.35.5",
+    "chart.js": "^3.9.1",
+    "css-minimizer-webpack-plugin": "^4.0.0",
+    "moment": "^2.29.4",
+    "postcss-selector-parser": "^6.0.10",
+    "register-service-worker": "^1.7.2",
+    "v-click-outside": "^3.2.0",
+    "vue": "^3.2.13",
+    "vue-apexcharts": "^1.6.2",
+    "vue-chart-3": "^3.1.8",
+    "vue-chartjs": "^4.1.1",
+    "vue-custom-range-slider": "^0.2.3",
+    "vue-date-pick": "^1.4.1",
+    "vue-moment": "^4.1.0",
+    "vue-router": "^4.0.3",
+    "vue-sorted-table": "^1.3.0",
+    "vue3-apexcharts": "^1.4.1",
+    "vue3-click-away": "^1.2.4",
+    "vue3-date-time-picker": "^2.8.3",
+    "vuejs-datetimepicker": "^1.1.13",
+    "vuex": "^4.0.0",
+    "yarn": "^1.22.19"
+  },
+  "devDependencies": {
+    "@vue/cli-plugin-pwa": "~5.0.0",
+    "@vue/cli-plugin-router": "~5.0.0",
+    "@vue/cli-plugin-vuex": "~5.0.0",
+    "@vue/cli-service": "~5.0.0",
+    "sass": "^1.32.7",
+    "sass-loader": "^12.0.0"
+  }
+}
