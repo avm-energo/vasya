@@ -53,6 +53,6 @@ export default {
     top: var(--y);
     width: var(--width);
     height: var(--height);
-    border: solid 5px #25252500;
+    border: solid 0px green;
   }
 </style>

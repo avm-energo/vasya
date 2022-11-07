@@ -270,7 +270,7 @@ export default {
       };
     },
   },
-  created() {
+  async created() {
     if (this.$parent.$parent.subscreenname){ 
       this.chart.Name += '/' + this.$parent.$parent.subscreenname
     }
@@ -280,13 +280,67 @@ export default {
       for (let j = 0; j< 101; j++){
         mas.push(Math.trunc(Math.random() * (100 - 0) + 0)*i)
       }
-      console.log(mas)
       this.series.push({'name': 'name' + i, 'data':mas})
       mas = []
     }
     for (let j = 0; j< 101; j++){
        this.chartOptions.xaxis.categories.push(2000 + j)
     }
+    function encript(values) {
+        const  Alphabet = "12345678" + "9ABDEFGH" + "JKLMNPQR" + "STUVWXYZ";
+        var bitsCount = 8 * values.length;
+        var ans = new Array(Math.trunc(bitsCount / 5) + (bitsCount%5==0?0:1));
+        for (let i = 0; i < ans.length; i++) {
+            var bitNum = i * 5;
+            var byteNum = Math.trunc(bitNum / 8);
+            var byteOffset = bitNum % 8;  
+            var symbol = values[byteNum] >> byteOffset;
+            if (byteOffset > 3 && byteNum<(values.length-1))
+            {
+                var symbolOffset = 8 - byteOffset;
+                symbol |= values[byteNum+1]<<symbolOffset;
+            }
+            symbol &= 0b11111; // cut a tail
+            ans[i] = Alphabet[symbol];
+        }
+        return ans.join("")
+      }
+    console.log(encript((new TextEncoder()).encode(this.chart.Name)))
+    console.log(this.chart.Name)
+    // let response = await fetch('http://localhost:5201/api/nodes/main/widget/NLWB7RKEQBUBQVPEL4/query/trend-history', {
+    //   headers: {
+    //       'Accept': 'application/json',
+    //       'contentType': 'application/json',
+    //   },
+    //   // mode: 'no-cors',
+    //   method: 'POST',
+    //   // cache: 'no-cache',
+    //   body: {
+    //     "lowerTime": "123",
+    //     "upperTime": "123"
+    //   },
+    // });
+    // console.log(response)
+
+    var url = `http://localhost:5201/api/nodes/main/widget/${encript((new TextEncoder()).encode(this.chart.Name))}/query/trend-history`;
+
+    var xhr = new XMLHttpRequest();
+    xhr.open("POST", url);
+
+    xhr.setRequestHeader("Content-Type", "application/json");
+
+    xhr.onreadystatechange = function () {
+      if (xhr.readyState === 4) {
+          console.log(xhr.responseText);
+      }};
+
+    var data = `{
+        "lowerTime": "2022-09-20T09:07:21",
+        "upperTime": "2023-11-20T09:07:21"
+    }`;
+
+    xhr.send(data);
+
     // this.params.sectors.forEach((element) => {
     //   this.chartOptions.xaxis.categories.push(element.alias)
     // })

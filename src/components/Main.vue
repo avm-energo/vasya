@@ -1,7 +1,7 @@
 <template>
   <div id="main" v-if="!isLoading">
-    <sonica-head :myJson="head" typewindow="head" />
-    <sonica-footer :myJson="footer" />
+    <!-- <sonica-head :myJson="head" typewindow="head" />
+    <sonica-footer :myJson="footer" /> -->
     <sonica-main :myJson="main" typewindow="main" />
     <sonica-window
       v-for="elem in elems"
