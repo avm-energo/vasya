@@ -208,7 +208,7 @@ export default {
 
     series.appear(1000);
     chart.appear(1000, 100);
-    // console.log(this.params.strends[0].sColor);
+    console.log(this.params.strends[0].sColor);
     
   },
   beforeDestroy() {
