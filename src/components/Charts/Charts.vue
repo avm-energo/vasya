@@ -8,7 +8,7 @@
 
 import Histogram from './Histogram.vue'
 import ClassicHystogramm from './ClassicHystogramm.vue'
-import TrendViewer from './TrendViewer.vue'
+import TrendViewer from './TrendViewerAmCharts.vue'
 
 export default {
     name: 'Charts',

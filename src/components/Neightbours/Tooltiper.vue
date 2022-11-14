@@ -137,7 +137,7 @@ export default {
         "--borderBrush": this.params.properties.borderBrush,
         "--scale": this.params.properties.scale,
         "--borderRadius": this.params.properties.borderRadius,
-        "--fontSize":(this.params.properties.fontSize / 1) * this.$parent.multiplier + "px",
+        "--fontSize":(this.params.properties.fontSize / 1.1) * this.$parent.multiplier + "px",
         "--textalign":[this.params.properties.leftIcon == 'None' ? 'center' : 'left'],
         "--vertical-rl": [(this.params.properties.angle == 270 ||  this.params.properties.angle == -90) ? 'vertical-lr' : 'horizontal-tb']
       };

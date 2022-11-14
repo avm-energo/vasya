@@ -9,10 +9,11 @@
       <div id="mainbody" :style="cssProps">
         <imagetrans v-for="elem in imagestrans" :key="elem.name" :params="elem.properties"/>
         <imagelogo v-for="elem in imageslogo" :key="elem.name" :params="elem.properties"/>
+        
+        <tiles v-for="elem  in tiless" :key="elem.name" :params="elem.properties" :name="elem.name" :screenPercentage="this.myJson.screenPercentage" :windowWidth="this.myJson.canvas.width" :windowHeight="this.myJson.canvas.height" :type="elem.type"/>
         <svg v-show="this.lines.length" :height="this.myJson.canvas.height * this.multiplier" :width="this.myJson.canvas.width * this.multiplier" xmlns="http://www.w3.org/2000/svg" style="position: absolute; left: 0px; top: 0px;">
           <sline v-for="line in lines" :key="line.name" :params="line.properties" />
         </svg>
-        <tiles v-for="elem  in tiless" :key="elem.name" :params="elem.properties" :name="elem.name" :screenPercentage="this.myJson.screenPercentage" :windowWidth="this.myJson.canvas.width" :windowHeight="this.myJson.canvas.height" :type="elem.type"/>
         <!-- <txtarg /> -->
         <!-- <radioarg></radioarg> -->
         <!-- <passwordarg></passwordarg> -->

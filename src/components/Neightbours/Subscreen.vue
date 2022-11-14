@@ -25,7 +25,7 @@ export default {
   computed: {
     cssProps() {
       return {
-        "--x": this.params.properties.x * this.$parent.multiplier + "px",
+        "--x": this.params.properties.x * this.$parent.multiplier + 5 *this.$parent.multiplier + "px",
         "--y": this.params.properties.y * this.$parent.multiplier + "px",
         "--z": this.params.properties.z,
         "--width": this.params.properties.width * this.$parent.multiplier + "px",

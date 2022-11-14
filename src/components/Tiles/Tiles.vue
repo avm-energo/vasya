@@ -31,11 +31,20 @@ export default {
     };
   },
   created(){
+    if(this.params.text == '               ШСМ'){
+      console.log(this.params.text.split(" "))
+    }
     this.tiles.Name = this.name
     if (this.$parent.subscreenname){ 
       this.tiles.Name += '/' + this.$parent.subscreenname
     }
-    this.tiles.value = this.params.text,
+    // костыль на пробелы
+    if (this.params.text.startsWith('        ')) {
+      this.tiles.value = this.params.text.replace(/ /g, '\u00A0')
+    } else {
+      this.tiles.value = this.params.text
+    }
+    
     this.tiles.ForegroundColor = this.params.foreground,
     this.tiles.BackgroundColor = this.params.background,
     this.tiles.Flashing = false,
@@ -63,9 +72,9 @@ export default {
   computed: {
     cssProps() {
       return {
-        "--x": this.params.x  * this.$parent.multiplier + "px",
-        "--y": this.params.y  * this.$parent.multiplier + "px",
-        "--z": this.params.z,
+        "--x": this.params.x  * this.$parent.multiplier + (this.params.width*this.params.scale - this.params.width)/2*this.$parent.multiplier + "px",
+        "--y": this.params.y  * this.$parent.multiplier + (this.params.height*this.params.scale - this.params.height)/2*this.$parent.multiplier + "px",
+        "--z": [this.params.text == 'X' ? 0 : ''],
         "--width": this.params.width  * this.$parent.multiplier + "px",
         "--height": this.params.height  * this.$parent.multiplier + "px",
         "--backgroundColor": "#" + [ this.tiles.BackgroundColor == "Blue" ? "#373737" : this.tiles.BackgroundColor, ],
@@ -75,10 +84,10 @@ export default {
         "--scale": this.params.scale,
         "--align": this.params.hAlignment,
         "--valign": [(this.params.vAlignment == 'Stretch' || this.params.vAlignment == 'Top') ? [(this.params.angle == 270 ||  this.params.angle ==-90) ? 'auto' : ''] : 'auto'],
-        "--fontSize": [this.params.fontSize == 0 ? 14 / 1 : this.params.fontSize / 1]  * this.$parent.multiplier + "px",
+        "--fontSize": [this.params.fontSize == 0 ? 14 / 1.1 : this.params.fontSize / 1.1]  * this.$parent.multiplier + "px",
         "--margin": [(this.params.vAlignment == 'Stretch' || this.params.vAlignment == 'Top') ? '' : this.params.margin.split(" : ")[0] + "px"],
         "--borderRadius": this.params.borderRadius * this.$parent.multiplier + "px",
-        "--vertical-rl": [(this.params.angle == 270 ||  this.params.angle ==-90) ? 'vertical-rl' : 'horizontal-tb']
+        "--vertical-rl": [(this.params.angle == 270 ||  this.params.angle == -90) ? 'vertical-lr' : 'horizontal-tb']
       };
     },
   },
@@ -86,6 +95,7 @@ export default {
 </script>
 <style scoped>
 .tiles {
+  z-index: var(--z);
   box-sizing: border-box;
   user-select: none;
   -ms-user: none;
