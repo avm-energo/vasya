@@ -1,5 +1,24 @@
 <template>
-  <div id="chartdiv" class="chart" ref="chartdiv">
+  <div id="box" :style="cssProps">
+    <div id="box_title">
+      <div><datepicker v-model="starttime" class="box_title_datepicker"/></div>
+      <div><datepicker v-model="endtime" class="box_title_datepicker"/></div>
+      <a class="box_title_update_icon" @click="updatedata">
+        <svg
+          width="100%"
+          height="100%"
+          viewBox="0 0 22 20"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M0 18.5549C0 18.1752 0.307804 17.8674 0.6875 17.8674H21.3125C21.6922 17.8674 22 18.1752 22 18.5549C22 18.9346 21.6922 19.2424 21.3125 19.2424H0.6875C0.307804 19.2424 0 18.9346 0 18.5549ZM9.97148 1.37158C9.97148 0.993401 10.2781 0.686829 10.6562 0.686829C11.0344 0.686829 11.341 0.993402 11.341 1.37158V12.3954C11.341 13.1166 12.2105 13.4803 12.724 12.9739L14.4471 11.2746C14.7111 11.0143 15.1351 11.0138 15.3997 11.2735C15.6704 11.5392 15.6709 11.9752 15.4008 12.2416L11.2267 16.3582C10.9098 16.6707 10.4005 16.6701 10.0843 16.3569L5.91017 12.2217C5.64079 11.9548 5.64203 11.5191 5.91292 11.2538C6.17811 10.994 6.60267 10.9952 6.86638 11.2565L8.58718 12.9611C9.10012 13.4692 9.97148 13.1058 9.97148 12.3838V1.37158Z"
+          />
+        </svg>
+      </a>
+    </div>
+    <div id="box_chart">
+      <div id="chartdiv" ref="chartdiv"></div>
+    </div>
   </div>
 </template>
 
@@ -7,15 +26,23 @@
 import * as am5 from '@amcharts/amcharts5';
 import * as am5xy from '@amcharts/amcharts5/xy';
 import am5themes_Animated from '@amcharts/amcharts5/themes/Animated';
+import Datepicker from "@vuepic/vue-datepicker";
+import moment from "moment";
 
 export default {
   name: "Histogram",
   props: ["params", "name"],
   data() {
     return {
+      starttime: null,
+      endtime: null,
       chartDataArr: [],
       // name: this.name,
     }
+  },
+  components: {
+    moment,
+    Datepicker,
   },
   methods: {
     encript(values) {
@@ -56,6 +83,8 @@ export default {
           "lowerTime": "2022-09-20T09:07:21",
           "upperTime": "2023-11-20T09:07:21"
       }`;
+      // пример с отправки даты из виджета с датой
+      // "lowerTime": moment(starttime).format("YYYY-MM-DDTHH:mm:ss")
 
       xhr.send(body);
     },
@@ -208,7 +237,13 @@ export default {
 
     series.appear(1000);
     chart.appear(1000, 100);
-    console.log(this.params.strends[0].sColor);
+    // console.log(this.params.strends[0].sColor);
+
+    //style
+    // chart.set("dy", this.params.y * this.$parent.$parent.multiplier);
+    // chart.set("dx", this.params.x * this.$parent.$parent.multiplier);
+    chart.set("width", am5.p100)
+    chart.set("height", am5.p100)
     
   },
   beforeDestroy() {
@@ -235,17 +270,49 @@ export default {
 </script>
 
 <style scoped>
-.chart {
-  /* padding-top:5px; */
-  border: solid var(--borderThick) gray;
-  border-radius: var(--borderRadius);
+#chartdiv {
+  width: 100%;
+  height: 100%;
+  /* border: solid 1px gray; */
+}
+#box{
   position: absolute;
-  left: var(--x);
-  top: var(--y);
-  color: black;
+  /* border: solid 1px green; */
   width: var(--width);
   height: var(--height);
-  background-color: var(--back);
-  font-size: var(--fontsize);
+  left: var(--x);
+  top: var(--y);
 }
+  #box_title{
+    /* border: solid 1px blue; */
+    width: 100%;
+    height: 10%;
+    display: flex;
+    justify-content:center;
+    align-items:center;
+  }
+    .box_title_datepicker{
+      /* border: solid 1px peru; */
+      width: 100%;
+      height: 100%;
+    }
+    .box_title_update_icon{
+      /* border: solid 1px peru; */
+      fill: white;
+      margin-left: 10px;
+      width: 38px;
+      height: 38px;
+    }
+    .box_title_update_icon:hover {
+      background-color: #267dff;
+    }
+    .box_title_update_icon:active {
+      background-color: #68a5ff;
+    }
+  #box_chart{
+    width: 100%;
+    height: 90%;
+    /* border: solid 1px yellow; */
+  }
+
 </style>
