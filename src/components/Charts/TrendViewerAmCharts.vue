@@ -3,7 +3,7 @@
     <div id="box_title">
       <div><datepicker v-model="starttime" class="box_title_datepicker"/></div>
       <div><datepicker v-model="endtime" class="box_title_datepicker"/></div>
-      <a class="box_title_update_icon" @click="updatedata">
+      <a class="box_title_update_icon" @click="loadNewChartData">
         <svg
           width="100%"
           height="100%"
@@ -29,6 +29,7 @@ import am5themes_Animated from '@amcharts/amcharts5/themes/Animated';
 import Datepicker from "@vuepic/vue-datepicker";
 import moment from "moment";
 
+
 export default {
   name: "Histogram",
   props: ["params", "name"],
@@ -37,7 +38,7 @@ export default {
       starttime: null,
       endtime: null,
       chartDataArr: [],
-      // name: this.name,
+      root: null,
     }
   },
   components: {
@@ -59,7 +60,7 @@ export default {
           var symbolOffset = 8 - byteOffset;
           symbol |= values[byteNum+1]<<symbolOffset;
         }
-        symbol &= 0b11111; // cut a tail
+        symbol &= 0b11111; 
         ans[i] = Alphabet[symbol];
       }
       return ans.join("")
@@ -79,15 +80,23 @@ export default {
         }
       };
 
-      var body = `{
-          "lowerTime": "2022-09-20T09:07:21",
-          "upperTime": "2023-11-20T09:07:21"
-      }`;
-      // пример с отправки даты из виджета с датой
-      // "lowerTime": moment(starttime).format("YYYY-MM-DDTHH:mm:ss")
-
+      var body = this.updatedBody()
       xhr.send(body);
     },
+    async loadNewChartData() {
+      await this.getChartData(this.series)
+
+    },
+    updatedBody() {
+      var body = `{
+          "lowerTime": "${moment(this.starttime).format("YYYY-MM-DDTHH:mm:ss")}",
+          "upperTime": "${moment(this.endtime).format("YYYY-MM-DDTHH:mm:ss")}"
+      }`;
+      console.log('new body created');
+      return body
+    },
+    
+   
     generateDataObj(point) {
       let dateStr = point.argument.split(' ')
       let date = dateStr[0]
@@ -102,26 +111,32 @@ export default {
       let seconds = hms [2]
       const pointDate = new Date(year, month, day, hour, minute, seconds, 0);
       
-      
       return {
         argument: pointDate.getTime(),
         value: point.value
       };
     },
     generateDatas(series) {
-      let data = [];
-      console.log(this.chartDataArr);
+      let dataArr = [];
       this.chartDataArr.resultData[0].points.map((elem) => {
-        data.push(this.generateDataObj(elem));
+        dataArr.push(this.generateDataObj(elem));
+      })
+      let valueArr = []
+      let dateArr = []
+      dataArr.forEach((elem) => {
+        valueArr.push(elem.value)
+        dateArr.push(elem.argument)
       })
       
-      series.data.setAll(data);
-      console.log(series.data);
+      this.series.data.setAll(dataArr)
+      console.log('chart series updated');
     },
 
   },
   async mounted() {
-    let root = am5.Root.new("chartdiv");
+    let root = am5.Root.new(this.$refs.chartdiv);
+    this.starttime = new Date(new Date().setDate(new Date().getDay() - 18));
+    this.endtime = new Date()
 
     root.setThemes([
       am5themes_Animated.new(root)
@@ -132,7 +147,6 @@ export default {
       panY: true,
       wheelY: "zoomXY",
       pinchZoomX:true,
-      // pinchZoomY:true,
       "valueAxes": [
         {
           "title": "Axis title"
@@ -150,23 +164,22 @@ export default {
       strokeDasharray: []
     });
 
-    let xAxis = chart.xAxes.push(am5xy.DateAxis.new(root, {
+    var xAxis = chart.xAxes.push(am5xy.DateAxis.new(root, {
       maxDeviation: 0.2,
       baseInterval: {
         timeUnit: "second",
         count: 1
       },
       renderer: am5xy.AxisRendererX.new(root, {}),
-      // tooltip: am5.Tooltip.new(root, {})
     }));
 
-    let yAxis = chart.yAxes.push(am5xy.ValueAxis.new(root, {
+    var yAxis = chart.yAxes.push(am5xy.ValueAxis.new(root, {
       renderer: am5xy.AxisRendererY.new(root, {
         opposite: true
       })
     }));
 
-    let series = chart.series.push(
+    var series = chart.series.push(
       am5xy.LineSeries.new(root, {
         name: "Series",
         xAxis: xAxis,
@@ -177,11 +190,11 @@ export default {
     );
 
     var tooltip = series.set("tooltip", am5.Tooltip.new(root, {
-      pointerOrientation: "horizontal"
+      pointerOrientation: "horizontal",
     }));
 
     tooltip.label.setAll({
-      text: `[bold]{valueX}:[/]\n[width: 130px]Value: [/] {valueY}`,
+      text: "{valueX.formatDate('yyyy-MM-dd HH:mm:ss')}\nValue: {valueY}"
     });
     await this.getChartData(series)
 
@@ -237,14 +250,18 @@ export default {
 
     series.appear(1000);
     chart.appear(1000, 100);
-    // console.log(this.params.strends[0].sColor);
 
-    //style
-    // chart.set("dy", this.params.y * this.$parent.$parent.multiplier);
-    // chart.set("dx", this.params.x * this.$parent.$parent.multiplier);
-    chart.set("width", am5.p100)
-    chart.set("height", am5.p100)
+    this.root = root;
+    this.series = series;
     
+  },
+  watch: {
+    chartDataArr() {
+      if (this.root) {
+        console.log('new data loaded');
+        console.log(this.chartDataArr.resultData[0].points);
+      }
+    }
   },
   beforeDestroy() {
     if (this.root) {

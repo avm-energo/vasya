@@ -180,6 +180,7 @@ export default {
   border-width: var(--borderThickness);
   border-style: solid;
   font-size: var(--fontSize);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   
 }
 .p{

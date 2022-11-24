@@ -1,44 +1,45 @@
 <template>
   <div id="footer">
-    <div
-      id="footer_title"
-      @click="clickfooter"
-      :class="[
-        !tablestate
-          ? !upHere
-            ? data['footer-flashing']
-              ? 'flash'
-              : ''
-            : ''
-          : '',
-      ]"
-      @mouseover="upHere = true"
-      @mouseleave="upHere = false"
-    >
-      {{ data["footer-title"] }}
+    <div id="footer_title" @click="clickfooter" :class="[!tablestate ? !upHere ? data['footer-flashing'] ? 'flash' : '' : '' : '', ]" @mouseover="upHere = true" @mouseleave="upHere = false">
+      {{ footertitle }}
     </div>
     <div v-show="tablestate">
       <div id="footer_table">
         <table id="table_footer" cellpadding="5">
           <tr>
-            <td style="color: white; text-align: center">Come</td>
-            <td style="color: white; text-align: center">Leave</td>
-            <td style="color: white; text-align: center">Event</td>
+            <td class="table_footer_columns" @click="sort('comeTime')">Come</td>
+            <td class="table_footer_columns" @click="sort('leaveTime')">Leave</td> 
+            <td class="table_footer_columns" @click="sort('ackTime')">Acknowledged</td>
+            <td class="table_footer_columns" @click="sort('text')">Event</td>
           </tr>
-          <tr
-            v-for="obj in data.events"
-            :key="obj.id"
-            :class="[obj.needAck ? 'flashtr' : '']"
-          >
-            <td>{{ DateTime(obj.comeTime) }}</td>
-            <td></td>
-            <td>{{ obj.text }}</td>
+          <tr v-for="obj in filteredEventsList" :key="obj.id" :class="[
+            obj.statusEventSignaling == 5 ?  
+              obj.warnType == 4 ? 'flashred' : 
+              obj.warnType == 2 ? 'flashyellow' :
+              obj.warnType == 1 ? 'flashgray' : '' : 
+              obj.statusEventSignaling == 1 || obj.statusEventSignaling == 7 ? 
+                obj.warnType == 4 ? 'backgroundred' : 
+                obj.warnType == 2 ? 'backgroundyellow' :
+                obj.warnType == 1 ? 'backgroundgray' : '' : 
+                obj.statusEventSignaling == 4 || obj.statusEventSignaling == 8 ? 
+                  obj.warnType == 4 ? 'textred' : 
+                  obj.warnType == 2 ? 'textyellow' :
+                  obj.warnType == 1 ? 'textgray' : '' : ''
+              ]" 
+              @dblclick="obj.needAck ? some(obj.id) : ''">
+            <td style="text-align: center;">{{ DateTime(obj.comeTime) }}</td>
+            <td style="text-align: center;">{{ obj.leaveTime != 0 ? DateTime(obj.leaveTime) : ''}}</td>
+            <td style="text-align: center;">{{ obj.ackTime ? DateTime(obj.ackTime) : ''}}</td>
+            <td style="text-align: center;">{{ obj.text }}</td>
           </tr>
         </table>
       </div>
       <div id="footer_footer">
         <button id="footer_footer_button" @click="clickhistory">
           History...
+        </button>
+        <button id="footer_footer_button" @click="Acknowledgedall">
+          Acknowledged all
         </button>
       </div>
     </div>
@@ -123,12 +124,14 @@ export default {
       eventsstatus: "",
       starttime: null,
       endtime: null,
+      footertitle: null,
       data: null,
       tablestate: false,
       historystate: false,
       upHere: false,
       currentSort: "message",
       currentSortDir: "asc",
+      tick:null
     };
   },
   props: {
@@ -141,7 +144,65 @@ export default {
   created() {
     this.$store.dispatch("changemainheight", 24);
     this.data = this.myJson.data;
+    this.footertitle = this.myJson.data["footer-title"];
+    this.tick = this.myJson.tick;
     this.events = this.data.events;
+
+    const today = new Date();
+    var currentDateMilliseconds = today.getMilliseconds();
+    setTimeout(() => {
+      setInterval(async () => {
+        let response = await fetch(
+          `http://${this.myJson.ip}/api/nodes/footer/delta/0/${
+            this.tick
+          }`
+        );
+        let obj = JSON.parse(await response.text())
+        console.log(obj)
+        this.tick = obj.tick
+        if (obj.data!=null){
+          console.log(obj)
+          // if (obj.data["footer-title"]!=null) {this.footertitle = obj.data["footer-title"]}
+          if (obj.data["footer-title"]){
+            console.log('yest')
+            this.footertitle = obj.data["footer-title"]
+          } else {
+            console.log('net')
+          }
+          if (obj.data.events){
+            obj.data.events.forEach(elem =>{  
+              if (!this.events){
+                this.events = []
+                this.events.push(elem)
+              }
+              let eventid = this.events.findIndex((s) => s.id === elem.id)
+              let event = this.events[eventid]
+              if (event === undefined) {
+                elem.needAck = true
+                this.events.push(elem)
+              } else {
+                console.log('было: ' + event.statusEventSignaling + 'стало: ' + elem.statusEventSignaling)
+                if (elem.comeTime != event.comeTime || elem.leaveTime != "0" || elem.statusEventSignaling != event.statusEventSignaling){
+                  elem.comeTime ? this.events[eventid].comeTime = elem.comeTime : null
+                  elem.leaveTime ? this.events[eventid].leaveTime = elem.leaveTime : null
+                  elem.statusEventSignaling != event.statusEventSignaling ? this.events[eventid].ackTime = null : ''
+                  this.events[eventid].statusEventSignaling = elem.statusEventSignaling
+                  elem.ackTime ? this.events[eventid].ackTime = elem.ackTime : null
+                  this.events[eventid].needAck = true
+                  // this.events[eventid].leaveTime = null
+                  console.log(elem)
+                }
+              }
+              if (elem.visible == false) {
+                this.events.splice(eventid, 1)
+              }
+            })
+          }
+        }
+        this.data 
+      }, 1000);
+    }, 1000 - Math.abs(500 - currentDateMilliseconds));
+
   },
   computed: {
     filteredHistoryList() {
@@ -159,11 +220,47 @@ export default {
             .includes(this.eventsfilter.toLowerCase());
         });
     },
+    filteredEventsList() {
+      return this.events
+        .sort((a, b) => {
+          let modifier = 1;
+          if (this.currentSortDir === "desc") modifier = -1;
+          if (a[this.currentSort] < b[this.currentSort]) return -1 * modifier;
+          if (a[this.currentSort] > b[this.currentSort]) return 1 * modifier;
+          return 0;
+        })
+    },
     historymas() {
       return this.$store.getters.historymas;
     },
   },
   methods: {
+    some(id){
+      let obj = this.events[this.events.findIndex((s)=> s.id === id)]
+      // if (!obj.acknowtime) obj.acknowtime = moment(new Date()).format("YYYY-MM-DD HH:mm:ss")
+      obj.needAck = false
+      obj.statusEventSignaling += 3
+      console.log(obj.statusEventSignaling)
+
+      var url = "http://localhost:5201/api/nodes/footer/widget/6MXB7RKGFTT5RNKE/query/acknowledge";
+      var xhr = new XMLHttpRequest();
+      xhr.open("POST", url);
+      xhr.setRequestHeader("Content-Type", "application/json");
+      xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4) {
+            // console.log(xhr.status);
+            // console.log(xhr.responseText);
+        }};
+      var data = `[${id}]`;
+      xhr.send(data);
+      console.log(this.events)
+    },
+    Acknowledgedall(){
+      this.events.forEach(elem => {
+        if (!elem.acknowtime) this.some(elem.id)
+      })
+    },
+
     sort(s) {
       if (s === this.currentSort) {
         this.currentSortDir = this.currentSortDir === "asc" ? "desc" : "asc";
@@ -213,6 +310,7 @@ export default {
   width: 100%;
 }
 #table_footer {
+  user-select: none;
   text-align: left;
   font-weight: bold;
   border-spacing: 0px;
@@ -221,6 +319,11 @@ export default {
   border: 0px;
   font-size: 16px;
 }
+  .table_footer_columns{
+    color: white;
+    text-align: center;
+    
+  }
 #footer_title {
   font-size: 16px;
   user-select: none;
@@ -240,12 +343,13 @@ export default {
   height: 100%;
   background-color: rgb(61, 61, 61);
   border: 0px;
+  margin-left: 10px;
 }
 #footer_title:hover {
   filter: brightness(150%);
 }
 #footer_table {
-  color: yellow;
+  color: white;
   height: 200px;
   overflow-y: auto;
   text-align: center;
@@ -260,15 +364,59 @@ export default {
   animation: glowing 2s step-start 0s infinite;
 }
 
-@keyframes glowingtr {
-  50% {
-    background-color: orange;
-    color: white;
-  }
-}
-.flashtr {
-  animation: glowingtr 2s step-start 0s infinite;
-}
+
+
+    @keyframes glowingred {
+      50% {
+        background-color: red;
+        color: white;
+      }
+    }
+    .flashred {
+      color: red;
+      animation: glowingred 1s step-start 0s infinite;
+    }
+    @keyframes glowingyellow {
+      50% {
+        background-color: orange;
+        color: white;
+      }
+    }
+    .flashyellow {
+      color: yellow;
+      animation: glowingyellow 1s step-start 0s infinite;
+    }
+    @keyframes glowinggray {
+      50% {
+        background-color: gray;
+        color: white;
+      }
+    }
+    .flashgray {
+      animation: glowinggray 1s step-start 0s infinite;
+    }
+    .backgroundred{
+      background-color: red;
+    }
+    .backgroundyellow{
+      background-color: orange;
+    }
+    .backgroundgray{
+      background-color: gray;
+    }
+    .textred{
+      color: red;
+    }
+    .textyellow{
+      color: yellow;
+    }
+    .textgray{
+      color: white;
+    }
+    
+
+
+
 
 #closewindow {
   user-select: none;
