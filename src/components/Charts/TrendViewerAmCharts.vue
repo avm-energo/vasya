@@ -66,8 +66,8 @@ export default {
       return ans.join("")
     },
     getChartData(series) {
-      var url = `http://localhost:5201/api/nodes/main/widget/${this.encript((new TextEncoder()).encode(this.name))}/query/trend-history`;
-
+      var url = `http://localhost:5201/api/nodes/${this.encript((new TextEncoder()).encode(this.$parent.$parent.windowname.split(':').join(':\\')))}/widget/${this.encript((new TextEncoder()).encode(this.name))}/query/trend-history`;
+      console.log(url)
       var xhr = new XMLHttpRequest();
       xhr.open("POST", url);
 

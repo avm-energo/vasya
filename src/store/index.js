@@ -55,11 +55,11 @@ export default createStore({
       );
       setTimeout(() => { state.isLoading = false }, 200);
       const data2 = JSON.parse(await response2.text());
-      // if (data2.widgets==[]) {
+      if (data2.widgets==[]) {
         state.data2 = null 
-      // } else {
-        // state.head = data2;
-      // }
+      } else {
+        state.head = data2;
+      }
 
       // data2.widgets.forEach(async (elem) =>{
       //   if (elem.type.startsWith('neightbours/Navigator')){
@@ -86,8 +86,8 @@ export default createStore({
         data3.ip = state.ip
       }
     
-      // this.dispatch("updateElems", ">:\\" + data.name);
-      // this.dispatch("updateElems", ">:\\" + data2.name);
+      this.dispatch("updateElems", ">:\\" + data.name);
+      this.dispatch("updateElems", ">:\\" + data2.name);
 
       var mas = JSON.parse(sessionStorage.getItem("localArray"))
       if (mas) {

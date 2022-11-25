@@ -12,7 +12,7 @@
             <td class="table_footer_columns" @click="sort('ackTime')">Acknowledged</td>
             <td class="table_footer_columns" @click="sort('text')">Event</td>
           </tr>
-          <tr v-for="obj in filteredEventsList" :key="obj.id" :class="[
+          <tr v-for="obj in events" :key="obj.id" :class="[
             obj.statusEventSignaling == 5 ?  
               obj.warnType == 4 ? 'flashred' : 
               obj.warnType == 2 ? 'flashyellow' :
