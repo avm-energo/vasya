@@ -56,7 +56,7 @@ export default createStore({
       setTimeout(() => { state.isLoading = false }, 200);
       const data2 = JSON.parse(await response2.text());
       if (data2.widgets==[]) {
-        state.data2 = null 
+        state.head = null 
       } else {
         state.head = data2;
       }

@@ -3,7 +3,7 @@
     <div id="box_title">
       <div><datepicker v-model="starttime" class="box_title_datepicker"/></div>
       <div><datepicker v-model="endtime" class="box_title_datepicker"/></div>
-      <a class="box_title_update_icon" @click="loadNewChartData">
+      <a class="box_title_update_icon" @click="updateChartSeries">
         <svg
           width="100%"
           height="100%"
@@ -29,6 +29,8 @@ import am5themes_Animated from '@amcharts/amcharts5/themes/Animated';
 import Datepicker from "@vuepic/vue-datepicker";
 import moment from "moment";
 
+import axios from 'axios'
+
 
 export default {
   name: "Histogram",
@@ -38,6 +40,7 @@ export default {
       starttime: null,
       endtime: null,
       chartDataArr: [],
+      ChartInfo: null,
       root: null,
     }
   },
@@ -65,27 +68,41 @@ export default {
       }
       return ans.join("")
     },
-    getChartData(series) {
-      var url = `http://localhost:5201/api/nodes/${this.encript((new TextEncoder()).encode(this.$parent.$parent.windowname.split(':').join(':\\')))}/widget/${this.encript((new TextEncoder()).encode(this.name))}/query/trend-history`;
-      console.log(url)
-      var xhr = new XMLHttpRequest();
-      xhr.open("POST", url);
+    // async getChartDataXMR() {
+    //   var url = `http://localhost:5201/api/nodes/main/widget/${this.encript((new TextEncoder()).encode(this.name))}/query/trend-history`;
 
-      xhr.setRequestHeader("Content-Type", "application/json");
+    //   var xhr = new XMLHttpRequest();
+    //   xhr.open("POST", url);
 
-      xhr.onreadystatechange = () => {
-        if (xhr.readyState === 4) {
-            this.chartDataArr = JSON.parse(xhr.responseText)
-            this.generateDatas(series)
-        }
+    //   await xhr.setRequestHeader("Content-Type", "application/json");
+
+    //   xhr.onreadystatechange = () => {
+    //     if (xhr.readyState === 4) {
+    //         this.chartDataArr = JSON.parse(xhr.responseText)
+    //         console.log(this.chartDataArr);
+    //         this.generateDatas()
+    //     }
+    //   };
+
+    //   var body = this.updatedBody()
+    //   xhr.send(body);
+    // },
+    async getChartData() {
+      const article = this.updatedBody()
+      const headers = { 
+          'Content-Type': 'application/json',
       };
-
-      var body = this.updatedBody()
-      xhr.send(body);
+      // this.chartDataArr = await axios.post(`http://localhost:5201/api/nodes/main/widget/${this.encript((new TextEncoder()).encode(this.name))}/query/trend-history`, article, { headers })
+      this.chartDataArr = await axios.post(` http://localhost:5201/api/nodes/${this.encript((new TextEncoder()).encode(this.$parent.$parent.windowname.split(':').join(':\\')))}/widget/${this.encript((new TextEncoder()).encode(this.name))}/query/trend-history`, article, { headers })
+      .then(response => {
+        return response.data
+      });
     },
-    async loadNewChartData() {
-      await this.getChartData(this.series)
-
+    async getChartsInfo() {
+      this.ChartInfo = await axios.get('http://localhost:5201/api/nodes/main/current')
+        .then(response => {
+          this.chartInfo = response.data.widgets[0].properties.strends
+        });
     },
     updatedBody() {
       var body = `{
@@ -116,27 +133,29 @@ export default {
         value: point.value
       };
     },
-    generateDatas(series) {
+    generateDatas(i) {
       let dataArr = [];
-      this.chartDataArr.resultData[0].points.map((elem) => {
-        dataArr.push(this.generateDataObj(elem));
-      })
-      let valueArr = []
-      let dateArr = []
-      dataArr.forEach((elem) => {
-        valueArr.push(elem.value)
-        dateArr.push(elem.argument)
-      })
-      
-      this.series.data.setAll(dataArr)
-      console.log('chart series updated');
+      this.chartDataArr.resultData[i].points.forEach((elem) => {
+          dataArr.push(this.generateDataObj(elem));
+        })
+      return dataArr
+    },
+    async updateChartSeries() {
+      await this.getChartData()
+      for (let i = 0; i < this.chart.series.values.length; i++) {
+        var data = this.generateDatas(i);
+        this.seriesArr[i].data.setAll(data)
+      }
     },
 
   },
+
   async mounted() {
     let root = am5.Root.new(this.$refs.chartdiv);
+    this.root = root;
     this.starttime = new Date(new Date().setDate(new Date().getDay() - 18));
     this.endtime = new Date()
+    
 
     root.setThemes([
       am5themes_Animated.new(root)
@@ -153,6 +172,8 @@ export default {
         }
       ],
     }));
+
+    this.chart = chart
 
     let cursor = chart.set("cursor", am5xy.XYCursor.new(root, {
       behavior: "none",
@@ -172,33 +193,41 @@ export default {
       },
       renderer: am5xy.AxisRendererX.new(root, {}),
     }));
+    this.xAxis = xAxis
 
     var yAxis = chart.yAxes.push(am5xy.ValueAxis.new(root, {
       renderer: am5xy.AxisRendererY.new(root, {
         opposite: true
       })
     }));
+    this.yAxis = yAxis
 
-    var series = chart.series.push(
-      am5xy.LineSeries.new(root, {
-        name: "Series",
-        xAxis: xAxis,
-        yAxis: yAxis,
-        valueYField: "value",
-        valueXField: "argument",
-      })
-    );
+    await this.getChartData()
+    await this.getChartsInfo()
 
-    var tooltip = series.set("tooltip", am5.Tooltip.new(root, {
-      pointerOrientation: "horizontal",
-    }));
+    this.seriesArr = []
+    for (let i = 0; i < this.chartDataArr.resultData.length; i++) {
+      var series = chart.series.push(
+        am5xy.LineSeries.new(root, {
+          name: this.chartInfo[i].name,
+          xAxis: xAxis,
+          yAxis: yAxis,
+          valueYField: "value",
+          valueXField: "argument",
+      }));
+      var tooltip = series.set("tooltip", am5.Tooltip.new(root, {
+        pointerOrientation: "horizontal",
+      }));
+      this.seriesArr.push(series)
+      tooltip.label.setAll({
+        text: "{name}\n{valueX.formatDate('yyyy-MM-dd HH:mm:ss')}\nValue: {valueY}"
+      });
 
-    tooltip.label.setAll({
-      text: "{valueX.formatDate('yyyy-MM-dd HH:mm:ss')}\nValue: {valueY}"
-    });
-    await this.getChartData(series)
-
-
+      var data = this.generateDatas(i);
+      series.data.setAll(data);
+      series.appear();
+    }
+    
 
     // Scrollbar X
     var scrollbarX = am5.Scrollbar.new(root, {
@@ -244,22 +273,26 @@ export default {
       cornerRadiusTL: 0,
       cornerRadiusBL: 0
     });
-    //lEGEND
-    // var legend = chart.children.push(am5.Legend.new(root, {}));
-    // legend.data.setAll(chart.series.values);
+    // lEGEND
+    var legend = chart.children.push(am5.Legend.new(root, {
+      x: am5.percent(5),
+    }));
+    legend.data.setAll(chart.series.values);
+
+    this.legend = legend
 
     series.appear(1000);
     chart.appear(1000, 100);
-
-    this.root = root;
-    this.series = series;
+    
+    
+    
     
   },
   watch: {
     chartDataArr() {
       if (this.root) {
         console.log('new data loaded');
-        console.log(this.chartDataArr.resultData[0].points);
+        // console.log(this.chartDataArr.resultData[0].points);
       }
     }
   },
