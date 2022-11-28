@@ -43,11 +43,15 @@ export default {
       chartDataArr: [],
       ChartInfo: null,
       root: null,
+      ip: null
     }
   },
   components: {
     moment,
     Datepicker,
+  },
+  created(){
+    this.ip = ip.ip
   },
   methods: {
     encript(values) {
@@ -94,16 +98,13 @@ export default {
           'Content-Type': 'application/json',
       };
       // this.chartDataArr = await axios.post(`http://localhost:5201/api/nodes/main/widget/${this.encript((new TextEncoder()).encode(this.name))}/query/trend-history`, article, { headers })
-      this.chartDataArr = await axios.post(` http://${state.ip}/api/nodes/${this.encript((new TextEncoder()).encode(this.$parent.$parent.windowname.split(':').join(':\\')))}/widget/${this.encript((new TextEncoder()).encode(this.name))}/query/trend-history`, article, { headers })
+      this.chartDataArr = await axios.post(` http://${this.ip}/api/nodes/${this.encript((new TextEncoder()).encode(this.$parent.$parent.windowname.split(':').join(':\\')))}/widget/${this.encript((new TextEncoder()).encode(this.name))}/query/trend-history`, article, { headers })
       .then(response => {
         return response.data
       });
     },
-    async getChartsInfo() {
-      this.ChartInfo = await axios.get(`http://${state.ip}/api/nodes/main/current`)
-        .then(response => {
-          this.chartInfo = response.data.widgets[0].properties.strends
-        });
+    getChartsInfo() {
+      this.chartInfo = this.params.strends
     },
     updatedBody() {
       var body = `{
@@ -207,6 +208,7 @@ export default {
     await this.getChartsInfo()
 
     this.seriesArr = []
+    console.log(this.chartDataArr)
     for (let i = 0; i < this.chartDataArr.resultData.length; i++) {
       var series = chart.series.push(
         am5xy.LineSeries.new(root, {
