@@ -28,6 +28,7 @@ import * as am5xy from '@amcharts/amcharts5/xy';
 import am5themes_Animated from '@amcharts/amcharts5/themes/Animated';
 import Datepicker from "@vuepic/vue-datepicker";
 import moment from "moment";
+import ip from '../../assets/ip.json'
 
 import axios from 'axios'
 
@@ -93,13 +94,13 @@ export default {
           'Content-Type': 'application/json',
       };
       // this.chartDataArr = await axios.post(`http://localhost:5201/api/nodes/main/widget/${this.encript((new TextEncoder()).encode(this.name))}/query/trend-history`, article, { headers })
-      this.chartDataArr = await axios.post(` http://localhost:5201/api/nodes/${this.encript((new TextEncoder()).encode(this.$parent.$parent.windowname.split(':').join(':\\')))}/widget/${this.encript((new TextEncoder()).encode(this.name))}/query/trend-history`, article, { headers })
+      this.chartDataArr = await axios.post(` http://${state.ip}/api/nodes/${this.encript((new TextEncoder()).encode(this.$parent.$parent.windowname.split(':').join(':\\')))}/widget/${this.encript((new TextEncoder()).encode(this.name))}/query/trend-history`, article, { headers })
       .then(response => {
         return response.data
       });
     },
     async getChartsInfo() {
-      this.ChartInfo = await axios.get('http://localhost:5201/api/nodes/main/current')
+      this.ChartInfo = await axios.get(`http://${state.ip}/api/nodes/main/current`)
         .then(response => {
           this.chartInfo = response.data.widgets[0].properties.strends
         });
