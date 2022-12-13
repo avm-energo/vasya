@@ -14,16 +14,7 @@
         <svg v-show="this.lines.length" :height="this.myJson.canvas.height * this.multiplier" :width="this.myJson.canvas.width * this.multiplier" xmlns="http://www.w3.org/2000/svg" style="position: absolute; left: 0px; top: 0px;">
           <sline v-for="line in lines" :key="line.name" :params="line.properties" />
         </svg>
-        <!-- <txtarg /> -->
-        <!-- <radioarg></radioarg> -->
-        <!-- <passwordarg></passwordarg> -->
-        <!-- <ipadressarg></ipadressarg> -->
-        <!-- <comboarg></comboarg> -->
-        <!-- <boolarg></boolarg> -->
-        <!-- <bitmaskarg></bitmaskarg> -->
-        <!-- <sliderarg></sliderarg> -->
-        <!-- <apply></apply> -->
-        
+        <commands v-for="elem in commandss" :key="elem.name" :params="elem"/>
         <subscreen v-for="elem in subscreens" :key="elem.name" :params="elem" :name="elem.type" :namewindow="this.windowname"/>
         <tooltiper v-for="elem in tooltipers" :key="elem.name" :params="elem"/>
         <chart v-for="elem in charts" :key="elem.name" :params="elem"/>
@@ -37,14 +28,6 @@
 <script>
 
 import Tiles from "../Tiles/Tiles.vue";
-import Txtarg from "../Commands/Txtarg.vue";
-import Radioarg from "../Commands/Radioarg.vue";
-import Passwordarg from "../Commands/Passwordarg.vue";
-import Ipadressarg from "../Commands/Ipadressarg.vue";
-import Comboarg from "../Commands/Comboarg.vue";
-import Boolarg from "../Commands/Boolarg.vue";
-import Bitmaskarg from "../Commands/Bitmaskarg.vue";
-// import Sliderarg from "../Commands/Sliderarg.vue";
 import Apply from "../Commands/Apply.vue";
 import Sline from "../Primitives/Sline.vue";
 import Tooltiper from "../Neightbours/Tooltiper.vue";
@@ -54,6 +37,7 @@ import Imagelogo from '../Primitives/Logo.vue';
 import Chart from '../Charts/Charts.vue';
 import Helper from '../Primitives/Helper.vue'
 import Duval from '../Specials/DuvalTriangle.vue'
+import Commands from "../Commands/Commands.vue";
 
 
 export default {
@@ -86,6 +70,7 @@ export default {
       charts:[],
       helper:[],
       duval:[],
+      commandss:[],
       width: 0,
       height: 0,
       windowname: null,
@@ -94,14 +79,7 @@ export default {
 
   components: {
     Tiles,
-    Txtarg,
-    Radioarg,
-    Passwordarg,
-    Ipadressarg,
-    Comboarg,
-    Boolarg,
-    Bitmaskarg,
-    // Sliderarg,
+    Commands,
     Apply,
     Sline,
     Tooltiper,
@@ -167,9 +145,6 @@ export default {
   },  
 
   methods: {
-    closejson(){
-      this.$store.dispatch('closewindow', this.windowname)
-    },
     reportWindowSize(){
       this.width = window.innerWidth
       this.height = window.innerHeight
@@ -207,38 +182,42 @@ export default {
       let res = element;
       if (res.type.startsWith("primitives/Line")) {
         this.lines.push(res);
-      }
+      } else
       if (
         res.type.startsWith("tile") ||
         res.type.startsWith("primitives/Text") ||
         res.type.startsWith("Tiles")
       ) {
         this.tiless.push(res);
-      }
+      } else
       if (
         res.type.startsWith("tooltip") ||
         res.type.startsWith("neightbours/Tooltiper") ||
         res.type.startsWith("neightbours/Navigator")) 
       {
         this.tooltipers.push(res);  
-      }
-      if (res.type.startsWith("neightbours/Subscreen") || res.type.startsWith("neightbours/Renter")) {
+      } else
+      if (res.type.startsWith("neightbours/Subscreen")) {
         this.subscreens.push(res);
-      }
+      } else
       if (res.type.startsWith("primitives/Image")) {
         this.imagestrans.push(res);
-      }
+      } else
       if (res.type.startsWith("primitives/Logo")) {
         this.imageslogo.push(res);
-      }
+      } else
       if (res.type.startsWith("charts") || (res.type.startsWith("view/ClassicHystogramm")) || (res.type.startsWith("trends/TrendViewer"))){
+        
         this.charts.push(res);
-      }
+      } else
       if (res.type.startsWith("primitives/Helper")) {
         this.helper.push(res);
-      }
+      } else
       if (res.type.startsWith("specials/DuvalTriangle")) {
         this.duval.push(res);
+      } else
+      if (res.type.startsWith("commands")) {
+        this.commandss.push(res)
       }
     });
   },

@@ -242,7 +242,7 @@ export default {
       obj.statusEventSignaling += 3
       console.log(obj.statusEventSignaling)
 
-      var url = "http://localhost:5201/api/nodes/footer/widget/6MXB7RKGFTT5RNKE/query/acknowledge";
+      var url = `http://${this.myJson.ip}/api/nodes/footer/widget/6MXB7RKGFTT5RNKE/query/acknowledge`;
       var xhr = new XMLHttpRequest();
       xhr.open("POST", url);
       xhr.setRequestHeader("Content-Type", "application/json");

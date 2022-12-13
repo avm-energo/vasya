@@ -73,36 +73,19 @@ export default {
       }
       return ans.join("")
     },
-    // async getChartDataXMR() {
-    //   var url = `http://localhost:5201/api/nodes/main/widget/${this.encript((new TextEncoder()).encode(this.name))}/query/trend-history`;
 
-    //   var xhr = new XMLHttpRequest();
-    //   xhr.open("POST", url);
-
-    //   await xhr.setRequestHeader("Content-Type", "application/json");
-
-    //   xhr.onreadystatechange = () => {
-    //     if (xhr.readyState === 4) {
-    //         this.chartDataArr = JSON.parse(xhr.responseText)
-    //         console.log(this.chartDataArr);
-    //         this.generateDatas()
-    //     }
-    //   };
-
-    //   var body = this.updatedBody()
-    //   xhr.send(body);
-    // },
     async getChartData() {
       const article = this.updatedBody()
       const headers = { 
           'Content-Type': 'application/json',
       };
       // this.chartDataArr = await axios.post(`http://localhost:5201/api/nodes/main/widget/${this.encript((new TextEncoder()).encode(this.name))}/query/trend-history`, article, { headers })
-      this.chartDataArr = await axios.post(` http://${this.ip}/api/nodes/${this.encript((new TextEncoder()).encode(this.$parent.$parent.windowname.split(':').join(':\\')))}/widget/${this.encript((new TextEncoder()).encode(this.name))}/query/trend-history`, article, { headers })
+      this.chartDataArr = await axios.post(`http://localhost:5201/api/nodes/${this.encript((new TextEncoder()).encode(this.$parent.$parent.windowname.split(':').join(':\\')))}/widget/${this.encript((new TextEncoder()).encode(this.name))}/query/trend-history`, article, { headers })
       .then(response => {
         return response.data
       });
     },
+    
     getChartsInfo() {
       this.chartInfo = this.params.strends
     },
@@ -117,21 +100,8 @@ export default {
     
    
     generateDataObj(point) {
-      let dateStr = point.argument.split(' ')
-      let date = dateStr[0]
-      let time = dateStr[1]
-      let dmy = date.split('/')
-      let hms = time.split(':')
-      let day = dmy[0]
-      let month = dmy[1]
-      let year = dmy[2]
-      let hour = hms[0]
-      let minute = hms[1]
-      let seconds = hms [2]
-      const pointDate = new Date(year, month, day, hour, minute, seconds, 0);
-      
       return {
-        argument: pointDate.getTime(),
+        argument: new Date(point.argument).getTime(),
         value: point.value
       };
     },
@@ -149,7 +119,6 @@ export default {
         this.seriesArr[i].data.setAll(data)
       }
     },
-
   },
 
   async mounted() {
@@ -157,7 +126,6 @@ export default {
     this.root = root;
     this.starttime = new Date(new Date().setDate(new Date().getDay() - 18));
     this.endtime = new Date()
-    
 
     root.setThemes([
       am5themes_Animated.new(root)
@@ -177,15 +145,7 @@ export default {
 
     this.chart = chart
 
-    let cursor = chart.set("cursor", am5xy.XYCursor.new(root, {
-      behavior: "none",
-    }));
-    cursor.lineY.set("visible", false);
-    cursor.lineX.setAll({
-      stroke: am5.color(0xf75394),
-      strokeWidth: 2,
-      strokeDasharray: []
-    });
+    
 
     var xAxis = chart.xAxes.push(am5xy.DateAxis.new(root, {
       maxDeviation: 0.2,
@@ -205,10 +165,9 @@ export default {
     this.yAxis = yAxis
 
     await this.getChartData()
-    await this.getChartsInfo()
+    this.getChartsInfo()
 
     this.seriesArr = []
-    console.log(this.chartDataArr)
     for (let i = 0; i < this.chartDataArr.resultData.length; i++) {
       var series = chart.series.push(
         am5xy.LineSeries.new(root, {
@@ -223,14 +182,24 @@ export default {
       }));
       this.seriesArr.push(series)
       tooltip.label.setAll({
-        text: "{name}\n{valueX.formatDate('yyyy-MM-dd HH:mm:ss')}\nValue: {valueY}"
+        showTooltipOn: "always",
+        text: "{name}\n{valueX.formatDate('yyyy-MM-dd HH:mm:ss')}\nЗначение: {valueY}"
       });
 
       var data = this.generateDatas(i);
       series.data.setAll(data);
       series.appear();
     }
-    
+    let cursor = chart.set("cursor", am5xy.XYCursor.new(root, {
+      behavior: "none",
+      snapToSeries: [series],
+    }));
+    cursor.lineY.set("visible", false);
+    cursor.lineX.setAll({
+      stroke: am5.color(0xf75394),
+      strokeWidth: 2,
+      strokeDasharray: []
+    });
 
     // Scrollbar X
     var scrollbarX = am5.Scrollbar.new(root, {
@@ -276,18 +245,17 @@ export default {
       cornerRadiusTL: 0,
       cornerRadiusBL: 0
     });
-    // lEGEND
-    var legend = chart.children.push(am5.Legend.new(root, {
-      x: am5.percent(5),
+
+    var legend = chart.topAxesContainer.children.push(am5.Legend.new(root, {
+      centerX: am5.percent(50),
+      x: am5.percent(50),
     }));
     legend.data.setAll(chart.series.values);
-
-    this.legend = legend
 
     series.appear(1000);
     chart.appear(1000, 100);
     
-    
+    cursor.snapToSeries = series;
     
     
   },
@@ -295,7 +263,6 @@ export default {
     chartDataArr() {
       if (this.root) {
         console.log('new data loaded');
-        // console.log(this.chartDataArr.resultData[0].points);
       }
     }
   },

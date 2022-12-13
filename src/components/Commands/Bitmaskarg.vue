@@ -1,24 +1,24 @@
 <template>
   <div>
-    <div class="bitmaskarg" @click="bitmaskarg.window = !bitmaskarg.window">
-      <span class="bitmaskarg1_star" v-show=" bitmaskarg.value != bitmaskarg.Notification && bitmaskarg.ShowNotification ">*</span>
-      <span class="bitmaskarg1_value">0x{{ bitmaskargvalue }}</span>
+    <div class="bitmaskarg" @click.stop="bitmaskarg.window = !bitmaskarg.window" :style="cssProps">
+      <span class="bitmaskarg_star" v-show=" bitmaskarg.value != bitmaskarg.Notification && bitmaskarg.ShowNotification ">*</span>
+      <span class="bitmaskarg_value">0x{{ bitmaskargvalue }}</span>
     </div>
-    <div class="bitmaskarg1_table" v-show="bitmaskarg.window" v-click-outside="onClickOutside">
-      <table style="background-color: gray; color: white">
+    <div class="bitmaskarg_table" v-show="bitmaskarg.window" v-click-outside="onClickOutside" :style="cssProps1">
+      <table class="bitmaskarg_table_style" :style="cssProps">
         <tr>
-          <td colspan="3">Bit field</td>
+          <td colspan="3" style="text-align: left; padding:5px">Bit field</td>
         </tr>
         <tr>
-          <td>Position</td>
-          <td>Description</td>
-          <td>Value</td>
+          <td style="padding:5px">Position</td>
+          <td style="padding:5px">Description</td>
+          <td style="padding:5px">Value</td>
         </tr>
         <tr v-for="elem in bitmaskarg.masvalue" :key="elem.id">
           <td>{{ elem.position }}</td>
           <td>{{ elem.description }}</td>
           <td>
-            <input type="checkbox" v-model="elem.value" @change="[elem.value ? (bitmaskarg.value += Math.pow(2, elem.position)) : (bitmaskarg.value -= Math.pow(2, elem.position)),], submitForm(bitmaskarg)" :disabled="bitmaskarg.disabled" />
+            <input type="checkbox" v-model="elem.value" @change="[elem.value ? BigInt(bitmaskarg.value += Math.pow(2, elem.position)) : BigInt(bitmaskarg.value -= Math.pow(2, elem.position)),], some(bitmaskarg)"/>
           </td>
         </tr>
       </table>
@@ -32,61 +32,56 @@ import { submitform } from "../../mixins/submitform";
 
 export default {
   name: "app",
+  props: ['params' , 'name'],
   data() {
     return {
       bitmaskarg: {
-        Name: "bitmaskarg",
+        Name: null,
         value: 0,
-        masvalue: [
-          {
-            position: 0,
-            description: "000",
-            value: false,
-          },
-          {
-            position: 1,
-            description: "111",
-            value: false,
-          },
-          {
-            position: 2,
-            description: "222",
-            value: false,
-          },
-          {
-            position: 3,
-            description: "333",
-            value: false,
-          },
-          {
-            position: 4,
-            description: "444",
-            value: false,
-          },
-          {
-            position: 10,
-            description: "10",
-            value: false,
-          },
-        ],
+        masvalue: null,
         window: false,
-        ForegroundColor: "white",
-        BackgroundColor: "blue",
-        Flashing: false,
-        AlarmInfo: "Good",
-        tooltip: "подсказка!",
-        windowlist: false,
-        ShowNotification: true,
-        Notification: 0,
-        disabled: false,
       },
     };
   },
   methods: {
     onClickOutside(event) {
-      if (!(event.target._prevClass == "bitmaskarg1_value")) {
+      if (!(event.target._prevClass == "bitmaskarg_value")) {
         this.bitmaskarg.window = false;
       }
+    },
+    async some(){
+      // if (this.params.trigger != `ButtonApply`) {
+      //   const article =`
+      //     ${this.ipadressarg.value}
+      //   `;
+      //   const headers = { 
+      //       'Content-Type': 'application/json',
+      //   };
+      //   await Axios.post(`http://localhost:5201/api/nodes/main/widget/${this.encript((new TextEncoder()).encode(this.ipadressarg.Name))}/query/write-arg`, article, { headers })
+      // } else {
+        console.log(this.bitmaskargvalue)
+        const res = {'namewidget': this.bitmaskarg.Name, 'namewindow': this.$parent.$parent.windowname , 'value': this.bitmaskarg.value}
+        this.$store.dispatch('addcommandwidgetmass', res)
+      // }
+      console.log(BigInt('800000000000000000') + BigInt(String(22)))
+    },
+    encript(values) {
+      const Alphabet = "12345678" + "9ABDEFGH" + "JKLMNPQR" + "STUVWXYZ";
+      var bitsCount = 8 * values.length;
+      var ans = new Array(Math.trunc(bitsCount / 5) + (bitsCount % 5 == 0 ? 0 : 1));
+      for (let i = 0; i < ans.length; i++) {
+          var bitNum = i * 5;
+          var byteNum = Math.trunc(bitNum / 8);
+          var byteOffset = bitNum % 8;
+          var symbol = values[byteNum] >> byteOffset;
+          if (byteOffset > 3 && byteNum < (values.length - 1)) {
+              var symbolOffset = 8 - byteOffset;
+              symbol |= values[byteNum + 1] << symbolOffset;
+          }
+          symbol &= 0b11111;
+          ans[i] = Alphabet[symbol];
+      }
+      return ans.join("")
     },
   },
   directives: {
@@ -104,10 +99,33 @@ export default {
       }
     }
   },
+  created(){
+    // this.bitmaskarg.value = this.params.value
+    this.bitmaskarg.masvalue = this.params.settings
+    this.bitmaskarg.Name = this.name
+  },
   computed: {
     bitmaskargvalue() {
       return this.bitmaskarg.value.toString(16).toUpperCase();
     },
+    cssProps() {
+      return {
+        "--x": (this.params.x / 1) * this.$parent.$parent.multiplier + "px",
+        "--y": (this.params.y / 1) * this.$parent.$parent.multiplier + "px",
+        "--width": this.params.width * this.$parent.$parent.multiplier + "px",
+        "--height": (this.params.height / 1) * this.$parent.$parent.multiplier + "px",
+        "--background": "#" + this.params.backgroundColor,
+        "--borderBrush": "#" + this.params.borderColor,
+        "--foreground": "#" + this.params.foreground,
+        "--fontsize": this.params.fontSize * this.$parent.$parent.multiplier + "px",
+      };
+    },
+    cssProps1(){
+      return{
+        "--ytable": (this.params.y + this.params.height) * this.$parent.$parent.multiplier + "px",
+        "--xtable": (this.params.x) * this.$parent.$parent.multiplier + "px"
+      }
+    }
   },
   mixins: [submitform],
 };
@@ -115,34 +133,47 @@ export default {
 
 <style scoped>
 .bitmaskarg {
-  top: 2px;
-  user-select: none;
+  box-sizing: border-box;
+  left: var(--x);
+  top: var(--y);
   position: absolute;
-  left: 700px;
+  width: var(--width);
+  height: var(--height);
+  background-color: var(--background);
+  border: solid 1px var(--borderBrush);
+  user-select: none;
   display: flex;
   align-items: center;
-  border: solid 1px black;
-  width: 60px;
-  height: 30px;
 }
 .bitmaskarg:hover {
-  background-color: blue;
+  background-color: rgb(22,70,108);
 }
 .bitmaskarg:active {
-  background-color: rgb(13, 168, 240);
+  background-color: rgb(7, 103, 179);
 }
-.bitmaskarg1_star {
+.bitmaskarg_star {
   position: absolute;
   width: 10px;
 }
-.bitmaskarg1_value {
+.bitmaskarg_value {
+  font-size: 12px;
   border: none;
   width: 100%;
   text-align: center;
 }
-.bitmaskarg1_table {
+.bitmaskarg_table {
+  font-size: 12px;
   position: absolute;
-  left: 700px;
-  top: 34px;
+  left: var(--xtable);
+  top: var(--ytable);
 }
+.bitmaskarg_table_style{
+  border-collapse: collapse;
+  border: 1px solid var(--borderBrush);
+  background-color: var(--background);
+}
+.bitmaskarg_table_style td {
+   border: 1px solid grey;
+}
+  
 </style>

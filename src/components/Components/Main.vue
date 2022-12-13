@@ -9,21 +9,12 @@
         </svg>
         <tiles v-for="elem  in tiless" :key="elem.name" :params="elem.properties" :name="elem.name" :screenPercentage="this.myJson.screenPercentage" :windowWidth="this.myJson.canvas.width" :windowHeight="this.myJson.canvas.height" :type="elem.type"/>
         <subscreen v-for="elem in subscreens" :key="elem.name" :params="elem" :name="elem.type" :namewindow="this.windowname"/>
-        <!-- <txtarg /> -->
-        <!-- <radioarg></radioarg> -->
-        <!-- <passwordarg></passwordarg> -->
-        <!-- <ipadressarg></ipadressarg> -->
-        <!-- <comboarg></comboarg> -->
-        <!-- <boolarg></boolarg> -->
-        <!-- <bitmaskarg></bitmaskarg> -->
-        <!-- <sliderarg></sliderarg> -->
-        <!-- <apply></apply> -->
+        <commands v-for="elem in commandss" :key="elem.name" :params="elem"/>
         <tooltiper v-for="elem in tooltipers" :key="elem.name" :params="elem"/>
         <imagelogo v-for="elem in imageslogo" :key="elem.name" :params="elem.properties"/>
         <chart v-for="elem in charts" :key="elem.name" :params="elem"/>
         <helper v-for="elem in helper" :key="elem.name" :params="elem.properties"/>
         <duval v-for="elem in duval" :key="elem.name" :params="elem.properties" :name="elem.name"/>
-        <!-- <charttest/> -->
       </div>
     </div>
   </div>
@@ -32,15 +23,6 @@
 <script>
 
 import Tiles from "../Tiles/Tiles.vue";
-import Txtarg from "../Commands/Txtarg.vue";
-import Radioarg from "../Commands/Radioarg.vue";
-import Passwordarg from "../Commands/Passwordarg.vue";
-import Ipadressarg from "../Commands/Ipadressarg.vue";
-import Comboarg from "../Commands/Comboarg.vue";
-import Boolarg from "../Commands/Boolarg.vue";
-import Bitmaskarg from "../Commands/Bitmaskarg.vue";
-// import Sliderarg from "../Commands/Sliderarg.vue";
-import Apply from "../Commands/Apply.vue";
 import Sline from "../Primitives/Sline.vue";
 import Tooltiper from "../Neightbours/Tooltiper.vue";
 import Subscreen from "../Neightbours/Subscreen.vue";
@@ -50,6 +32,7 @@ import Chart from '../Charts/Charts.vue';
 import Helper from '../Primitives/Helper.vue'
 import Duval from '../Specials/DuvalTriangle.vue'
 import Charttest from '../Charts/Test.vue'
+import Commands from "../Commands/Commands.vue";
 
 export default {
   name: "window",
@@ -59,7 +42,6 @@ export default {
     //фон для вложенный subscreen
     boolback:{default:true},
     typewindow:{},
-    namewindow:{default:''},
     subscreenname:{default: ''}
   },
   data() {
@@ -77,23 +59,16 @@ export default {
       charts:[],
       helper:[],
       duval:[],
+      commandss:[],
       width: 0,
       height: 0,
       windowname: null,
+      namewindow: null,
     };
   },
 
   components: {
     Tiles,
-    Txtarg,
-    Radioarg,
-    Passwordarg,
-    Ipadressarg,
-    Comboarg,
-    Boolarg,
-    Bitmaskarg,
-    // Sliderarg,
-    Apply,
     Sline,
     Tooltiper,
     Subscreen,
@@ -102,8 +77,8 @@ export default {
     Chart,
     Helper,
     Duval,
-    Charttest
-    
+    Charttest,
+    Commands
   },
 
   // directives: {
@@ -174,8 +149,8 @@ export default {
     window.addEventListener('resize', this.reportWindowSize)
     this.width = window.innerWidth - 2
     this.height = window.innerHeight ;
-    this.windowname = this.namewindow.split('\\').join('')
-    this.windowname = '>:MAIN'
+    this.windowname = '>:' + this.myJson.name
+    this.namewindow = '>:\\' + this.myJson.name
     this.multiplierwindow = (this.mainheight - 4)/this.myJson.canvas.height
     
     if (this.multiplierwindow * this.myJson.canvas.width > window.innerWidth){
@@ -191,39 +166,42 @@ export default {
       
       if (res.type.startsWith("primitives/Line")) {
         this.lines.push(res);
-      }
+      } else
       if (
         res.type.startsWith("tile") ||
         res.type.startsWith("primitives/Text") ||
         res.type.startsWith("Tiles")
       ) {
         this.tiless.push(res);
-      }
+      } else
       if (
         res.type.startsWith("tooltip") ||
         res.type.startsWith("neightbours/Tooltiper") ||
         res.type.startsWith("neightbours/Navigator")) 
       {
         this.tooltipers.push(res);  
-      }
+      } else
       if (res.type.startsWith("neightbours/Subscreen")) {
         this.subscreens.push(res);
-      }
+      } else
       if (res.type.startsWith("primitives/Image")) {
         this.imagestrans.push(res);
-      }
+      } else
       if (res.type.startsWith("primitives/Logo")) {
         this.imageslogo.push(res);
-      }
+      } else
       if (res.type.startsWith("charts") || (res.type.startsWith("view/ClassicHystogramm")) || (res.type.startsWith("trends/TrendViewer"))){
         
         this.charts.push(res);
-      }
+      } else
       if (res.type.startsWith("primitives/Helper")) {
         this.helper.push(res);
-      }
+      } else
       if (res.type.startsWith("specials/DuvalTriangle")) {
         this.duval.push(res);
+      } else
+      if (res.type.startsWith("commands")) {
+        this.commandss.push(res)
       }
     });
   },

@@ -13,6 +13,7 @@ export default createStore({
     footer: null,
     elems: [],
     tickmas: [],
+    commandwidgetmass: [],
     tick: null,
     isLoading: true,
     ip: null,
@@ -34,6 +35,8 @@ export default createStore({
       state.tickmas[state.tickmas.findIndex((s)=> s.name === res.namewindow)]?.mas.find((t) => t.name === res.namewidget),
     historymas: (state) => state.historymas,
     mainmultiplier: (state) => state.mainmultiplier,
+    commandwidgets: (state) => (res) =>
+      state.commandwidgetmass.find((s)=> s.namewindow === res)?.widgets,
   },
   mutations: {
     async fetchElems(state) {
@@ -55,10 +58,11 @@ export default createStore({
       );
       setTimeout(() => { state.isLoading = false }, 200);
       const data2 = JSON.parse(await response2.text());
-      if (data2.widgets==[]) {
+      if (data2.widgets==[] || data2.status=="404") {
         state.head = null 
       } else {
         state.head = data2;
+        this.dispatch("updateElems", ">:\\" + data2.name);
       }
 
       // data2.widgets.forEach(async (elem) =>{
@@ -85,9 +89,7 @@ export default createStore({
         state.footer = data3;
         data3.ip = state.ip
       }
-    
       this.dispatch("updateElems", ">:\\" + data.name);
-      this.dispatch("updateElems", ">:\\" + data2.name);
 
       var mas = JSON.parse(sessionStorage.getItem("localArray"))
       if (mas) {
@@ -138,7 +140,6 @@ export default createStore({
           );
           // console.log("number= " + ticknumber + " tick=" + state.tickmas[ticknumber])
           const data = JSON.parse(await response.text());
-          
           state.tickmas[ticknumber].tick = data.tick
           data.widgets.forEach((element) => {
             if (element.name.startsWith("Sub")) {
@@ -241,7 +242,7 @@ export default createStore({
     },
 
     closewindow(state, name) {
-      
+      state.commandwidgetmass.splice(state.commandwidgetmass.findIndex((t) => t.namewindow === name), 1)
       const index = state.tickmas.findIndex((t) => t.name === name)
       state.elems.pop();
       clearInterval(state.tickmas[index].interval);
@@ -273,6 +274,29 @@ export default createStore({
       state.elems = []
       sessionStorage.clear()
     },
+
+    addcommandwidgetmass(state, params){
+      if (state.commandwidgetmass.find((t) => t.namewindow === params.namewindow)) {
+        // дописать логик
+        console.log('da')
+      } else {
+        state.commandwidgetmass.push({'namewindow': params.namewindow, 'widgets': []})
+      }
+      let indexmas = state.commandwidgetmass.findIndex((t) => t.namewindow === params.namewindow)
+      if (state.commandwidgetmass[indexmas].widgets.find((t)=> t.namewidget === params.namewidget)){
+       let indexwidget = state.commandwidgetmass[indexmas].widgets.findIndex((t)=> t.namewidget === params.namewidget)
+       state.commandwidgetmass[indexmas].widgets[indexwidget].value = params.value
+      } else {
+      state.commandwidgetmass[indexmas].widgets.push({'namewidget' : params.namewidget, 'value' : params.value})
+      }
+      console.log(state.commandwidgetmass)
+    },
+
+    clearcommandwidgets(state, name){
+      console.log(state.commandwidgetmass.findIndex((t) => t.namewindow === name))
+      state.commandwidgetmass.splice(state.commandwidgetmass.findIndex((t) => t.namewindow === name), 1)
+      console.log(state.commandwidgetmass)
+    }
 
     // changemain(state, name){
     //   console.log(state.buttonstate.find((t) => t.path === name))
@@ -312,6 +336,13 @@ export default createStore({
     mainmultiplier({ commit }, elems) {
       commit("mainmultiplier", elems);
     },
+    addcommandwidgetmass({ commit }, elems) {
+      commit("addcommandwidgetmass", elems);
+    },
+    clearcommandwidgets({ commit }, elems) {
+      commit("clearcommandwidgets", elems);
+    },
+    
     // changemain({ commit }, elems) {
     //   commit("changemain", elems);
     // },
