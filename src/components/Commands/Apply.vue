@@ -10,7 +10,7 @@ import axios from 'axios';
 
 export default {
   name: "app",
-  props:['params', 'name'],
+  props:['params', 'name', 'ip'],
   data() {
     return {};
   },
@@ -31,25 +31,32 @@ export default {
   methods:{
     async some(){
       let res = this.$store.getters.commandwidgets(this.$parent.$parent.windowname)
-      var items = {};
-      res.forEach(element => {
-        console.log(element)
-        items[element.namewidget] = element.value.toString();
-      });
-      const jsonString = JSON.stringify(Object.assign({}, items)) 
-      const json_obj = JSON.parse(jsonString);
+      let json_obj
+      if (res){
+        var items = {};
+        res.forEach(element => {
+          console.log(element)
+          items[element.namewidget] = element.value.toString();
+        });
+        const jsonString = JSON.stringify(Object.assign({}, items)) 
+        json_obj = JSON.parse(jsonString);
+        console.log(json_obj)
+      } else{
+
+      }
       if (this.params.writeParams) {
         const headers = { 
             'Content-Type': 'application/json',
         };
         console.log(this.$parent.$parent.namewindow.split('\\').join('\\') )
-        await axios.post(`http://localhost:5201/api/nodes/${this.encript((new TextEncoder()).encode(this.$parent.$parent.namewindow))}/widget/${this.encript((new TextEncoder()).encode(this.name))}/query/apply-form`, json_obj, { headers })
+        await axios.post(`http://${this.ip}/api/nodes/${this.encript((new TextEncoder()).encode(this.$parent.$parent.namewindow))}/widget/${this.encript((new TextEncoder()).encode(this.name))}/query/apply-form`, json_obj, { headers })
         this.$store.dispatch('clearcommandwidgets', this.$parent.$parent.windowname)
       } else {
-        // Второй запрос write-command
-        // http://localhost:5201/api/nodes/YKGS67XF8DU7QK97/widget/23W18Q6H/query/write-command
-        // {} // Передавай пустоту
-        // Примечание работает если writeParams = false, пока не работает...
+        const headers = { 
+            'Content-Type': 'application/json',
+        };
+        json_obj = {}
+        await axios.post(`http://${this.ip}/api/nodes/${this.encript((new TextEncoder()).encode(this.$parent.$parent.namewindow))}/widget/${this.encript((new TextEncoder()).encode(this.name))}/query/write-command`, json_obj, { headers })
       }
     },
     encript(values) {
@@ -72,6 +79,7 @@ export default {
     },
   },
   created(){
+    console.log(this.ip)
   }
 };
 </script>

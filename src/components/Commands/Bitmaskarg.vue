@@ -27,12 +27,13 @@
 </template>
 
 <script>
+
+import axios from "axios";
 import vClickOutside from "v-click-outside";
-import { submitform } from "../../mixins/submitform";
 
 export default {
   name: "app",
-  props: ['params' , 'name'],
+  props: ['params' , 'name', 'ip'],
   data() {
     return {
       bitmaskarg: {
@@ -50,20 +51,18 @@ export default {
       }
     },
     async some(){
-      // if (this.params.trigger != `ButtonApply`) {
-      //   const article =`
-      //     ${this.ipadressarg.value}
-      //   `;
-      //   const headers = { 
-      //       'Content-Type': 'application/json',
-      //   };
-      //   await Axios.post(`http://localhost:5201/api/nodes/main/widget/${this.encript((new TextEncoder()).encode(this.ipadressarg.Name))}/query/write-arg`, article, { headers })
-      // } else {
-        console.log(this.bitmaskargvalue)
+      if (this.params.personalSend) {
+        const article =`
+          ${this.bitmaskargvalue}
+        `;
+        const headers = { 
+            'Content-Type': 'application/json',
+        };
+        await axios.post(`http://${this.ip}/api/nodes/${this.encript((new TextEncoder()).encode(this.$parent.$parent.namewindow))}/widget/${this.encript((new TextEncoder()).encode(this.bitmaskarg.Name))}/query/write-arg`, article, { headers })
+      } else {
         const res = {'namewidget': this.bitmaskarg.Name, 'namewindow': this.$parent.$parent.windowname , 'value': this.bitmaskarg.value}
         this.$store.dispatch('addcommandwidgetmass', res)
-      // }
-      console.log(BigInt('800000000000000000') + BigInt(String(22)))
+      }
     },
     encript(values) {
       const Alphabet = "12345678" + "9ABDEFGH" + "JKLMNPQR" + "STUVWXYZ";
@@ -127,7 +126,6 @@ export default {
       }
     }
   },
-  mixins: [submitform],
 };
 </script>
 

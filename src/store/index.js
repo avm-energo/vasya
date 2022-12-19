@@ -1,7 +1,6 @@
 
 import { createStore } from "vuex";
 // import ip from '../assets/ip.json'
-import ip from '../assets/ip.json'
 import moment from "moment";
 
 export default createStore({
@@ -23,6 +22,7 @@ export default createStore({
     mainmultiplier: true,
   },
   getters: {
+    ip: (state) => state.ip,
     isLoading: (state) => state.isLoading,
     main: (state) => state.main,
     mainstate: (state) => state.mainstate,
@@ -40,8 +40,11 @@ export default createStore({
   },
   mutations: {
     async fetchElems(state) {
+
+      let config = await fetch('defaults.json')
       state.mainheight = window.innerHeight
-      state.ip = (ip.ip)
+      state.ip = JSON.parse(await config.text()).ip
+      console.log(state.ip)
 
       let response = await fetch(
         `http://${state.ip}/api/nodes/main/current`,{

@@ -13,7 +13,7 @@ import axios from "axios";
 
 export default {
   name: "app",
-  props:['params','name'],
+  props:['params','name', 'ip'],
   components: {
     "vue3-slider": slider
   },
@@ -43,7 +43,7 @@ export default {
         const headers = { 
             'Content-Type': 'application/json',
         };
-        await axios.post(`http://localhost:5201/api/nodes/main/widget/${this.encript((new TextEncoder()).encode(this.sliderarg.Name))}/query/write-arg`, article, { headers })
+        await axios.post(`http://${this.ip}/api/nodes/${this.encript((new TextEncoder()).encode(this.$parent.$parent.namewindow))}/widget/${this.encript((new TextEncoder()).encode(this.sliderarg.Name))}/query/write-arg`, article, { headers })
        
         // this.chartDataArr = await axios.post(`http://localhost:5201/api/nodes/${this.encript((new TextEncoder()).encode(this.$parent.$parent.windowname.split(':').join(':\\')))}/widget/${this.encript((new TextEncoder()).encode(this.name))}/query/trend-history`, article, { headers })
       }

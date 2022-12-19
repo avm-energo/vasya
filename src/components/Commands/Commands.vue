@@ -1,13 +1,13 @@
 <template>
-    <txtarg v-if="params.type.startsWith('commands/TxtArg')" :params="this.params.properties" :name="this.params.name"/>
-    <radioarg v-if="params.type.startsWith('commands/RadioArg')" :params="this.params.properties" :name="this.params.name"></radioarg>
+    <txtarg v-if="params.type.startsWith('commands/TxtArg')" :params="this.params.properties" :name="this.params.name" :ip="this.ip"/>
+    <radioarg v-if="params.type.startsWith('commands/RadioArg')" :params="this.params.properties" :name="this.params.name" :ip="this.ip"/>
     <!-- <passwordarg></passwordarg> -->
-    <ipadressarg v-if="params.type.startsWith('commands/IpAddress')" :params="this.params.properties" :name="this.params.name"></ipadressarg>
-    <comboarg v-if="params.type.startsWith('commands/ComboArg')" :params="this.params.properties" :name="this.params.name"></comboarg>
-    <boolarg v-if="params.type.startsWith('commands/BoolArg')" :params="this.params.properties" :name="this.params.name"></boolarg>
-    <bitmaskarg v-if="params.type.startsWith('commands/BitMaskArg')" :params="this.params.properties" :name="this.params.name"></bitmaskarg>
-    <sliderarg v-if="params.type.startsWith('commands/SliderArg')" :params="this.params.properties" :name="this.params.name"></sliderarg>
-    <apply v-if="params.type.startsWith('commands/Apply')" :params="this.params.properties" :name="this.params.name"></apply>
+    <ipadressarg v-if="params.type.startsWith('commands/IpAddress')" :params="this.params.properties" :name="this.params.name" :ip="this.ip"/>
+    <comboarg v-if="params.type.startsWith('commands/ComboArg')" :params="this.params.properties" :name="this.params.name" :ip="this.ip"/>
+    <boolarg v-if="params.type.startsWith('commands/BoolArg')" :params="this.params.properties" :name="this.params.name" :ip="this.ip"/>
+    <bitmaskarg v-if="params.type.startsWith('commands/BitMaskArg')" :params="this.params.properties" :name="this.params.name" :ip="this.ip"/>
+    <sliderarg v-if="params.type.startsWith('commands/SliderArg')" :params="this.params.properties" :name="this.params.name" :ip="this.ip"/>
+    <apply v-if="params.type.startsWith('commands/Apply')" :params="this.params.properties" :name="this.params.name" :ip="this.ip"/>
 </template>
 
 <script>
@@ -38,6 +38,11 @@ export default {
     },
     created(){
         console.log(this.params)
+    },
+    computed: {
+        ip() {
+            return this.$store.getters.ip;
+        },
     }
 }
 </script>

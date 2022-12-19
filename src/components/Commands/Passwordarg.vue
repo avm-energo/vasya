@@ -3,7 +3,7 @@
     <input
       v-model="passwordarg.value"
       type="password"
-      @blur="submitForm(passwordarg)"
+      @blur="some(passwordarg)"
       @keyup.enter="$event.target.blur()"
       :disabled="passwordarg.disabled"
     /><br />
@@ -11,7 +11,6 @@
 </template>
 
 <script>
-import { submitform } from "../../mixins/submitform";
 
 export default {
   name: "app",
@@ -29,7 +28,11 @@ export default {
       },
     };
   },
-  mixins: [submitform],
+  methods:{
+    some(){
+      console.log('asd')
+    }
+  }
 };
 </script>
 

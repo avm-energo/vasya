@@ -9,11 +9,11 @@
 
 <script>
 
-import { Axios } from "axios";
+import axios from 'axios';
 
 export default {
   name: "app",
-  props: ['params','name'], 
+  props: ['params','name', 'ip'], 
   data() {
     return {
       radioarg: {
@@ -25,18 +25,18 @@ export default {
   },
   methods: {
     async some(){
-      // if (this.params.trigger != `ButtonApply`) {
-      //   const article =`
-      //     ${this.ipadressarg.value}
-      //   `;
-      //   const headers = { 
-      //       'Content-Type': 'application/json',
-      //   };
-      //   await Axios.post(`http://localhost:5201/api/nodes/main/widget/${this.encript((new TextEncoder()).encode(this.ipadressarg.Name))}/query/write-arg`, article, { headers })
-      // } else {
+      if (this.params.setOnCheck) {
+        const article =`
+          ${this.radioarg.value}
+        `;
+        const headers = { 
+            'Content-Type': 'application/json',
+        };
+        await axios.post(`http://${this.ip}/api/nodes/${this.encript((new TextEncoder()).encode(this.$parent.$parent.namewindow))}/widget/${this.encript((new TextEncoder()).encode(this.radioarg.Name))}/query/write-arg`, article, { headers })
+      } else {
         const res = {'namewidget': this.radioarg.Name, 'namewindow': this.$parent.$parent.windowname , 'value': this.radioarg.value}
         this.$store.dispatch('addcommandwidgetmass', res)
-      // }
+      }
     },
     encript(values) {
       const Alphabet = "12345678" + "9ABDEFGH" + "JKLMNPQR" + "STUVWXYZ";
@@ -59,10 +59,9 @@ export default {
     
   },
   created(){
-    this.radioarg.value = this.params.state.find((t) => t.isSelected = true).value
-    console.log(this.params.state.find((t) => t.isSelected = true).value)
     this.radioarg.Name = this.name
     this.radioarg.masvalue = this.params.state
+    // this.radioarg.value = this.radioarg.masvalue.find((t) => t.isSelected == true).value
   },
   computed: {
     cssProps() {

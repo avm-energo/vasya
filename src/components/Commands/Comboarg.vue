@@ -10,11 +10,11 @@
 
 <script>
 
-
+import axios from 'axios';
 
 export default {
   name: "app",
-  props:['params', 'name'],
+  props:['params', 'name' ,'ip'],
   data() {
     return {
       comboarg: {
@@ -26,19 +26,18 @@ export default {
   },
   methods:{
     async some(){
-      // if (this.params.trigger != `ButtonApply`) {
-      //   const article =`
-      //     ${this.ipadressarg.value}
-      //   `;
-      //   const headers = { 
-      //       'Content-Type': 'application/json',
-      //   };
-      //   await Axios.post(`http://localhost:5201/api/nodes/main/widget/${this.encript((new TextEncoder()).encode(this.ipadressarg.Name))}/query/write-arg`, article, { headers })
-      // } else {
-        console.log(this.comboarg.value)
+      if (this.params.trigger == "ChangeOnEnd") {
+        const article =`
+          ${this.comboarg.value}
+        `;
+        const headers = { 
+            'Content-Type': 'application/json',
+        };
+        await axios.post(`http://${this.ip}/api/nodes/${this.encript((new TextEncoder()).encode(this.$parent.$parent.namewindow))}/widget/${this.encript((new TextEncoder()).encode(this.comboarg.Name))}/query/write-arg`, article, { headers })
+      } else {
         const res = {'namewidget': this.comboarg.Name, 'namewindow': this.$parent.$parent.windowname , 'value': this.comboarg.value}
         this.$store.dispatch('addcommandwidgetmass', res)
-      // }
+      }
     },
     encript(values) {
       const Alphabet = "12345678" + "9ABDEFGH" + "JKLMNPQR" + "STUVWXYZ";
@@ -60,6 +59,7 @@ export default {
     },
   },
   created(){
+    console.log(this.params)
     this.comboarg.value = this.params.value
     this.comboarg.masvalue = this.params.cases
     this.comboarg.Name = this.name

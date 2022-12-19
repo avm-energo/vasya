@@ -6,9 +6,11 @@
 
 <script>
 
+import axios from 'axios';
+
 export default {
   name: "app",
-  props:['params', 'name'],
+  props:['params', 'name', 'ip'],
   data() {
     return {
       boolarg: {
@@ -19,18 +21,18 @@ export default {
   },
   methods: {
     async some(){
-      // if (this.params.trigger != `ButtonApply`) {
-      //   const article =`
-      //     ${this.ipadressarg.value}
-      //   `;
-      //   const headers = { 
-      //       'Content-Type': 'application/json',
-      //   };
-      //   await Axios.post(`http://localhost:5201/api/nodes/main/widget/${this.encript((new TextEncoder()).encode(this.ipadressarg.Name))}/query/write-arg`, article, { headers })
-      // } else {
+      if (this.params.trigger == "ChangeOnEnd") {
+        const article =`
+          ${this.boolarg.value}
+        `;
+        const headers = { 
+            'Content-Type': 'application/json',
+        };
+        await axios.post(`http://${this.ip}/api/nodes/${this.encript((new TextEncoder()).encode(this.$parent.$parent.namewindow))}/widget/${this.encript((new TextEncoder()).encode(this.boolarg.Name))}/query/write-arg`, article, { headers })
+      } else {
         const res = {'namewidget': this.boolarg.Name, 'namewindow': this.$parent.$parent.windowname , 'value': this.boolarg.value}
         this.$store.dispatch('addcommandwidgetmass', res)
-      // }
+      }
     },
     encript(values) {
       const Alphabet = "12345678" + "9ABDEFGH" + "JKLMNPQR" + "STUVWXYZ";
