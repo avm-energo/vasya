@@ -28,7 +28,6 @@ import * as am5xy from '@amcharts/amcharts5/xy';
 import am5themes_Animated from '@amcharts/amcharts5/themes/Animated';
 import Datepicker from "@vuepic/vue-datepicker";
 import moment from "moment";
-import ip from '../../assets/ip.json'
 
 import axios from 'axios'
 
@@ -43,15 +42,11 @@ export default {
       chartDataArr: [],
       ChartInfo: null,
       root: null,
-      ip: null
     }
   },
   components: {
     moment,
     Datepicker,
-  },
-  created(){
-    this.ip = ip.ip
   },
   methods: {
     encript(values) {
@@ -79,8 +74,8 @@ export default {
       const headers = { 
           'Content-Type': 'application/json',
       };
-      // this.chartDataArr = await axios.post(`http://localhost:5201/api/nodes/main/widget/${this.encript((new TextEncoder()).encode(this.name))}/query/trend-history`, article, { headers })
-      this.chartDataArr = await axios.post(`http://localhost:5201/api/nodes/${this.encript((new TextEncoder()).encode(this.$parent.$parent.windowname.split(':').join(':\\')))}/widget/${this.encript((new TextEncoder()).encode(this.name))}/query/trend-history`, article, { headers })
+      this.chartDataArr = await axios.post(`http://${this.ip}/api/nodes/main/widget/${this.encript((new TextEncoder()).encode(this.name))}/query/trend-history`, article, { headers })
+      // this.chartDataArr = await axios.post(`http://${this.ip}/api/nodes/${this.encript((new TextEncoder()).encode(this.$parent.$parent.windowname.split(':').join(':\\')))}/widget/${this.encript((new TextEncoder()).encode(this.name))}/query/trend-history`, article, { headers })
       .then(response => {
         return response.data
       });
@@ -283,6 +278,9 @@ export default {
         "--back": "#" + this.params.back,
         "--fontSize": this.params.fontSize * this.$parent.$parent.multiplier + "px",
       };
+    },
+    ip() {
+      return this.$store.getters.ip;
     },
     
   },

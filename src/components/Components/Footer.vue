@@ -239,7 +239,7 @@ export default {
       let obj = this.events[this.events.findIndex((s)=> s.id === id)]
       // if (!obj.acknowtime) obj.acknowtime = moment(new Date()).format("YYYY-MM-DD HH:mm:ss")
       obj.needAck = false
-      obj.statusEventSignaling += 3
+      // obj.statusEventSignaling += 3
       console.log(obj.statusEventSignaling)
 
       var url = `http://${this.myJson.ip}/api/nodes/footer/widget/6MXB7RKGFTT5RNKE/query/acknowledge`;
@@ -257,7 +257,7 @@ export default {
     },
     Acknowledgedall(){
       this.events.forEach(elem => {
-        if (!elem.acknowtime) this.some(elem.id)
+        if (!elem.ackTime ) this.some(elem.id)
       })
     },
 

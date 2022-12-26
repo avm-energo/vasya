@@ -15,6 +15,7 @@
         <chart v-for="elem in charts" :key="elem.name" :params="elem"/>
         <helper v-for="elem in helper" :key="elem.name" :params="elem.properties"/>
         <duval v-for="elem in duval" :key="elem.name" :params="elem.properties" :name="elem.name"/>
+        <!-- <meters /> -->
       </div>
     </div>
   </div>
@@ -33,6 +34,7 @@ import Helper from '../Primitives/Helper.vue'
 import Duval from '../Specials/DuvalTriangle.vue'
 import Charttest from '../Charts/Test.vue'
 import Commands from "../Commands/Commands.vue";
+import Meters from "../Scales/Meter.vue"
 
 export default {
   name: "window",
@@ -78,7 +80,8 @@ export default {
     Helper,
     Duval,
     Charttest,
-    Commands
+    Commands,
+    Meters,
   },
 
   // directives: {
