@@ -1,6 +1,8 @@
 
 <template>
-  <div id="chartdiv"></div>
+  <div id="Gauge" :style="cssProps">
+    <div id="chartdiv"></div>
+  </div>
 </template>
 
 <script>
@@ -11,19 +13,12 @@ import * as am5radar from '@amcharts/amcharts5/radar'
 import am5themes_Animated from '@amcharts/amcharts5/themes/Animated';
 
 export default {
-  name: "app",
+  name: "Gauge",
+  props: ["params" , "name"],
   data() {
     return {
-      passwordarg: {
-        Name: "passwordarg",
-        value: "",
-        ForegroundColor: "white",
-        BackgroundColor: "blue",
-        Flashing: false,
-        AlarmInfo: "Good",
-        tooltip: "подсказка!",
-        disabled: false,
-      },
+      Name: this.name,
+      data: 2,
     };
   },
   mounted() {
@@ -55,11 +50,17 @@ export default {
 
     var xAxis = chart.xAxes.push(am5xy.ValueAxis.new(root, {
       maxDeviation: 0,
-      min: 0,
-      max: 100,
+      min: this.params.minValue,
+      max: this.params.maxValue,
       strictMinMax: true,
       renderer: axisRenderer
     }));
+    
+
+    xAxis.get("renderer").labels.template.setAll({
+      fontSize: 15,
+      fill: am5.color(0xffffff),
+    });
 
 
     // Add clock hand
@@ -69,7 +70,7 @@ export default {
     var clockHand = am5radar.ClockHand.new(root, {
       pinRadius: am5.percent(20),
       radius: am5.percent(80),
-      bottomWidth: 40
+      bottomWidth: 20
     })
 
     var bullet = axisDataItem.set("bullet", am5xy.AxisBullet.new(root, {
@@ -83,10 +84,10 @@ export default {
       centerX: am5.percent(50),
       textAlign: "center",
       centerY: am5.percent(50),
-      fontSize: "3em"
+      fontSize: "1em"
     }));
 
-    axisDataItem.set("value", 50);
+    axisDataItem.set("value", this.params.data);
     bullet.get("sprite").on("rotation", function () {
       var value = axisDataItem.get("value");
       var text = Math.round(axisDataItem.get("value")).toString();
@@ -103,14 +104,19 @@ export default {
       clockHand.hand.animate({ key: "fill", to: fill, duration: 500, easing: am5.ease.out(am5.ease.cubic) })
     });
 
-    setInterval(function () {
-      axisDataItem.animate({
-        key: "value",
-        to: Math.round(Math.random() * 100),
-        duration: 500,
-        easing: am5.ease.out(am5.ease.cubic)
-      });
-    }, 2000)
+    const today = new Date();
+    var currentDateMilliseconds = today.getMilliseconds();
+    setTimeout(() => {
+      setInterval(() => {
+        axisDataItem.animate({
+          key: "value",
+          to: this.data,
+          duration: 500,
+          easing: am5.ease.out(am5.ease.cubic)
+        });
+      }, 1000)
+    // }, 1000 - Math.abs(500 - currentDateMilliseconds));
+    }, 1000 - currentDateMilliseconds);
 
     chart.bulletsContainer.set("mask", undefined);
 
@@ -119,24 +125,24 @@ export default {
     // https://www.amcharts.com/docs/v5/charts/radar-chart/gauge-charts/#Bands
     var bandsData = [{
       color: "#ee1f25",
-      lowScore: 0,
-      highScore: 10
+      lowScore: this.params.minValue,
+      highScore: this.params.lowAlarm
     }, {
       color: "#fdae19",
-      lowScore: 10,
-      highScore: 25
+      lowScore: this.params.lowAlarm,
+      highScore: this.params.lowWarning
     }, {
       color: "#b0d136",
-      lowScore: 25,
-      highScore: 75
+      lowScore: this.params.lowWarning,
+      highScore: this.params.highWarning
     }, {
       color: "#fdae19",
-      lowScore: 75,
-      highScore: 90
+      lowScore: this.params.highWarning,
+      highScore: this.params.highAlarm
     }, {
       color: "#ee1f25",
-      lowScore: 90,
-      highScore: 100
+      lowScore: this.params.highAlarm,
+      highScore: this.params.maxValue
     }];
 
     am5.array.each(bandsData, function (data) {
@@ -168,6 +174,38 @@ export default {
     some() {
       console.log('asd')
     }
+  },
+  computed: {
+    cssProps() {
+      return {
+        "--x": (this.params.x / 1) * this.$parent.multiplier + "px",
+        "--y": (this.params.y / 1) * this.$parent.multiplier + "px",
+        "--width": this.params.width * this.$parent.multiplier + "px",
+        "--height": (this.params.height / 1) * this.$parent.multiplier + "px",
+        // "--background": "#" + this.params.background,
+        // "--borderBrush": "#" + this.params.borderBrush,
+        // "--foreground": "#" + this.params.foreground,
+        // "--fontsize": this.params.fontSize * this.$parent.$parent.multiplier + "px",
+      };
+    }
+  },
+  created(){
+    console.log(this.params)
+    const res = {'namewidget': this.Name, 'namewindow': this.$parent.windowname}
+    console.log(res)
+    const today = new Date();
+    var currentDateMilliseconds = today.getMilliseconds();
+    setTimeout(() => {
+      setInterval(() => {
+        let changedelem= this.$store.getters.elemByName(res)?.properties
+        if (changedelem) {
+          if (changedelem.data){
+            this.data = changedelem.data
+          }
+        }
+      },1000)
+    // }, 1000 - Math.abs(500 - currentDateMilliseconds));
+    }, 1000 - currentDateMilliseconds);
   }
 };
 </script>
@@ -175,6 +213,13 @@ export default {
 <style scoped>
 #chartdiv {
   width: 100%;
-  height: 500px;
+  height: 100%;
+}
+#Gauge{
+  left: var(--x);
+  top: var(--y);
+  position: absolute;
+  width: var(--width);
+  height: var(--height)
 }
 </style>

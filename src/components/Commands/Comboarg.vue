@@ -83,7 +83,7 @@ export default {
 
 <style scoped>
 .comboarg {
-  box-sizing: border-box;
+  box-sizing: content-box;
   left: var(--x);
   top: var(--y);
   position: absolute;
@@ -93,7 +93,7 @@ export default {
   border: solid 1px var(--borderBrush);
 }
 .comboarg_value {
-  background-color: var(--background);
+  background-color: #252525FF;
   color: white;
   border: none;
   width: 100%;

@@ -197,7 +197,7 @@ export default {
       {
         this.tooltipers.push(res);  
       } else
-      if (res.type.startsWith("neightbours/Subscreen")) {
+      if (res.type.startsWith("neightbours/Subscreen") || (res.type.startsWith("neightbours/Renter"))) {
         this.subscreens.push(res);
       } else
       if (res.type.startsWith("primitives/Image")) {

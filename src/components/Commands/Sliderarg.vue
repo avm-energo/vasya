@@ -7,7 +7,6 @@
 </template>
 
 <script>
-// import CustomSlider from "vue-custom-range-slider";
 import slider from "vue3-slider"
 import axios from "axios";
 

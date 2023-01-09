@@ -15,7 +15,9 @@
         <chart v-for="elem in charts" :key="elem.name" :params="elem"/>
         <helper v-for="elem in helper" :key="elem.name" :params="elem.properties"/>
         <duval v-for="elem in duval" :key="elem.name" :params="elem.properties" :name="elem.name"/>
-        <!-- <meters /> -->
+        <meters v-for="elem in meter" :key="elem.name" :params="elem.properties" :name="elem.name"/>
+        <horizontals v-for="elem in horizontal" :key="elem.name" :params="elem.properties" :name="elem.name"/>
+
       </div>
     </div>
   </div>
@@ -35,6 +37,7 @@ import Duval from '../Specials/DuvalTriangle.vue'
 import Charttest from '../Charts/Test.vue'
 import Commands from "../Commands/Commands.vue";
 import Meters from "../Scales/Meter.vue"
+import Horizontals from "../Scales/Horizontal.vue";
 
 export default {
   name: "window",
@@ -62,6 +65,8 @@ export default {
       helper:[],
       duval:[],
       commandss:[],
+      meter:[],
+      horizontal:[],
       width: 0,
       height: 0,
       windowname: null,
@@ -82,6 +87,7 @@ export default {
     Charttest,
     Commands,
     Meters,
+    Horizontals,
   },
 
   // directives: {
@@ -205,6 +211,12 @@ export default {
       } else
       if (res.type.startsWith("commands")) {
         this.commandss.push(res)
+      } else
+      if (res.type.startsWith("scales/Meter")) {
+        this.meter.push(res)
+      } else
+      if (res.type.startsWith("scales/HorizontalSimple") || res.type.startsWith("scales/Horizontal")) {
+        this.horizontal.push(res)
       }
     });
   },

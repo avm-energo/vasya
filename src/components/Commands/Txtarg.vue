@@ -34,7 +34,7 @@ export default {
         const headers = { 
             'Content-Type': 'application/json',
         };
-        await Axios.post(`http://${this.ip}/api/nodes/main/widget/${this.encript((new TextEncoder()).encode(this.txtarg.Name))}/query/write-arg`, article, { headers })
+        await Axios.post(`http://${this.ip}/api/nodes/${this.encript((new TextEncoder()).encode(this.$parent.$parent.namewindow))}/widget/${this.encript((new TextEncoder()).encode(this.txtarg.Name))}/query/write-arg`, article, { headers })
       } else {
         const res = {'namewidget': this. txtarg.Name, 'namewindow': this.$parent.$parent.windowname , 'value': this. txtarg.value}
         this.$store.dispatch('addcommandwidgetmass', res)
