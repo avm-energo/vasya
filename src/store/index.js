@@ -103,6 +103,8 @@ export default createStore({
           }, 50*index);
         })
       }
+
+      // setInterval(() => {console.log(state.tickmas)},1000)
     },
 
     async updateElems(state, name) {
@@ -145,7 +147,7 @@ export default createStore({
           const data = JSON.parse(await response.text());
           state.tickmas[ticknumber].tick = data.tick
           data.widgets.forEach((element) => {
-            if (element.name.startsWith("Sub")) {
+            if (element.name.startsWith("Sub") || element.name.startsWith("Ren")) {
               element.properties.screen.widgets.forEach((elements) => {
                 elements.name += '/' + element.name
                 state.tickmas[ticknumber].mas.push(elements)

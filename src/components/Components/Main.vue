@@ -190,7 +190,7 @@ export default {
       {
         this.tooltipers.push(res);  
       } else
-      if (res.type.startsWith("neightbours/Subscreen")) {
+      if (res.type.startsWith("neightbours/Subscreen") || (res.type.startsWith("neightbours/Renter"))) {
         this.subscreens.push(res);
       } else
       if (res.type.startsWith("primitives/Image")) {
@@ -215,7 +215,8 @@ export default {
       if (res.type.startsWith("scales/Meter")) {
         this.meter.push(res)
       } else
-      if (res.type.startsWith("scales/HorizontalSimple") || res.type.startsWith("scales/Horizontal")) {
+      // if (res.type.startsWith("scales/HorizontalSimple") || res.type.startsWith("scales/Horizontal")) {
+      if (res.type.startsWith("scales/Horizontal")) {
         this.horizontal.push(res)
       }
     });

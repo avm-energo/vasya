@@ -1,18 +1,22 @@
 <template>
-  <div id="Horizontal" class="border" :style="cssProps">
-    <div id="Horizontal_top" class="border">
-
-      <div id="Horizontal_top_tag" class="border"> {{ this.params.tag }}</div>
-      <div v-if="!this.params.tag">{{ Math.trunc(this.value) }}</div>
-      <div id="Horizontal_top_text" class="border"> {{ this.params.tag ? Math.trunc(this.value) : ''}} </div>
+  <div id="Horizontal" :style="cssProps">
+    <div><p :style="cssProps" class="value">{{ Math.trunc(this.valuepercent) }}</p></div>
+    <div id="Horizontal_Middle_progresslinear" >
+      <div id="Horizontal_Middle_bar">
+        <div v-if="this.params.lowAlarm" style="border-right: solid 4px red" :style="cssProps" class="lowAlarmb"><p class="Horizontal_Middle_bar_borders_top" style="text-align: right; left:6px">{{ this.params.lowAlarm }}</p></div>
+        <div :style="cssProps" class="centera"><p></p></div>
+        <div v-if="this.params.highAlarm" style="border-left: solid 4px red;"  :style="cssProps" class="highAlarmb"><p class="Horizontal_Middle_bar_borders_top" style="text-align: left; right: 10px;">{{ this.params.highAlarm }}</p></div>
+      </div>
+      <k-progress :percent="value" :line-height="14" :show-text="false" :style="cssProps" :color="colors()" :bg-color="'#353535'" class="progressbar"></k-progress>
+      <div id="Horizontal_Middle_bar">
+        <div :style="cssProps" class="lowAlarmb"><p class="Horizontal_Middle_bar_borders" style="text-align: left;">{{this.params.downLimit}}</p></div>
+        <div v-if="this.params.lowWarning" :style="cssProps" class="lowWarningb" style="border-right: solid 4px yellow;"><p class="Horizontal_Middle_bar_borders_bottom" style="text-align: right; left:10px">{{this.params.lowWarning}}</p></div>
+        <div :style="cssProps" class="centerb"><p></p></div>
+        <div v-if="this.params.highWarning" :style="cssProps" class="highWarningb" style="border-left: solid 4px yellow;"><p class="Horizontal_Middle_bar_borders_bottom" style="text-align: left; right: 10px;">{{this.params.highWarning}}</p></div>
+        <div :style="cssProps" class="highAlarmb"><p class="Horizontal_Middle_bar_borders" style="text-align: right;">{{this.params.upLimit}}</p></div>
+      </div>
     </div>
-    <div id="Horizontal_Middle_progresslinear" class="border">
-      <k-progress :percent="value" :line-height="14" :show-text="false" style="width:106%"></k-progress>
-    </div>
-    <div id="Horizontal_bottom" class="border">
-      <div id="Horizontal_bottom_min" class="border">0</div>
-      <div id="Horizontal_bottom_max" class="border">{{this.params.upLimit}}</div>
-    </div>
+    
   </div>
 </template>
 
@@ -27,6 +31,9 @@ export default {
     return {
       Name: this.name,
       value: null,
+      valuepercent: null,
+      color: this.params.scaleCurrentBrush,
+      center: this.params.upLimit - (this.params.lowAlarm ? this.params.lowAlarm : 5) - (this.params.lowAlarm ? this.params.lowWarning ? this.params.lowWarning - this.params.lowAlarm : 0 : this.params.lowWarning ? this.params.lowWarning - 5 : 0) - (this.params.highWarning ? this.params.highAlarm ?  this.params.upLimit - (this.params.highWarning + this.params.upLimit - this.params.highAlarm): this.params.upLimit - this.params.highWarning - 5 : 0) - (this.params.highAlarm ? this.params.upLimit - this.params.highAlarm : 5)
     }
   },
   components:{
@@ -38,11 +45,15 @@ export default {
         "--x": (this.params.x / 1) * this.$parent.multiplier + "px",
         "--y": (this.params.y / 1) * this.$parent.multiplier + "px",
         "--width": this.params.width * this.$parent.multiplier + "px",
+        "--widthbar": this.params.width * this.$parent.multiplier + 50 + "px",
         "--height": (this.params.height / 1) * this.$parent.multiplier + "px",
-        // "--background": "#" + this.params.background,
-        // "--borderBrush": "#" + this.params.borderBrush,
-        // "--foreground": "#" + this.params.foreground,
-        // "--fontsize": this.params.fontSize * this.$parent.$parent.multiplier + "px",
+        "--valuecolor": '#' + this.color,
+        "--lowAlarm": [this.params.lowAlarm ? this.params.lowAlarm : 5] + '%',
+        "--lowWarning": [this.params.lowAlarm ? this.params.lowWarning ? this.params.lowWarning - this.params.lowAlarm : 0 : this.params.lowWarning ? this.params.lowWarning - 5 : 0] + '%',
+        "--center": this.center + '%',
+        "--centera": this.params.upLimit - this.params.lowAlarm - [this.params.highAlarm ? this.params.upLimit - this.params.highAlarm : 0] + '%',
+        "--highWarning": [this.params.highWarning ? this.params.highAlarm ?  this.params.upLimit - (this.params.highWarning + this.params.upLimit - this.params.highAlarm): this.params.upLimit - this.params.highWarning - 5 : 0] + '%',
+        "--highAlarm": [this.params.highAlarm ? this.params.upLimit - this.params.highAlarm : 5] + '%',
       };
     }
   },
@@ -58,20 +69,38 @@ export default {
         if (changedelem) {
           console.log(changedelem)
           if (changedelem.currentValue){
-            this.value = changedelem.currentValue
+            console.log(changedelem.currentValue)
+            this.valuepercent = Math.trunc(changedelem.currentValue)
+            this.value =  Math.trunc(changedelem.currentValue/(this.params.upLimit/100))
+            console.log(this.value)
+          }
+          if (changedelem.scaleCurrentBrush){
+            this.color = changedelem.scaleCurrentBrush
           }
         }
       },1000)
     // }, 1000 - Math.abs(500 - currentDateMilliseconds));
     }, 1000 - currentDateMilliseconds);
+    if (this.params.lowAlarm ||  this.params.lowWarning || this.params.highWarning || this.params.highAlarm) {
+      console.log(this.center)
+      console.log(this.params.lowAlarm ? this.params.lowAlarm : 5)
+      console.log(this.params.lowAlarm ? this.params.lowWarning ? this.params.lowWarning - this.params.lowAlarm : 0 : this.params.lowWarning ? this.params.lowWarning - 5 : 0)
+      console.log(this.params.highWarning ? this.params.highAlarm ?  this.params.upLimit - (this.params.highWarning + this.params.upLimit - this.params.highAlarm): this.params.upLimit - this.params.highWarning - 5 : 0)
+      console.log(this.params.highAlarm ? this.params.upLimit - this.params.highAlarm : 0)
+    }
+  },
+  methods:{
+    colors(){
+      return "#" + this.color
+    }
   }
 }
 </script>
 
 <style scoped>
-.border{
-  /* box-sizing: border-box;
-  border: solid 1px white; */
+.progressbar{
+  width: var(--widthbar);
+  margin-bottom: 0px;
 }
 #Horizontal{
   left: var(--x);
@@ -92,9 +121,50 @@ export default {
     #Horizontal_Middle_progresslinear{
       align-items: center;
     }
+    #Horizontal_Middle_bar{
+      height: 20%;
+      display: flex;
+    }
+    .Horizontal_Middle_bar_borders{
+        position: relative;
+        bottom: 15px;
+      }
+      .Horizontal_Middle_bar_borders_top{
+        position: relative;
+        font-size: 17px;
+        position: relative;
+        bottom:35px
+      }
+      .Horizontal_Middle_bar_borders_bottom{
+        position: relative;
+        font-size: 17px;
+        position: relative;
+        top:10px
+      }
   #Horizontal_bottom{
     display: flex;
     flex-direction: row;
     justify-content: space-between;
+  }
+  .lowAlarmb{
+    width: var(--lowAlarm);
+  }
+  .highAlarmb{
+    width: var(--highAlarm);
+  }
+  .lowWarningb{
+    width: var(--lowWarning);
+  }
+  .highWarningb{
+    width: var(--highWarning);
+  }
+  .centerb{
+    width: var(--center);
+  }
+  .centera{
+    width: var(--centera);
+  }
+  .value{
+    color: var(--valuecolor)
   }
 </style>
