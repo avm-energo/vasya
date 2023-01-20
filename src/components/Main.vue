@@ -10,6 +10,7 @@
       :namewindow="elem.typename"
       typewindow="modalwindow"
     />
+    <!-- develop -->
   </div>
   
 </template>
