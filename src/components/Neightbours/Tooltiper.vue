@@ -66,7 +66,7 @@
       :style="cssPropsimg"
       class="img"
     />
-    <p class="p" :style="cssProps" v-else>{{ button.value }}</p>
+    <p class="p" :style="cssProps" v-else-if="this.params.properties.leftIcon != 'Info'">{{button.value == "Инфо" ? '' : button.value}}</p>
   </div>
 </template>
 
@@ -89,6 +89,9 @@ export default {
     };
   },
   created() {
+    if (this.params.properties.leftIcon == 'Info') {
+      console.log(this.params.properties.leftIcon)
+    }
     this.button.Name = this.params.name
     if (this.$parent.subscreenname){ 
       this.button.Name += '/' + this.$parent.subscreenname
@@ -152,9 +155,9 @@ export default {
     },
     cssPropsIcon() {
       return {
-        "--widthicon": this.params.properties.height * this.$parent.multiplier  - 10 * this.$parent.multiplier + "px",
-        "--margintopicon": 3 * this.$parent.multiplier + "px",
-        "--marginsideicon": 15 * this.$parent.multiplier + "px",
+        "--widthicon": this.params.properties.height * this.$parent.multiplier - 10 * this.$parent.multiplier+ "px",
+        "--margintopicon": this.params.properties.height/10 * this.$parent.multiplier + "px",
+        "--marginsideicon": this.params.properties.width/10 * this.$parent.multiplier + "px",
       };
     },
   },

@@ -8,6 +8,7 @@
   import * as am5 from '@amcharts/amcharts5';
   import * as am5xy from '@amcharts/amcharts5/xy';
   import am5themes_Animated from '@amcharts/amcharts5/themes/Animated';
+import { range } from '@amcharts/amcharts5/.internal/core/util/Animation';
   
   export default {
     name: "Histogram",
@@ -23,68 +24,120 @@
       };
     },
     methods: {
-      makeSeries(xAxis, yAxis, name, fieldName, index) {
-        this.series = this.chart.series.push(am5xy.ColumnSeries.new(this.root, {
+      //Метод создания объекта графика для включения на полотно
+      makeSeries(xAxis, yAxis, name, root) {
+        this.series = this.chart.series.push(am5xy.ColumnSeries.new(root, {
           name: name,
           xAxis: xAxis,
           yAxis: yAxis,
-          valueYField: fieldName,
-          categoryXField: "period",
-          fill: am5.color('#' + this.params.graphs[index].back.slice(0,6).toLowerCase()),
+          valueYField: "value",
+          categoryXField: "argument",
         }));
-  
-        this.series.columns.template.setAll({
-          width: am5.percent(90),
-          tooltipY: 0
+        this.series.bullets.push(function() {
+          return am5.Bullet.new(root, {
+            locationX: 0.5,
+            locationY: 1.1,
+            sprite: am5.Label.new(root, {
+              text: "{valueY}",
+              fontSize: 9,
+              centerX: am5.percent(50),
+              centerY: am5.percent(50),
+              textAlign: "center",
+              populateText: true,
+            })
+          });
         });
-        if (this.params.graphs.length > 1) {
-          this.series.columns.template.setAll({
-            tooltipText: "{name}, {categoryX} : {valueY}",
-          });
-          this.legend.data.push(this.series);
-        } else {
-          this.series.columns.template.setAll({
-            tooltipText: "{valueY}",
-          });
-        }
         this.seriesArr.push(this.series)
       },
-  
-      createData(changedelem) {
-        let data = this.data
-        changedelem.forEach((element) =>{
-          let ColumnId = element.columnId
-          data[ColumnId].period = element.settingSector.alias
-          data[ColumnId][`${element.settingEntity.name}`] = element.currentValue
+      //Создание конкретной длинны оси абсцис на основе данных графков
+      createXaxisArgument() {
+        let maxArrLen = 0
+        this.dataArr.forEach((elem, index) => {
+          if (elem.length > maxArrLen) {
+            maxArrLen = index
+          }
         })
-        return data
+        let xaxisData = []
+        for(let g = 0; g <= 20; g++) { //КОСТЫЛЬ ДЛИННЫ ОСИ АБСЦЫС
+          xaxisData.push({"argument": g})
+        }
+
+        
+        return xaxisData
+      },
+      //Создание массива занчений осей для графика
+      createData(changedelem) {
+        let dataArr = [];
+        changedelem.dataSeries.forEach((PointsArr) => {
+          let dataArrEx = []
+          PointsArr.points.forEach((element, index) => {
+            dataArrEx.push({"argument": '', "value": ''})
+            dataArrEx[index].argument = element.argument
+            dataArrEx[index].value = element.value
+          })
+          dataArr.push(dataArrEx)
+        })
+        return dataArr
+      },
+      //Создание синусоиды
+      createSinusDataSeries() {
+        let maxArrLen = 0
+        this.dataArr.forEach((elem, index) => {
+          if (elem.length > maxArrLen) {
+            maxArrLen = index
+          }
+        })
+        let maxValue = 0
+        this.dataArr[maxArrLen].forEach((elem) => {
+          if (elem.value > maxValue) {
+            maxValue = elem.value
+          }
+        })
+        let sinusDataArr = []
+        let sinus = function(maxValue, x) {
+          let res = 0.95105 * maxValue * Math.sin(0.1 * Math.PI * x) //Примерная формула синусоиды
+          return res
+        }
+        for (let i = 0; i <= 20; i++) {
+          sinusDataArr.push({"argument" : '', "value" : ''})
+          sinusDataArr[i].argument = i
+          sinusDataArr[i].value = sinus(maxValue, i)
+        }
+        return sinusDataArr
+        
+      },
+      getRandomInt() {
+        return Math.floor(Math.random() * 100000000000000000);
       }
+
     },
     created() {
-      this.chartid = this.name
+      console.log('this.params',this.params);
+      // this.chartid = this.$parent.$parent.subscreenname
+      this.chartid = this.getRandomInt() //КОСТЫЛЬ НА СЛУЧАЙНОЕ ЗНАЧЕНИЕ ID ДЛЯ БЛОКА ГРАФИКА
     },
     mounted() {
+      //Создание экземпляра графка
       let root = am5.Root.new(this.chartid);
       root.setThemes([
         am5themes_Animated.new(root),
       ]);
+      //Уставнока базовых параметров отображения
       root.interfaceColors.set("text", am5.color(0xffffff));
       this.root = root
       let chart = root.container.children.push(am5xy.XYChart.new(root, {
         panX: false,
         panY: false,
-        wheelX: "panX",
-        wheelY: "zoomX",
         layout: root.verticalLayout
       }));
       chart.startDuration = 0;
       this.chart = chart
-      
+      //Создание экземпляра оси Абсцис
       let xAxis = chart.xAxes.push(am5xy.CategoryAxis.new(root, {
-        categoryField: "period",
+        categoryField: "argument",
         renderer: am5xy.AxisRendererX.new(root, {
-          cellStartLocation: 0.03,
-          cellEndLocation: 0.97,
+          cellStartLocation: 0,
+          cellEndLocation: 1,
           minGridDistance: 10,
           stroke: am5.color(0xFFFFFF),
           strokeOpacity: 1,
@@ -92,7 +145,7 @@
         }),
         tooltip: am5.Tooltip.new(root, {})
       }));
-  
+      //Уставнока рендера оси абсцис
       let xRenderer = xAxis.get("renderer");
       xRenderer.labels.template.setAll({
         fill: am5.color(0xFFFFFF),
@@ -100,11 +153,12 @@
       });
   
       this.xAxis = xAxis
-  
+      //Создание экземпляра оси Ординат
       let yAxis = chart.yAxes.push(am5xy.ValueAxis.new(root, {
-        min: this.params.min,
-        max: this.params.max,
-        strictMinMax: true,
+        //Парамтеры для ограничения экстремумов отображения графика
+        // min: this.params.min,
+        // max: this.params.max,
+        // strictMinMax: true,
         renderer: am5xy.AxisRendererY.new(root, {
           minGridDistance: 20,
           stroke: am5.color(0xFFFFFF),
@@ -112,11 +166,11 @@
           strokeWidth: 1
         })
       }));
-  
+      //Уставнока рендера оси ординат
       let yRenderer = yAxis.get("renderer");
       yRenderer.labels.template.setAll({
         fill: am5.color(0xFFFFFF),
-        fontSize: this.params.fontSize * this.$parent.$parent.multiplier * 1.5 + "px"
+        // fontSize: this.params.fontSize * this.$parent.$parent.multiplier * 1.5 + "px"
       });
       yRenderer.grid.template.setAll({
         stroke: am5.color(0xFFFFFF),
@@ -126,7 +180,7 @@
       });
   
       this.yAxis = yAxis
-  
+      //Базовая легенда
       let legend = chart.children.push(
       am5.Legend.new(root, {
         centerX: am5.p50,
@@ -134,26 +188,23 @@
         })
       );
       this.legend = legend
-      
-      this.data = [{}];
-      // this.params.sectors.forEach((element, index) => {
-      //   this.data.push({"period": ''})
-      //   this.data[index].period = element.alias
-      // })
-      // this.data.pop()
-  
+      //Первоначальная устанвока значений при первой отрисовки
+      this.dataArr = [];
+      this.params.dataSeries.forEach((PointsArr) => {
+        let dataArrEx = []
+        PointsArr.points.forEach((element, index) => {
+          dataArrEx.push({"argument": '', "value": ''})
+          dataArrEx[index].argument = element.argument
+          dataArrEx[index].value = element.value
+        })
+        this.dataArr.push(dataArrEx)
+      })
+      console.log("data", this.dataArr);
+
       let mas = []
-      // let j = this.params.table.length/this.params.sectors.length
-      // for (let i=0; i<j;i++){
-      //   mas.push({name: '',data: []})
-      //   mas[i].name = this.params.graphs[i].name
-      // } 
-      // this.params.table.forEach((element) => {
-      //   mas[element.rowId].data.push(element.currentValue);
-      // })
-  
-      xAxis.data.setAll(this.data);
-  
+
+      xAxis.data.setAll(this.createXaxisArgument());
+
       this.chartName = this.name
       if (this.$parent.$parent.subscreenname){ 
         this.chartName += '/' + this.$parent.$parent.subscreenname
@@ -163,23 +214,48 @@
       var currentDateMilliseconds = today.getMilliseconds();
   
       const res = {'namewidget': this.chartName, 'namewindow': this.$parent.$parent.windowname}
+      //Массив обхектов графиков для дальнейшего перебора
       this.seriesArr = []
-  
-      // this.params.graphs.forEach((graph, index) => {
-      //   this.makeSeries(xAxis, yAxis, graph.name, graph.name, index);
-      // })
-      // this.seriesArr.forEach((series) => {
-      //   series.data.setAll(this.data)
-      // })
-      
+
+      this.params.dataSeries.forEach((dataArr, index) => {
+        this.makeSeries(xAxis, yAxis, dataArr.id, root);
+      })
+      this.seriesArr.forEach((series, index) => {
+        series.data.setAll(this.dataArr[index])
+      })
+
+      //Создания экзмепляра графика синусоиды и его добавление
+      let sinSeries = this.chart.series.push(
+          am5xy.LineSeries.new(this.root, {
+            xAxis: this.xAxis,
+            yAxis: this.yAxis,
+            valueYField: "value",
+            categoryXField: "argument",
+            tooltip:am5.Tooltip.new(this.root, {
+              pointerOrientation:"horizontal",
+              labelText:"{valueY}"
+            })
+          })
+        );
+      sinSeries.data.setAll(this.createSinusDataSeries())
+
       setTimeout(() => {
         setInterval(() => {
           let changedelem= this.$store.getters.elemByName(res)?.properties
           if (changedelem) {
-            console.log('changedelem',changedelem);
+            //Обновление массива данных
+            this.dataArr = this.createData(changedelem)
+            //Создание графков на основе новых данных
+            this.seriesArr.forEach((series, index) => {
+              if (series.className === "ColumnSeries") {
+                series.data.setAll(this.dataArr[index])
+              }
+            })
+            //Обновление оси абсцис на основе новой длинны графков
+            xAxis.data.setAll(this.createXaxisArgument());
+            
           }
         },1000)
-      // }, 1000 - Math.abs(500 - currentDateMilliseconds));
       }, 1000 - currentDateMilliseconds);
   
     },

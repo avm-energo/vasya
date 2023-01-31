@@ -10,7 +10,7 @@
 
 <script>
 
-import axios from 'axios';
+import Axios from 'axios';
 
 export default {
   name: "app",
@@ -33,7 +33,7 @@ export default {
         const headers = { 
             'Content-Type': 'application/json',
         };
-        await axios.post(`http://${this.ip}/api/nodes/${this.encript((new TextEncoder()).encode(this.$parent.$parent.namewindow))}/widget/${this.encript((new TextEncoder()).encode(this.comboarg.Name))}/query/write-arg`, article, { headers })
+        await Axios.post(`http://${this.ip}/api/nodes/${this.encript((new TextEncoder()).encode(this.$parent.$parent.namewindow))}/widget/${this.encript((new TextEncoder()).encode(this.comboarg.Name))}/query/write-arg`, article, { headers })
       } else {
         const res = {'namewidget': this.comboarg.Name, 'namewindow': this.$parent.$parent.windowname , 'value': this.comboarg.value}
         this.$store.dispatch('addcommandwidgetmass', res)
