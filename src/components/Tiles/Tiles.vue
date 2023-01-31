@@ -1,6 +1,6 @@
 <template>
   <div class="tiles" :class="[ this.name.startsWith('Tiles/Number') ? tiles.Flashing ? 'flash' : '' : '', ]" :style="cssProps" :title="'Состояние элемента ' + tiles.tooltip" v-show="tiles.Visible" >
-    <p :style="cssProps" :id="this.name" v-show="tiles.value!='text'">{{ tiles.value }}</p>
+    <p :style="cssProps" :id="this.name" v-show="tiles.value!='text'">{{tiles.value}}</p>
   </div>
 </template>
 <script>
@@ -39,11 +39,16 @@ export default {
       this.tiles.Name += '/' + this.$parent.subscreenname
     }
     // костыль на пробелы
-    if (this.params.text.startsWith('        ')) {
-      this.tiles.value = this.params.text.replace(/ /g, '\u00A0')
-    } else {
-      this.tiles.value = this.params.text
-    }
+    // if (this.params.text.startsWith('        ')) {
+    //   this.tiles.value = this.params.text.replace(/ /g, '\u00A0')
+    // } else {
+    //   this.tiles.value = this.params.text
+    // }
+
+    let size = this.params.text.search(/\S|$/)
+    let text = ""
+    for (var i = 0; i < size; i++) {text = text + `\u2002`}
+    this.tiles.value = text + this.params.text.slice(size)
     
     this.tiles.ForegroundColor = this.params.foreground,
     this.tiles.BackgroundColor = this.params.background,

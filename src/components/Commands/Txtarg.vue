@@ -11,7 +11,7 @@
 
 <script>
 
-import { Axios } from "axios";
+import  Axios  from "axios";
 
 export default {
   name: "app",
@@ -27,17 +27,19 @@ export default {
   },
   methods:{
     async some(){
+      console.log(`http://${this.ip}/api/nodes/${this.encript((new TextEncoder()).encode(this.$parent.$parent.namewindow))}/widget/${this.encript((new TextEncoder()).encode(this.txtarg.Name))}/query/write-arg`)
+      const res = {'namewidget': this.txtarg.Name, 'namewindow': this.$parent.$parent.windowname , 'value': this.txtarg.value}
+      this.$store.dispatch('addcommandwidgetmass', res)
       if (this.params.trigger != `ButtonApply`) {
-        const article =`
-          ${this.txtarg.value}
-        `;
+        const article =`${this.txtarg.value}`;
         const headers = { 
             'Content-Type': 'application/json',
         };
+        console.log(article)
         await Axios.post(`http://${this.ip}/api/nodes/${this.encript((new TextEncoder()).encode(this.$parent.$parent.namewindow))}/widget/${this.encript((new TextEncoder()).encode(this.txtarg.Name))}/query/write-arg`, article, { headers })
-      } else {
-        const res = {'namewidget': this. txtarg.Name, 'namewindow': this.$parent.$parent.windowname , 'value': this. txtarg.value}
-        this.$store.dispatch('addcommandwidgetmass', res)
+      // } else {
+      //   const res = {'namewidget': this.txtarg.Name, 'namewindow': this.$parent.$parent.windowname , 'value': this.txtarg.value}
+      //   this.$store.dispatch('addcommandwidgetmass', res)
       }
     },
     encript(values) {
@@ -62,6 +64,8 @@ export default {
   created(){
     this.txtarg.value = this.params.value
     this.txtarg.Name = this.name
+    const res = {'namewidget': this.txtarg.Name, 'namewindow': this.$parent.$parent.windowname , 'value': this.txtarg.value}
+    this.$store.dispatch('addcommandwidgetmass', res)
   },
   computed: {
     cssProps() {

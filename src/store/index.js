@@ -2,6 +2,7 @@
 import { createStore } from "vuex";
 // import ip from '../assets/ip.json'
 import moment from "moment";
+// import { log4js } from "log4js";
 
 export default createStore({
   state: {
@@ -45,7 +46,10 @@ export default createStore({
       state.mainheight = window.innerHeight
       state.ip = JSON.parse(await config.text()).ip
       console.log(state.ip)
-
+      // var log4js = require("log4js");
+      // var loggerr = log4js.getLogger();
+      // loggerr.level = "debug";
+      // loggerr.debug("Some debug messages");
       let response = await fetch(
         `http://${state.ip}/api/nodes/main/current`,{
           method: "GET",
@@ -55,6 +59,7 @@ export default createStore({
       const data = JSON.parse(await response.text());
       state.tick = data.tick;
       state.main = (data);
+      this.dispatch("updateElems", data.path);
 
       let response2 = await fetch(
         `http://${state.ip}/api/nodes/header/current`
@@ -65,7 +70,7 @@ export default createStore({
         state.head = null 
       } else {
         state.head = data2;
-        this.dispatch("updateElems", ">:\\" + data2.name);
+        this.dispatch("updateElems", data2.path);
       }
 
       // data2.widgets.forEach(async (elem) =>{
@@ -92,7 +97,6 @@ export default createStore({
         state.footer = data3;
         data3.ip = state.ip
       }
-      this.dispatch("updateElems", ">:\\" + data.name);
 
       var mas = JSON.parse(sessionStorage.getItem("localArray"))
       if (mas) {
@@ -128,11 +132,11 @@ export default createStore({
         }
         return ans.join("")
       }
-
       const today = new Date();
       var currentDateMilliseconds = today.getMilliseconds();
       let ticknumber = state.tickmas.length
       let con = {'tick': state.tick, 'name': name.split('\\').join(''), 'mas': [1]}
+      console.log(name)
       state.tickmas.push(con)
       var zyx = setTimeout(() => {
         // console.log("я запустил:" + name)
@@ -167,51 +171,54 @@ export default createStore({
     },
 
     async addElems(state, data) {
-
-      function encript(values) {
-        const  Alphabet = "12345678" + "9ABDEFGH" + "JKLMNPQR" + "STUVWXYZ";
-        var bitsCount = 8 * values.length;
-        var ans = new Array(Math.trunc(bitsCount / 5) + (bitsCount%5==0?0:1));
-        for (let i = 0; i < ans.length; i++) {
-            var bitNum = i * 5;
-            var byteNum = Math.trunc(bitNum / 8);
-            var byteOffset = bitNum % 8;  
-            var symbol = values[byteNum] >> byteOffset;
-            if (byteOffset > 3 && byteNum<(values.length-1))
-            {
-                var symbolOffset = 8 - byteOffset;
-                symbol |= values[byteNum+1]<<symbolOffset;
-            }
-            symbol &= 0b11111; // cut a tail
-            ans[i] = Alphabet[symbol];
-        }
-        return ans.join("")
-      }
-
-      let response = await fetch(
-        `http://${state.ip}/api/nodes/${encript((new TextEncoder()).encode(data.name))}/current`
-      );
-      if (response.ok){
-        console.log(`http://${state.ip}/api/nodes/${encript((new TextEncoder()).encode(data.name))}/current`)
-        const res = JSON.parse(await response.text());
-        res.title = data.title
-        res.screenPercentage = data.screenPercentage
-        res.typename = data.name
-        state.elems.push(res);
-        console.log(data.name)
-        this.dispatch("updateElems", data.name);
-        var localArray = sessionStorage.getItem('localArray')
-        if (localArray) {
-          var localArray = JSON.parse(sessionStorage.getItem("localArray"))
-          localArray.push(JSON.stringify({name: data.name, title: data.title, screenPercentage: data.screenPercentage}))
-          sessionStorage.setItem('localArray', JSON.stringify(localArray))
-        } else {
-          var localArray = [JSON.stringify({name: data.name, title: data.title, screenPercentage: data.screenPercentage})]
-          sessionStorage.setItem('localArray', JSON.stringify(localArray))
-        }
-        
+      if (state.tickmas.find(res => res.name == data.name.split('\\').join(''))) 
+      {
+        this.dispatch("closewindow", state.tickmas[state.tickmas.length-1].name);
       } else {
-        alert("Ошибка HTTP: " + response.status)
+        function encript(values) {
+          const  Alphabet = "12345678" + "9ABDEFGH" + "JKLMNPQR" + "STUVWXYZ";
+          var bitsCount = 8 * values.length;
+          var ans = new Array(Math.trunc(bitsCount / 5) + (bitsCount%5==0?0:1));
+          for (let i = 0; i < ans.length; i++) {
+              var bitNum = i * 5;
+              var byteNum = Math.trunc(bitNum / 8);
+              var byteOffset = bitNum % 8;  
+              var symbol = values[byteNum] >> byteOffset;
+              if (byteOffset > 3 && byteNum<(values.length-1))
+              {
+                  var symbolOffset = 8 - byteOffset;
+                  symbol |= values[byteNum+1]<<symbolOffset;
+              }
+              symbol &= 0b11111; // cut a tail
+              ans[i] = Alphabet[symbol];
+          }
+          return ans.join("")
+        }
+
+        let response = await fetch(
+          `http://${state.ip}/api/nodes/${encript((new TextEncoder()).encode(data.name))}/current`
+        );
+        if (response.ok){
+          console.log(`http://${state.ip}/api/nodes/${encript((new TextEncoder()).encode(data.name))}/current`)
+          const res = JSON.parse(await response.text());
+          res.title = data.title
+          res.screenPercentage = data.screenPercentage
+          res.typename = data.name
+          state.elems.push(res);
+          this.dispatch("updateElems", data.name);
+          var localArray = sessionStorage.getItem('localArray')
+          if (localArray) {
+            var localArray = JSON.parse(sessionStorage.getItem("localArray"))
+            localArray.push(JSON.stringify({name: data.name, title: data.title, screenPercentage: data.screenPercentage}))
+            sessionStorage.setItem('localArray', JSON.stringify(localArray))
+          } else {
+            var localArray = [JSON.stringify({name: data.name, title: data.title, screenPercentage: data.screenPercentage})]
+            sessionStorage.setItem('localArray', JSON.stringify(localArray))
+          }
+          
+        } else {
+          alert("Ошибка HTTP: " + response.status)
+        }
       }
     },
 
@@ -294,7 +301,7 @@ export default createStore({
       } else {
       state.commandwidgetmass[indexmas].widgets.push({'namewidget' : params.namewidget, 'value' : params.value})
       }
-      console.log(state.commandwidgetmass)
+      // console.log(state.commandwidgetmass)
     },
 
     clearcommandwidgets(state, name){

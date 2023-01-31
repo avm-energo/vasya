@@ -5,9 +5,9 @@
     <ipadressarg v-if="params.type.startsWith('commands/IpAddress')" :params="this.params.properties" :name="this.params.name" :ip="this.ip"/>
     <comboarg v-if="params.type.startsWith('commands/ComboArg')" :params="this.params.properties" :name="this.params.name" :ip="this.ip"/>
     <boolarg v-if="params.type.startsWith('commands/BoolArg')" :params="this.params.properties" :name="this.params.name" :ip="this.ip"/>
-    <bitmaskarg v-if="params.type.startsWith('commands/BitMaskArg')" :params="this.params.properties" :name="this.params.name" :ip="this.ip"/>
     <sliderarg v-if="params.type.startsWith('commands/SliderArg')" :params="this.params.properties" :name="this.params.name" :ip="this.ip"/>
     <apply v-if="params.type.startsWith('commands/Apply')" :params="this.params.properties" :name="this.params.name" :ip="this.ip"/>
+    <bitmaskarg v-if="params.type.startsWith('commands/BitMaskArg')" :params="this.params.properties" :name="this.params.name" :ip="this.ip"/>
 </template>
 
 <script>
@@ -37,7 +37,7 @@ export default {
         Apply,
     },
     created(){
-        console.log(this.params)
+        // console.log(this.params)
     },
     computed: {
         ip() {

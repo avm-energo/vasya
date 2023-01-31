@@ -35,12 +35,12 @@ export default {
       if (res){
         var items = {};
         res.forEach(element => {
-          console.log(element)
+          // console.log(element)
           items[element.namewidget] = element.value.toString();
         });
         const jsonString = JSON.stringify(Object.assign({}, items)) 
         json_obj = JSON.parse(jsonString);
-        console.log(json_obj)
+        // console.log(json_obj)
       } else{
 
       }
@@ -79,7 +79,7 @@ export default {
     },
   },
   created(){
-    console.log(this.ip)
+    // console.log(this.ip)
   }
 };
 </script>
