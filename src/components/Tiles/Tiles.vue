@@ -31,9 +31,6 @@ export default {
     };
   },
   created(){
-    if(this.params.text == '               ШСМ'){
-      console.log(this.params.text.split(" "))
-    }
     this.tiles.Name = this.name
     if (this.$parent.subscreenname){ 
       this.tiles.Name += '/' + this.$parent.subscreenname

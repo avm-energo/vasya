@@ -27,7 +27,7 @@ export default {
   },
   methods:{
     async some(){
-      console.log(`http://${this.ip}/api/nodes/${this.encript((new TextEncoder()).encode(this.$parent.$parent.namewindow))}/widget/${this.encript((new TextEncoder()).encode(this.txtarg.Name))}/query/write-arg`)
+      // console.log(`http://${this.ip}/api/nodes/${this.encript((new TextEncoder()).encode(this.$parent.$parent.namewindow))}/widget/${this.encript((new TextEncoder()).encode(this.txtarg.Name))}/query/write-arg`)
       const res = {'namewidget': this.txtarg.Name, 'namewindow': this.$parent.$parent.windowname , 'value': this.txtarg.value}
       this.$store.dispatch('addcommandwidgetmass', res)
       if (this.params.trigger != `ButtonApply`) {
@@ -35,7 +35,6 @@ export default {
         const headers = { 
             'Content-Type': 'application/json',
         };
-        console.log(article)
         await Axios.post(`http://${this.ip}/api/nodes/${this.encript((new TextEncoder()).encode(this.$parent.$parent.namewindow))}/widget/${this.encript((new TextEncoder()).encode(this.txtarg.Name))}/query/write-arg`, article, { headers })
       // } else {
       //   const res = {'namewidget': this.txtarg.Name, 'namewindow': this.$parent.$parent.windowname , 'value': this.txtarg.value}

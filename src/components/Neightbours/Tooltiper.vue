@@ -89,9 +89,9 @@ export default {
     };
   },
   created() {
-    if (this.params.properties.leftIcon == 'Info') {
-      console.log(this.params.properties.leftIcon)
-    }
+    // if (this.params.properties.leftIcon == 'Info') {
+    //   console.log(this.params.properties.leftIcon)
+    // }
     this.button.Name = this.params.name
     if (this.$parent.subscreenname){ 
       this.button.Name += '/' + this.$parent.subscreenname
@@ -113,10 +113,13 @@ export default {
     some() {
       let data = [];
       data.name = this.params.properties.path;
+      data.title = [];
       if (this.params.properties.title) {
-        data.title = this.params.properties.title;
+        data.title.text = this.params.properties.title;
+        data.title.bool = true
       } else {
-        data.title = this.params.properties.text;
+        data.title.text = this.params.properties.text;
+        data.title.bool = false
       }
       data.screenPercentage = this.params.properties.screenPercentage;
       // if (this.$parent.windowname == ">:Header" || this.params.type == "neightbours/Navigator"){
