@@ -92,7 +92,7 @@ export default {
       .then(response => {
         const endtime = new Date().getTime()
         console.log('получил')
-        localStorage.setItem(starttime, endtime)
+        // localStorage.setItem(starttime, endtime)
         return response.data
       });
     },
