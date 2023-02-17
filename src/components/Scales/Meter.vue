@@ -172,7 +172,6 @@ export default {
   },
   methods: {
     some() {
-      console.log('asd')
     }
   },
   computed: {
@@ -190,9 +189,7 @@ export default {
     }
   },
   created(){
-    console.log(this.params)
     const res = {'namewidget': this.Name, 'namewindow': this.$parent.windowname}
-    console.log(res)
     const today = new Date();
     var currentDateMilliseconds = today.getMilliseconds();
     setTimeout(() => {

@@ -33,7 +33,7 @@ export default {
       value: null,
       valuepercent: null,
       color: this.params.scaleCurrentBrush,
-      center: this.params.upLimit - (this.params.lowAlarm ? this.params.lowAlarm : 5) - (this.params.lowAlarm ? this.params.lowWarning ? this.params.lowWarning - this.params.lowAlarm : 0 : this.params.lowWarning ? this.params.lowWarning - 5 : 0) - (this.params.highWarning ? this.params.highAlarm ?  this.params.upLimit - (this.params.highWarning + this.params.upLimit - this.params.highAlarm): this.params.upLimit - this.params.highWarning - 5 : 0) - (this.params.highAlarm ? this.params.upLimit - this.params.highAlarm : 5)
+      center: (this.params.upLimit - this.params.downLimit) - (this.params.lowAlarm ? (this.params.lowAlarm - this.params.downLimit) : 5) - (this.params.lowAlarm ? this.params.lowWarning ? this.params.lowWarning - this.params.lowAlarm : 0 : this.params.lowWarning ? this.params.lowWarning - 5 : 0) - (this.params.highWarning ? this.params.highAlarm ?  this.params.upLimit - (this.params.highWarning + this.params.upLimit - this.params.highAlarm): this.params.upLimit - this.params.highWarning - 5 : 0) - (this.params.highAlarm ? this.params.upLimit - this.params.highAlarm : 5)
     }
   },
   components:{
@@ -48,7 +48,7 @@ export default {
         "--widthbar": this.params.width * this.$parent.multiplier + 50 + "px",
         "--height": (this.params.height / 1) * this.$parent.multiplier + "px",
         "--valuecolor": '#' + this.color,
-        "--lowAlarm": [this.params.lowAlarm ? this.params.lowAlarm : 5] + '%',
+        "--lowAlarm": [this.params.lowAlarm ? (this.params.lowAlarm - this.params.downLimit) : 5] + '%',
         "--lowWarning": [this.params.lowAlarm ? this.params.lowWarning ? this.params.lowWarning - this.params.lowAlarm : 0 : this.params.lowWarning ? this.params.lowWarning - 5 : 0] + '%',
         "--center": this.center + '%',
         "--centera": this.params.upLimit - this.params.lowAlarm - [this.params.highAlarm ? this.params.upLimit - this.params.highAlarm : 0] + '%',
@@ -58,8 +58,8 @@ export default {
     }
   },
   created(){
-    this.value = this.params.currentValue
-    console.log(this.params)
+    this.value = (this.params.currentValue-this.params.downLimit)/((this.params.upLimit-this.params.downLimit)/100)
+    this.valuepercent = Math.round(this.params.currentValue)
     const res = {'namewidget': this.Name, 'namewindow': this.$parent.windowname}
     const today = new Date();
     var currentDateMilliseconds = today.getMilliseconds();
@@ -67,12 +67,9 @@ export default {
       setInterval(() => {
         let changedelem= this.$store.getters.elemByName(res)?.properties
         if (changedelem) {
-          console.log(changedelem)
           if (changedelem.currentValue){
-            console.log(changedelem.currentValue)
-            this.valuepercent = Math.trunc(changedelem.currentValue)
-            this.value =  Math.trunc(changedelem.currentValue/(this.params.upLimit/100))
-            console.log(this.value)
+            this.valuepercent = Math.round(changedelem.currentValue)
+            this.value = (changedelem.currentValue-this.params.downLimit)/((this.params.upLimit-this.params.downLimit)/100)
           }
           if (changedelem.scaleCurrentBrush){
             this.color = changedelem.scaleCurrentBrush
@@ -81,13 +78,6 @@ export default {
       },1000)
     // }, 1000 - Math.abs(500 - currentDateMilliseconds));
     }, 1000 - currentDateMilliseconds);
-    if (this.params.lowAlarm ||  this.params.lowWarning || this.params.highWarning || this.params.highAlarm) {
-      console.log(this.center)
-      console.log(this.params.lowAlarm ? this.params.lowAlarm : 5)
-      console.log(this.params.lowAlarm ? this.params.lowWarning ? this.params.lowWarning - this.params.lowAlarm : 0 : this.params.lowWarning ? this.params.lowWarning - 5 : 0)
-      console.log(this.params.highWarning ? this.params.highAlarm ?  this.params.upLimit - (this.params.highWarning + this.params.upLimit - this.params.highAlarm): this.params.upLimit - this.params.highWarning - 5 : 0)
-      console.log(this.params.highAlarm ? this.params.upLimit - this.params.highAlarm : 0)
-    }
   },
   methods:{
     colors(){
@@ -165,6 +155,7 @@ export default {
     width: var(--centera);
   }
   .value{
-    color: var(--valuecolor)
+    color: var(--valuecolor);
+    font-size: 120%
   }
 </style>

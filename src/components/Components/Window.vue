@@ -3,7 +3,7 @@
     <!-- <div v-clickoutside:[typewindow]="onClickOutside"> -->
     <div>
       <div id="head" v-show="myJson.title">
-        <div id="headtext">{{myJson.title}}</div>
+        <div id="headtext">{{titlebool ? titletext : ''}}</div>
         <div id="closewindow" @click.stop="closejson">x</div>
       </div>
       <div id="mainbody" :style="cssProps">
@@ -74,6 +74,8 @@ export default {
       width: 0,
       height: 0,
       windowname: null,
+      titlebool: null,
+      titletext: null
     };
   },
 
@@ -151,7 +153,6 @@ export default {
       this.multiplier = this.multiplierwindow * (this.mainmultiplier[1]/this.multiplierwindowww)
       if (this.typewindow == "modalwindow") {
         if (this.myJson.canvas.width * this.multiplier + 30 > window.innerWidth) {
-          console.log('asd')
           this.multiplier = this.multiplier / ((this.myJson.canvas.width * this.multiplier)/window.innerWidth)
         }
       }
@@ -163,6 +164,15 @@ export default {
   },
 
   created() {
+    if (this.myJson.title) {
+      if (this.myJson.title.bool) {
+        this.titletext = this.myJson.title.text
+        this.titlebool = true
+      } else {
+        this.titletext = ''
+        this.titlebool = false
+      } 
+    }
     window.addEventListener('resize', this.reportWindowSize)
     this.multiplierwindow= this.multiplierwindow * this.subscreensize
     this.windowname = this.namewindow.split('\\').join('')

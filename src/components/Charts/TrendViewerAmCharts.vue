@@ -1,4 +1,5 @@
 <template>
+  <!-- <button @click="some()">Нажми меня</button> -->
   <div id="box" :style="cssProps">
     <div id="box_title">
       <div><datepicker v-model="starttime" class="box_title_datepicker"/></div>
@@ -49,6 +50,14 @@ export default {
     Datepicker,
   },
   methods: {
+    some(){
+      let keys = Object.keys(localStorage);
+        for(let key of keys.sort()) {
+          const date = new Date(+key)
+          const end = localStorage.getItem(key) - key
+          console.log('Запрос в ' + date.getHours() + ":" + date.getMinutes() + ':' + date.getSeconds() + ':' + date.getMilliseconds() + ' Прошло:' + end/1000 + ' секунд' );
+        }
+    },
     encript(values) {
       const  Alphabet = "12345678" + "9ABDEFGH" + "JKLMNPQR" + "STUVWXYZ";
       var bitsCount = 8 * values.length;
@@ -71,12 +80,19 @@ export default {
 
     async getChartData() {
       const article = this.updatedBody()
+      const starttime = new Date().getTime()
+      console.log('запросил')
       const headers = { 
           'Content-Type': 'application/json',
       };
+      console.log(`http://${this.ip}/api/nodes/main/widget/${this.encript((new TextEncoder()).encode(this.name))}/query/trend-history`)
+      console.log(article)
       this.chartDataArr = await axios.post(`http://${this.ip}/api/nodes/main/widget/${this.encript((new TextEncoder()).encode(this.name))}/query/trend-history`, article, { headers })
       // this.chartDataArr = await axios.post(`http://${this.ip}/api/nodes/${this.encript((new TextEncoder()).encode(this.$parent.$parent.windowname.split(':').join(':\\')))}/widget/${this.encript((new TextEncoder()).encode(this.name))}/query/trend-history`, article, { headers })
       .then(response => {
+        const endtime = new Date().getTime()
+        console.log('получил')
+        localStorage.setItem(starttime, endtime)
         return response.data
       });
     },
@@ -89,7 +105,8 @@ export default {
           "lowerTime": "${moment(this.starttime).format("YYYY-MM-DDTHH:mm:ss")}",
           "upperTime": "${moment(this.endtime).format("YYYY-MM-DDTHH:mm:ss")}"
       }`;
-      console.log('new body created');
+      const today = new Date();
+      console.log('new body created ');
       return body
     },
     
@@ -119,7 +136,7 @@ export default {
   async mounted() {
     let root = am5.Root.new(this.$refs.chartdiv);
     this.root = root;
-    this.starttime = new Date(new Date().setDate(new Date().getDay() - 18));
+    this.starttime = new Date(new Date().setDate(new Date().getDay() + 8));
     this.endtime = new Date()
 
     root.setThemes([
@@ -257,7 +274,8 @@ export default {
   watch: {
     chartDataArr() {
       if (this.root) {
-        console.log('new data loaded');
+        const today = new Date();
+        console.log('new data loaded ');
       }
     }
   },

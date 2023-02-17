@@ -5,9 +5,9 @@
       <span class="bitmaskarg_value">0x{{ bitmaskargvalue }}</span>
     </div>
     <div class="bitmaskarg_table"  v-show="bitmaskarg.window" v-click-outside="onClickOutside" :style="cssProps1">
-      <table class="bitmaskarg_table_style" ref="bit" :style="cssProps">
+      <table class="bitmaskarg_table_style"  ref="bit" :style="cssProps">
         <tr>
-          <td colspan="3" style="text-align: left; padding:5px">Bit field</td>
+          <td colspan="3" style="text-align: left; padding:5px" >Bit field</td>
         </tr>
         <tr>
           <td style="padding:5px">Position</td>
@@ -16,7 +16,7 @@
         </tr>
         <tr v-for="elem in bitmaskarg.masvalue" :key="elem.id">
           <td>{{ elem.position }}</td>
-          <td>{{ elem.description }}</td>
+          <td style="padding:0 5px 0 5px;">{{ elem.description }}</td>
           <td>
             <input type="checkbox" v-model="elem.value" @change="[elem.value ? BigInt(bitmaskarg.value += Math.pow(2, elem.position)) : BigInt(bitmaskarg.value -= Math.pow(2, elem.position)),], some(bitmaskarg)"/>
           </td>
@@ -36,11 +36,13 @@ export default {
   props: ['params' , 'name', 'ip'],
   data() {
     return {
+      leftside:null,
+      widthtable:null,
       bitmaskarg: {
         Name: null,
         value: 0,
         masvalue: null,
-        window: false,
+        window: true,
       },
     };
   },
@@ -102,12 +104,14 @@ export default {
     // this.bitmaskarg.value = this.params.value
     this.bitmaskarg.masvalue = this.params.settings
     this.bitmaskarg.Name = this.name
+    setTimeout(()=>{this.bitmaskarg.window = false},1  )
     // console.log(this.params.x * this.$parent.$parent.multiplier)
-    console.log(this.params.backgroundColor)
     
   },
   mounted(){
-    console.log(this.$refs.bit.clientWidth)
+    const bit = this.$refs.bit
+    this.widthtable = bit.getBoundingClientRect().width
+    this.leftside = this.params.x * this.$parent.$parent.multiplier  + this.widthtable + 84.67 > document.documentElement.clientWidth
   },
   computed: {
     bitmaskargvalue() {
@@ -115,7 +119,7 @@ export default {
     },
     cssProps() {
       return {
-        "--x": (this.params.x / 1) * this.$parent.$parent.multiplier + "px",
+        "--x": this.params.x * this.$parent.$parent.multiplier + "px",
         "--y": (this.params.y / 1) * this.$parent.$parent.multiplier + "px",
         "--width": this.params.width * this.$parent.$parent.multiplier + "px",
         "--height": (this.params.height / 1) * this.$parent.$parent.multiplier + "px",
@@ -128,7 +132,7 @@ export default {
     cssProps1(){
       return{
         "--ytable": (this.params.y + this.params.height) * this.$parent.$parent.multiplier + "px",
-        "--xtable": (this.params.x) * this.$parent.$parent.multiplier + "px",
+        "--xtable": [this.leftside ? this.params.x * this.$parent.$parent.multiplier - this.widthtable :  this.params.x * this.$parent.$parent.multiplier] + "px",
         "--background": "#" + this.params.backgroundColor,
       }
     }

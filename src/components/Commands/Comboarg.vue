@@ -59,7 +59,6 @@ export default {
     },
   },
   created(){
-    console.log(this.params)
     this.comboarg.value = this.params.value
     this.comboarg.masvalue = this.params.cases
     this.comboarg.Name = this.name

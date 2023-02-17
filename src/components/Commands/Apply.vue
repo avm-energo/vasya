@@ -35,12 +35,10 @@ export default {
       if (res){
         var items = {};
         res.forEach(element => {
-          // console.log(element)
           items[element.namewidget] = element.value.toString();
         });
         const jsonString = JSON.stringify(Object.assign({}, items)) 
         json_obj = JSON.parse(jsonString);
-        // console.log(json_obj)
       } else{
 
       }
@@ -48,7 +46,7 @@ export default {
         const headers = { 
             'Content-Type': 'application/json',
         };
-        console.log(this.$parent.$parent.namewindow.split('\\').join('\\') )
+        // console.log(this.$parent.$parent.namewindow.split('\\').join('\\') )
         await axios.post(`http://${this.ip}/api/nodes/${this.encript((new TextEncoder()).encode(this.$parent.$parent.namewindow))}/widget/${this.encript((new TextEncoder()).encode(this.name))}/query/apply-form`, json_obj, { headers })
         this.$store.dispatch('clearcommandwidgets', this.$parent.$parent.windowname)
       } else {

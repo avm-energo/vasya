@@ -35,7 +35,6 @@ export default {
   methods: {
     async some() {
       if (this.sliderarg.value != this.sliderarg.lastvalue){
-        console.log('asd')
         const article =`
           ${this.sliderarg.value}
         `;
