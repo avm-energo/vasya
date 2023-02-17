@@ -44,8 +44,10 @@ export default createStore({
 
       let config = await fetch('defaults.json')
       state.mainheight = window.innerHeight
-      state.ip = JSON.parse(await config.text()).ip
+      const a = JSON.parse(await config.text())
+      state.ip = a.ip
       console.log(state.ip)
+      console.log("версия: " + a.version)
       // var log4js = require("log4js");
       // var loggerr = log4js.getLogger();
       // loggerr.level = "debug";
@@ -138,36 +140,47 @@ export default createStore({
       let con = {'tick': state.tick, 'name': name.split('\\').join(''), 'mas': [1]}
       console.log(name)
       state.tickmas.push(con)
-      var zyx = setTimeout(() => {
-        // console.log("я запустил:" + name)
-        var xyz = setInterval(async () => {
-          state.tickmas[ticknumber].mas = []
-          let response = await fetch(
-            `http://${state.ip}/api/nodes/${encript((new TextEncoder()).encode(name))}/delta/0/${
-              state.tickmas[ticknumber].tick
-            }`
-          );
-          // console.log("number= " + ticknumber + " tick=" + state.tickmas[ticknumber])
-          const data = JSON.parse(await response.text());
-          state.tickmas[ticknumber].tick = data.tick
-          data.widgets.forEach((element) => {
-            if (element.name.startsWith("Sub") || element.name.startsWith("Ren")) {
-              element.properties.screen.widgets.forEach((elements) => {
-                elements.name += '/' + element.name
-                state.tickmas[ticknumber].mas.push(elements)
-              });
-            } else {
-              state.tickmas[ticknumber].mas.push(element)
-            }
-          });
-          // console.log(" time:" + new Date().getHours() + ":"+ new Date().getMinutes() + ":"+ new Date().getSeconds() + ":" + asdasda.getMilliseconds() + ' name = ' + name + " tick:" + state.tickmas[ticknumber].tick) 
-          // console.log(data)
-          // console.log(state.tickmas[ticknumber])
-        }, 1000);
-        state.tickmas[ticknumber].interval = xyz
-        
-      }, 1000 - Math.abs(500 - currentDateMilliseconds));
-      state.tickmas[ticknumber].timeout = zyx
+      let response = await fetch(
+        `http://${state.ip}/api/nodes/${encript((new TextEncoder()).encode(name))}/delta/0/${
+          state.tickmas[ticknumber].tick
+        }`
+      );
+      if (response.status == 200) {
+        var zyx = setTimeout(() => {
+          // console.log("я запустил:" + name)
+          var xyz = setInterval(async () => {
+            state.tickmas[ticknumber].mas = []
+            let response = await fetch(
+              `http://${state.ip}/api/nodes/${encript((new TextEncoder()).encode(name))}/delta/0/${
+                state.tickmas[ticknumber].tick
+              }`
+            );
+            // console.log("number= " + ticknumber + " tick=" + state.tickmas[ticknumber])
+            const data = JSON.parse(await response.text());
+            state.tickmas[ticknumber].tick = data.tick
+            data.widgets.forEach((element) => {
+              if (element.name.startsWith("Sub") || element.name.startsWith("Ren")) {
+                element.properties.screen.widgets.forEach((elements) => {
+                  elements.name += '/' + element.name
+                  state.tickmas[ticknumber].mas.push(elements)
+                });
+              } else {
+                state.tickmas[ticknumber].mas.push(element)
+              }
+            });
+            // console.log(" time:" + new Date().getHours() + ":"+ new Date().getMinutes() + ":"+ new Date().getSeconds() + ":" + asdasda.getMilliseconds() + ' name = ' + name + " tick:" + state.tickmas[ticknumber].tick) 
+            // console.log(data)
+            // console.log(state.tickmas[ticknumber])
+          }, 1000);
+          state.tickmas[ticknumber].interval = xyz
+          
+        }, 1000 - Math.abs(500 - currentDateMilliseconds));
+        state.tickmas[ticknumber].timeout = zyx
+      } else if (response.status == 404) {
+        console.log('ошибка подключения к ' + name)
+      } else {
+        console.log(response)
+      }
     },
 
     async addElems(state, data) {

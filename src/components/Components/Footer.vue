@@ -1,6 +1,6 @@
 <template>
   <div id="footer">
-    <div id="footer_title" @click="clickfooter" :class="[!tablestate ? !upHere ? data['footer-flashing'] ? 'flash' : '' : '' : '', ]" @mouseover="upHere = true" @mouseleave="upHere = false">
+    <div id="footer_title" @click="clickfooter" :class="[!tablestate ? !upHere ? footerflashing ? 'flash' : 'footer_title_back' : 'footer_title_back' : 'footer_title_back', ]" @mouseover="upHere = true" @mouseleave="upHere = false" :style="cssProps">
       {{ footertitle }}
     </div>
     <div v-show="tablestate">
@@ -12,7 +12,7 @@
             <td class="table_footer_columns" @click="sort('ackTime')">Acknowledged</td>
             <td class="table_footer_columns" @click="sort('text')">Event</td>
           </tr>
-          <tr v-for="obj in events" :key="obj.id" :class="[
+          <tr v-for="obj in filteredEventsList" :key="obj.id" :class="[
             obj.statusEventSignaling == 5 ?  
               obj.warnType == 4 ? 'flashred' : 
               obj.warnType == 2 ? 'flashyellow' :
@@ -125,6 +125,8 @@ export default {
       starttime: null,
       endtime: null,
       footertitle: null,
+      footercolor: null,
+      footerflashing: null,
       data: null,
       tablestate: false,
       historystate: false,
@@ -145,6 +147,8 @@ export default {
     this.$store.dispatch("changemainheight", 24);
     this.data = this.myJson.data;
     this.footertitle = this.myJson.data["footer-title"];
+    this.footercolor = this.myJson.data['footer-state'];
+    this.footerflashing = this.myJson.data['footer-flashing']
     this.tick = this.myJson.tick;
     this.events = this.data.events;
 
@@ -169,6 +173,8 @@ export default {
           } else {
             console.log('net')
           }
+          this.footercolor = obj.data['footer-state']
+          this.footerflashing = obj.data['footer-flashing']
           if (obj.data.events){
             obj.data.events.forEach(elem =>{  
               if (!this.events){
@@ -233,6 +239,11 @@ export default {
     historymas() {
       return this.$store.getters.historymas;
     },
+    cssProps() {
+      return {
+        "--backgroundColor": this.footercolor
+      }
+    }
   },
   methods: {
     some(id){
@@ -329,7 +340,10 @@ export default {
   user-select: none;
   color: white;
   height: 24px;
-  background-color: #252525ff;
+  background-color: #252525ff
+}
+#footer_title_back{
+  background-color: #252525ff
 }
 #footer_footer {
   font-size: 16px;
@@ -355,13 +369,20 @@ export default {
   text-align: center;
   background-color: rgb(27, 27, 27);
 }
+
 @keyframes glowing {
+  from {
+    background-color: var(--backgroundColor);
+  }
   50% {
-    background-color: red;
+    background-color: #252525ff;
+  }
+  to {
+    background-color: var(--backgroundColor);
   }
 }
 .flash {
-  animation: glowing 2s step-start 0s infinite;
+  animation: glowing 1s step-start 0s infinite;
 }
 
 
