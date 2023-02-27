@@ -1,6 +1,6 @@
 <template>
 <div class="Subscreen" :style="cssProps">
-    <window  :myJson = params.properties.screen :subscreensize = subscreensize :boolback="false" typewindow="subscreen" :namewindow="namewindow" :subscreenname="this.params.name"/>
+    <window  :myJson = params.properties.screen :subscreensize = subscreensize :boolback="false" typewindow="subscreen" :namewindow="this.namewindow" :subscreenname="this.params.name" :path="this.params.properties.path"/>
     <!-- <window  :myJson = params.properties.screen :subscreensize = this.params.properties.scale :boolback="false" /> -->
 </div>
 </template>
@@ -15,6 +15,7 @@ export default {
   data(){
     return{
       subscreensize: 1
+      
     }
   },
   props:['params', 'namewindow'],

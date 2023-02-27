@@ -5,7 +5,7 @@
       class="txtarg_value" v-model="txtarg.value" @blur="submitForm(txtarg)" @keyup.enter="$event.target.blur()" id="txtarg" :disabled="txtarg.disabled"/>
   </div> -->
   <div class="txtarg" :style="cssProps">
-    <input class="txtarg_value" v-model="txtarg.value" @blur="some()" @keyup.enter="$event.target.blur()" :style="cssProps"/>
+    <input class="txtarg_value" v-model="txtarg.value" @blur="some()" @keyup.enter="$event.target.blur()" :style="cssProps" />
   </div>
 </template>
 
@@ -20,6 +20,7 @@ export default {
     return {
       txtarg: {
         Name: null,
+        Namesub: null,
         value: null,
         disabled: false,
       },
@@ -35,10 +36,16 @@ export default {
         const headers = { 
             'Content-Type': 'application/json',
         };
-        await Axios.post(`http://${this.ip}/api/nodes/${this.encript((new TextEncoder()).encode(this.$parent.$parent.namewindow))}/widget/${this.encript((new TextEncoder()).encode(this.txtarg.Name))}/query/write-arg`, article, { headers })
-      // } else {
-      //   const res = {'namewidget': this.txtarg.Name, 'namewindow': this.$parent.$parent.windowname , 'value': this.txtarg.value}
-      //   this.$store.dispatch('addcommandwidgetmass', res)
+        console.log(this.$parent.$parent.namewindow)
+        await Axios.post(`http://${this.ip}/api/nodes/${this.encript((new TextEncoder()).encode(this.$parent.$parent.windowpath))}/widget/${this.encript((new TextEncoder()).encode(this.txtarg.Name))}/query/write-arg`, article, { headers }).
+        then(response =>{
+          console.log(response)
+        })
+        
+      } else {
+        // const res = {'namewidget': this.txtarg.Name, 'namewindow': this.$parent.$parent.windowname , 'value': this.txtarg.value}
+        // this.$store.dispatch('addcommandwidgetmass', res)
+        
       }
     },
     encript(values) {
@@ -65,6 +72,26 @@ export default {
     this.txtarg.Name = this.name
     const res = {'namewidget': this.txtarg.Name, 'namewindow': this.$parent.$parent.windowname , 'value': this.txtarg.value}
     this.$store.dispatch('addcommandwidgetmass', res)
+    // if( this.type.startsWith("tiles") || (this.$parent.typewindow == 'head' ) || this.name.startsWith("Number") || this.name.startsWith("Flag")) {
+      if (this.$parent.$parent.subscreenname){ 
+        this.txtarg.Namesub = this.txtarg.Name + '/' + this.$parent.$parent.subscreenname
+      } else {
+        this.txtarg.Namesub = this.txtarg.Name
+      }
+      const today = new Date();
+      var currentDateMilliseconds = today.getMilliseconds();
+      const ress = {'namewidget': this.txtarg.Namesub, 'namewindow': this.$parent.$parent.windowname}
+      setTimeout(() => {
+        setInterval(() => {
+          let changedelem = this.$store.getters.elemByName(ress)?.properties
+          if (changedelem) {
+            if (changedelem.value) this.txtarg.value = changedelem.value
+            console.log(this.txtarg.value)
+          }
+        },1000)
+      // }, 1000 - Math.abs(500 - currentDateMilliseconds));
+      }, 1000 - currentDateMilliseconds);
+    // }
   },
   computed: {
     cssProps() {

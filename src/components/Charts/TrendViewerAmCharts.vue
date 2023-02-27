@@ -1,5 +1,4 @@
 <template>
-  <!-- <button @click="some()">Нажми меня</button> -->
   <div id="box" :style="cssProps">
     <div id="box_title">
       <div><datepicker v-model="starttime" class="box_title_datepicker"/></div>
@@ -20,6 +19,10 @@
     <div id="box_chart">
       <div id="chartdiv" ref="chartdiv"></div>
     </div>
+  </div>
+  <div id="box_loading" v-if="!this.getdata" :style="cssProps">
+    <svg xmlns:svg="http://www.w3.org/2000/svg" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.0" width="64px" height="64px" viewBox="0 0 128 128" xml:space="preserve"><rect x="0" y="0" width="100%" height="100%" fill="#232323" /><g><path d="M71 39.2V.4a63.6 63.6 0 0 1 33.96 14.57L77.68 42.24a25.53 25.53 0 0 0-6.7-3.03z" fill="#000000"/><path d="M71 39.2V.4a63.6 63.6 0 0 1 33.96 14.57L77.68 42.24a25.53 25.53 0 0 0-6.7-3.03z" fill="#e1e1e1" transform="rotate(45 64 64)"/><path d="M71 39.2V.4a63.6 63.6 0 0 1 33.96 14.57L77.68 42.24a25.53 25.53 0 0 0-6.7-3.03z" fill="#e1e1e1" transform="rotate(90 64 64)"/><path d="M71 39.2V.4a63.6 63.6 0 0 1 33.96 14.57L77.68 42.24a25.53 25.53 0 0 0-6.7-3.03z" fill="#e1e1e1" transform="rotate(135 64 64)"/><path d="M71 39.2V.4a63.6 63.6 0 0 1 33.96 14.57L77.68 42.24a25.53 25.53 0 0 0-6.7-3.03z" fill="#bebebe" transform="rotate(180 64 64)"/><path d="M71 39.2V.4a63.6 63.6 0 0 1 33.96 14.57L77.68 42.24a25.53 25.53 0 0 0-6.7-3.03z" fill="#979797" transform="rotate(225 64 64)"/><path d="M71 39.2V.4a63.6 63.6 0 0 1 33.96 14.57L77.68 42.24a25.53 25.53 0 0 0-6.7-3.03z" fill="#6e6e6e" transform="rotate(270 64 64)"/><path d="M71 39.2V.4a63.6 63.6 0 0 1 33.96 14.57L77.68 42.24a25.53 25.53 0 0 0-6.7-3.03z" fill="#3c3c3c" transform="rotate(315 64 64)"/><animateTransform attributeName="transform" type="rotate" values="0 64 64;45 64 64;90 64 64;135 64 64;180 64 64;225 64 64;270 64 64;315 64 64" calcMode="discrete" dur="720ms" repeatCount="indefinite"></animateTransform></g><g><circle fill="#000000" cx="63.66" cy="63.16" r="12"/><animate attributeName="opacity" dur="720ms" begin="0s" repeatCount="indefinite" keyTimes="0;0.5;1" values="1;0;1"/></g></svg>
+    <div style="margin-left: 10px;">Loading...</div>
   </div>
 </template>
 
@@ -43,6 +46,7 @@ export default {
       chartDataArr: [],
       ChartInfo: null,
       root: null,
+      getdata: false,
     }
   },
   components: {
@@ -90,9 +94,10 @@ export default {
       this.chartDataArr = await axios.post(`http://${this.ip}/api/nodes/main/widget/${this.encript((new TextEncoder()).encode(this.name))}/query/trend-history`, article, { headers })
       // this.chartDataArr = await axios.post(`http://${this.ip}/api/nodes/${this.encript((new TextEncoder()).encode(this.$parent.$parent.windowname.split(':').join(':\\')))}/widget/${this.encript((new TextEncoder()).encode(this.name))}/query/trend-history`, article, { headers })
       .then(response => {
-        const endtime = new Date().getTime()
+        // const endtime = new Date().getTime()
+        this.getdata = true
         console.log('получил')
-        localStorage.setItem(starttime, endtime)
+        // localStorage.setItem(starttime, endtime)
         return response.data
       });
     },
@@ -106,7 +111,7 @@ export default {
           "upperTime": "${moment(this.endtime).format("YYYY-MM-DDTHH:mm:ss")}"
       }`;
       const today = new Date();
-      console.log('new body created ');
+      console.log('new body created');
       return body
     },
     
@@ -125,9 +130,14 @@ export default {
       return dataArr
     },
     async updateChartSeries() {
+      this.getdata = false
       await this.getChartData()
       for (let i = 0; i < this.chart.series.values.length; i++) {
         var data = this.generateDatas(i);
+        // for ( let i = 0; i<data.length; i++){
+        //   if (data[i].value == 3.4028234663852886e+38) data[i].value = null
+        //   console.log(data[i])
+        // }
         this.seriesArr[i].data.setAll(data)
       }
     },
@@ -136,7 +146,8 @@ export default {
   async mounted() {
     let root = am5.Root.new(this.$refs.chartdiv);
     this.root = root;
-    this.starttime = new Date(new Date().setDate(new Date().getDay() + 8));
+    // this.starttime = new Date(new Date().setDate(new Date().getDay() + 18));
+    this.starttime = new Date(Date.now() - 86400000 * 7);
     this.endtime = new Date()
 
     root.setThemes([
@@ -148,6 +159,7 @@ export default {
       panY: true,
       wheelY: "zoomXY",
       pinchZoomX:true,
+     
       "valueAxes": [
         {
           "title": "Axis title"
@@ -161,15 +173,14 @@ export default {
 
     var xAxis = chart.xAxes.push(am5xy.DateAxis.new(root, {
       maxDeviation: 0.2,
-      baseInterval: {
-        timeUnit: "second",
-        count: 1
-      },
+      baseInterval: { timeUnit: "millisecond", count: 60000 },
       renderer: am5xy.AxisRendererX.new(root, {}),
     }));
     this.xAxis = xAxis
 
     var yAxis = chart.yAxes.push(am5xy.ValueAxis.new(root, {
+      numberFormat: "#.0a",
+      // numberFormat: "#.##e",
       renderer: am5xy.AxisRendererY.new(root, {
         opposite: true
       })
@@ -188,6 +199,7 @@ export default {
           yAxis: yAxis,
           valueYField: "value",
           valueXField: "argument",
+          connect: false
       }));
       var tooltip = series.set("tooltip", am5.Tooltip.new(root, {
         pointerOrientation: "horizontal",
@@ -199,6 +211,7 @@ export default {
       });
 
       var data = this.generateDatas(i);
+      
       series.data.setAll(data);
       series.appear();
     }
@@ -268,6 +281,25 @@ export default {
     chart.appear(1000, 100);
     
     cursor.snapToSeries = series;
+
+    // chart.preloader.disabled = true;
+
+    // var indicator;
+    // function showIndicator() {
+    //   indicator = chart.tooltipContainer.createChild(am4core.Container);
+    //   indicator.background.fill = am4core.color("#fff");
+    //   indicator.background.fillOpacity = 0.8;
+    //   indicator.width = am4core.percent(100);
+    //   indicator.height = am4core.percent(100);
+      
+    //   var indicatorLabel = indicator.createChild(am4core.Label);
+    //   indicatorLabel.text = "Loading stuff...";
+    //   indicatorLabel.align = "center";
+    //   indicatorLabel.valign = "middle";
+    //   indicatorLabel.fontSize = 20;
+    // }
+
+    // showIndicator();
     
     
   },
@@ -310,6 +342,20 @@ export default {
   width: 100%;
   height: 100%;
   /* border: solid 1px gray; */
+}
+#box_loading{
+  border: solid 1px white;
+  background-color: #232323;
+  position: absolute;
+  /* border: solid 1px green; */
+  width: var(--width);
+  height: var(--height);
+  left: var(--x);
+  top: var(--y);
+  align-items: center;
+  display: flex;
+  justify-content: center;
+  
 }
 #box{
   position: absolute;

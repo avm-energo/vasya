@@ -60,7 +60,11 @@ export default {
         const headers = { 
             'Content-Type': 'application/json',
         };
-        await axios.post(`http://${this.ip}/api/nodes/${this.encript((new TextEncoder()).encode(this.$parent.$parent.namewindow))}/widget/${this.encript((new TextEncoder()).encode(this.bitmaskarg.Name))}/query/write-arg`, article, { headers })
+        await axios.post(`http://${this.ip}/api/nodes/${this.encript((new TextEncoder()).encode(this.$parent.$parent.windowpath))}/widget/${this.encript((new TextEncoder()).encode(this.bitmaskarg.Name))}/query/write-arg`, article, { headers }).
+        then(response =>{
+          console.log(response)
+        })
+        
       } else {
         const res = {'namewidget': this.bitmaskarg.Name, 'namewindow': this.$parent.$parent.windowname , 'value': this.bitmaskarg.value}
         this.$store.dispatch('addcommandwidgetmass', res)

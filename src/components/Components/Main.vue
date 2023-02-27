@@ -8,7 +8,7 @@
           <sline v-for="line in lines" :key="line.name" :params="line.properties" />
         </svg>
         <tiles v-for="elem  in tiless" :key="elem.name" :params="elem.properties" :name="elem.name" :screenPercentage="this.myJson.screenPercentage" :windowWidth="this.myJson.canvas.width" :windowHeight="this.myJson.canvas.height" :type="elem.type"/>
-        <subscreen v-for="elem in subscreens" :key="elem.name" :params="elem" :name="elem.type" :namewindow="this.windowname"/>
+        <subscreen v-for="elem in subscreens" :key="elem.name" :params="elem" :name="elem.type" :namewindow="this.namewindow"/>
         <commands v-for="elem in commandss" :key="elem.name" :params="elem"/>
         <tooltiper v-for="elem in tooltipers" :key="elem.name" :params="elem"/>
         <imagelogo v-for="elem in imageslogo" :key="elem.name" :params="elem.properties"/>
@@ -71,6 +71,7 @@ export default {
       height: 0,
       windowname: null,
       namewindow: null,
+      windowpath: null,
     };
   },
 
@@ -158,8 +159,13 @@ export default {
     window.addEventListener('resize', this.reportWindowSize)
     this.width = window.innerWidth - 2
     this.height = window.innerHeight ;
-    this.windowname = '>:' + this.myJson.name
-    this.namewindow = '>:\\' + this.myJson.name
+    this.namewindow = this.myJson.path
+    this.windowname = this.namewindow.split('\\').join('')
+    if (this.path){
+      this.windowpath = this.path
+    } else {
+      this.windowpath = this.namewindow
+    }
     this.multiplierwindow = (this.mainheight - 4)/this.myJson.canvas.height
     
     if (this.multiplierwindow * this.myJson.canvas.width > window.innerWidth){
