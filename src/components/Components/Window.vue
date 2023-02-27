@@ -15,7 +15,8 @@
           <sline v-for="line in lines" :key="line.name" :params="line.properties" />
         </svg>
         <commands v-for="elem in commandss" :key="elem.name" :params="elem"/>
-        <subscreen v-for="elem in subscreens" :key="elem.name" :params="elem" :name="elem.type" :namewindow="this.windowname"/>
+        <!-- было windowname -->
+        <subscreen v-for="elem in subscreens" :key="elem.name" :params="elem" :name="elem.type" :namewindow="this.namewindow"/> 
         <tooltiper v-for="elem in tooltipers" :key="elem.name" :params="elem"/>
         <chart v-for="elem in charts" :key="elem.name" :params="elem"/>
         <helper v-for="elem in helper" :key="elem.name" :params="elem.properties"/>
@@ -50,7 +51,8 @@ export default {
     title:{default:''},
     typewindow:{default: 'modalwindow'},
     namewindow:{default:''},
-    subscreenname:{default: ''}
+    subscreenname:{default: ''},
+    path:{default: '',}
   },
   data() {
     return {
@@ -75,7 +77,8 @@ export default {
       height: 0,
       windowname: null,
       titlebool: null,
-      titletext: null
+      titletext: null,
+      windowpath: null,
     };
   },
 
@@ -136,7 +139,7 @@ export default {
       };
     },
     mainheight(){
-      return this.$store.getters.mainheight
+      return this.$store.getters.mainheightwindowname
     },
     updatedmainheight(){
       return this.$store.getters.updatedmainheight
@@ -176,6 +179,11 @@ export default {
     window.addEventListener('resize', this.reportWindowSize)
     this.multiplierwindow= this.multiplierwindow * this.subscreensize
     this.windowname = this.namewindow.split('\\').join('')
+    if (this.path){
+      this.windowpath = this.path
+    } else {
+      this.windowpath = this.namewindow
+    }
     if (this.myJson.screenPercentage){
         let ss = ((window.innerHeight - 100) * (this.myJson.screenPercentage/100))/this.myJson.canvas.height
         this.multiplierwindow = this.multiplierwindow * ss

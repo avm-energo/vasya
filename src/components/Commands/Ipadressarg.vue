@@ -36,7 +36,7 @@ export default {
         const headers = { 
             'Content-Type': 'application/json',
         };
-        await axios.post(`http://${this.ip}/api/nodes/${this.encript((new TextEncoder()).encode(this.$parent.$parent.namewindow))}/widget/${this.encript((new TextEncoder()).encode(this.ipadressarg.Name))}/query/write-arg`, article, { headers })
+        await axios.post(`http://${this.ip}/api/nodes/${this.encript((new TextEncoder()).encode(this.$parent.$parent.windowpath))}/widget/${this.encript((new TextEncoder()).encode(this.ipadressarg.Name))}/query/write-arg`, article, { headers })
       } else {
         const res = {'namewidget': this. ipadressarg.Name, 'namewindow': this.$parent.$parent.windowname , 'value': this. ipadressarg.value}
         this.$store.dispatch('addcommandwidgetmass', res)

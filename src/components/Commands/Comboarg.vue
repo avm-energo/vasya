@@ -19,6 +19,7 @@ export default {
     return {
       comboarg: {
         Name: null,
+        Namesub: null,
         masvalue: null,
         value: null,
       },
@@ -33,7 +34,7 @@ export default {
         const headers = { 
             'Content-Type': 'application/json',
         };
-        await Axios.post(`http://${this.ip}/api/nodes/${this.encript((new TextEncoder()).encode(this.$parent.$parent.namewindow))}/widget/${this.encript((new TextEncoder()).encode(this.comboarg.Name))}/query/write-arg`, article, { headers })
+        await Axios.post(`http://${this.ip}/api/nodes/${this.encript((new TextEncoder()).encode(this.$parent.$parent.windowpath))}/widget/${this.encript((new TextEncoder()).encode(this.comboarg.Name))}/query/write-arg`, article, { headers })
       } else {
         const res = {'namewidget': this.comboarg.Name, 'namewindow': this.$parent.$parent.windowname , 'value': this.comboarg.value}
         this.$store.dispatch('addcommandwidgetmass', res)
@@ -62,6 +63,23 @@ export default {
     this.comboarg.value = this.params.value
     this.comboarg.masvalue = this.params.cases
     this.comboarg.Name = this.name
+    if (this.$parent.$parent.subscreenname){ 
+        this.comboarg.Namesub = this.comboarg.Name + '/' + this.$parent.$parent.subscreenname
+      } else {
+        this.comboarg.Namesub = this.comboarg.Name
+      }
+      const today = new Date();
+      var currentDateMilliseconds = today.getMilliseconds();
+      const ress = {'namewidget': this.comboarg.Namesub, 'namewindow': this.$parent.$parent.windowname}
+      setTimeout(() => {
+        setInterval(() => {
+          let changedelem = this.$store.getters.elemByName(ress)?.properties
+          if (changedelem) {
+            if (typeof(changedelem.value)!= "indefined") this.comboarg.value = changedelem.value
+          }
+        },1000)
+      // }, 1000 - Math.abs(500 - currentDateMilliseconds));
+      }, 1000 - currentDateMilliseconds);
   },
   computed: {
     cssProps() {
