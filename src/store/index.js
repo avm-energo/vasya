@@ -41,11 +41,13 @@ export default createStore({
   },
   mutations: {
     async fetchElems(state) {
-
-      let config = await fetch('defaults.json')
+      
       state.mainheight = window.innerHeight
+      
+      let config = await fetch('defaults.json')
       const a = JSON.parse(await config.text())
       state.ip = a.ip
+      document.title = a.Caption
       console.log(state.ip)
       console.log("версия: " + a.version)
       // var log4js = require("log4js");

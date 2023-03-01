@@ -6,32 +6,36 @@
     <div v-show="tablestate">
       <div id="footer_table">
         <table id="table_footer" cellpadding="5">
-          <tr>
-            <td class="table_footer_columns" @click="sort('comeTime')">Come</td>
-            <td class="table_footer_columns" @click="sort('leaveTime')">Leave</td> 
-            <td class="table_footer_columns" @click="sort('ackTime')">Acknowledged</td>
-            <td class="table_footer_columns" @click="sort('text')">Event</td>
-          </tr>
-          <tr v-for="obj in filteredEventsList" :key="obj.id" :class="[
-            obj.statusEventSignaling == 5 ?  
-              obj.warnType == 4 ? 'flashred' : 
-              obj.warnType == 2 ? 'flashyellow' :
-              obj.warnType == 1 ? 'flashgray' : '' : 
-              obj.statusEventSignaling == 1 || obj.statusEventSignaling == 7 ? 
-                obj.warnType == 4 ? 'backgroundred' : 
-                obj.warnType == 2 ? 'backgroundyellow' :
-                obj.warnType == 1 ? 'backgroundgray' : '' : 
-                obj.statusEventSignaling == 4 || obj.statusEventSignaling == 8 ? 
-                  obj.warnType == 4 ? 'textred' : 
-                  obj.warnType == 2 ? 'textyellow' :
-                  obj.warnType == 1 ? 'textgray' : '' : ''
-              ]" 
-              @dblclick="obj.needAck ? some(obj.id) : ''">
-            <td style="text-align: center;">{{ DateTime(obj.comeTime) }}</td>
-            <td style="text-align: center;">{{ obj.leaveTime != 0 ? DateTime(obj.leaveTime) : ''}}</td>
-            <td style="text-align: center;">{{ obj.ackTime ? DateTime(obj.ackTime) : ''}}</td>
-            <td style="text-align: center;">{{ obj.text }}</td>
-          </tr>
+          <thead>
+            <tr>
+              <td class="table_footer_columns" @click="sort('comeTime')">Come</td>
+              <td class="table_footer_columns" @click="sort('leaveTime')">Leave</td> 
+              <td class="table_footer_columns" @click="sort('ackTime')">Acknowledged</td>
+              <td class="table_footer_columns" @click="sort('text')">Event</td>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="obj in filteredEventsList" :key="obj.id" :class="[
+              obj.statusEventSignaling == 5 ?  
+                obj.warnType == 4 ? 'flashred' : 
+                obj.warnType == 2 ? 'flashyellow' :
+                obj.warnType == 1 ? 'flashgray' : '' : 
+                obj.statusEventSignaling == 1 || obj.statusEventSignaling == 7 ? 
+                  obj.warnType == 4 ? 'backgroundred' : 
+                  obj.warnType == 2 ? 'backgroundyellow' :
+                  obj.warnType == 1 ? 'backgroundgray' : '' : 
+                  obj.statusEventSignaling == 4 || obj.statusEventSignaling == 8 ? 
+                    obj.warnType == 4 ? 'textred' : 
+                    obj.warnType == 2 ? 'textyellow' :
+                    obj.warnType == 1 ? 'textgray' : '' : ''
+                ]" 
+                @dblclick="obj.needAck ? some(obj.id) : ''">
+              <td style="text-align: center;">{{ DateTime(obj.comeTime) }}</td>
+              <td style="text-align: center;">{{ obj.leaveTime != 0 ? DateTime(obj.leaveTime) : ''}}</td>
+              <td style="text-align: center;">{{ obj.ackTime ? DateTime(obj.ackTime) : ''}}</td>
+              <td style="text-align: center;">{{ obj.text }}</td>
+            </tr>
+          </tbody>
         </table>
       </div>
       <div id="footer_footer">
@@ -250,9 +254,8 @@ export default {
       let obj = this.events[this.events.findIndex((s)=> s.id === id)]
       // if (!obj.acknowtime) obj.acknowtime = moment(new Date()).format("YYYY-MM-DD HH:mm:ss")
       obj.needAck = false
-      // obj.statusEventSignaling += 3
-      console.log(obj.statusEventSignaling)
-
+      obj.ackTime = this.DateTime(Date.now())
+      obj.statusEventSignaling += 3
       var url = `http://${this.myJson.ip}/api/nodes/footer/widget/6MXB7RKGFTT5RNKE/query/acknowledge`;
       var xhr = new XMLHttpRequest();
       xhr.open("POST", url);
@@ -326,9 +329,14 @@ export default {
   font-weight: bold;
   border-spacing: 0px;
   border-collapse: collapse;
+  table-layout: fixed;
   margin: 0 auto;
   border: 0px;
   font-size: 16px;
+}
+
+tbody{
+  overflow: auto;
 }
   .table_footer_columns{
     color: white;

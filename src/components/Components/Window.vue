@@ -123,8 +123,9 @@ export default {
         "--margin": [this.typewindow == 'modalwindow' ? 0 : 'auto'],
         // "--windowWidth": [this.boolback ? this.width + "px": this.myJson.canvas.width*this.subscreensize + "px"],
         "--windowWidth": [this.boolback ? this.width + "px": this.myJson.canvas.width*this.multiplier + "px"],
-        // "--windowHeight": [this.boolback ? this.height + "px": this.myJson.canvas.height*this.subscreensize + "px"],
-        "--windowHeight": [this.boolback ? this.height + "px": this.myJson.canvas.height* this.multiplier + "px"],
+        // "--windowHeight": [this.boolback ? this.height -1 + "px": this.myJson.canvas.height*this.subscreensize + "px"],
+        // -------------------------------костыль тут---\/------появляются слайдеры
+        "--windowHeight": [this.boolback ? this.height - 1 + "px": this.myJson.canvas.height* this.multiplier + "px"],
         "--width": this.myJson.canvas.width * this.multiplier + "px",
         "--height": [this.myJson.canvas.height * this.multiplier > window.innerHeight ? this.height - 50 : this.myJson.canvas.height * this.multiplier] + "px",
         "--background": "#" + this.myJson.canvas.background,
@@ -184,12 +185,15 @@ export default {
     } else {
       this.windowpath = this.namewindow
     }
+    //скалирование модального окна из переданного параметра scrennPercentage
     if (this.myJson.screenPercentage){
         let ss = ((window.innerHeight - 100) * (this.myJson.screenPercentage/100))/this.myJson.canvas.height
         this.multiplierwindow = this.multiplierwindow * ss
     }
+
     this.width = window.innerWidth;
     this.height = window.innerHeight;
+    //если модальнгое окно превышает размер рабочего окна, то оно уменьшается 
     if (this.myJson.canvas.width * this.multiplierwindow > window.innerWidth) {
       this.multiplierwindow = window.innerWidth / (this.myJson.canvas.width + 100)
     }
