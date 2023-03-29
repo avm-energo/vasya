@@ -5,6 +5,7 @@
       class="txtarg_value" v-model="txtarg.value" @blur="submitForm(txtarg)" @keyup.enter="$event.target.blur()" id="txtarg" :disabled="txtarg.disabled"/>
   </div> -->
   <div class="txtarg" :style="cssProps">
+    <span class="txtarg_star" v-show="txtarg.value != txtarg.prevvalue">*</span>
     <input class="txtarg_value" v-model="txtarg.value" @blur="some()" @keyup.enter="$event.target.blur()" :style="cssProps" />
   </div>
 </template>
@@ -23,6 +24,7 @@ export default {
         Namesub: null,
         value: null,
         disabled: false,
+        prevvalue: null,
       },
     };
   },
@@ -36,10 +38,10 @@ export default {
         const headers = { 
             'Content-Type': 'application/json',
         };
-        console.log(this.$parent.$parent.namewindow)
         await Axios.post(`http://${this.ip}/api/nodes/${this.encript((new TextEncoder()).encode(this.$parent.$parent.windowpath))}/widget/${this.encript((new TextEncoder()).encode(this.txtarg.Name))}/query/write-arg`, article, { headers }).
         then(response =>{
           console.log(response)
+          this.txtarg.prevvalue = this.txtarg.value
         })
         
       } else {
@@ -69,9 +71,10 @@ export default {
   },
   created(){
     this.txtarg.value = this.params.value
+    this.txtarg.prevvalue = this.txtarg.value
     this.txtarg.Name = this.name
-    const res = {'namewidget': this.txtarg.Name, 'namewindow': this.$parent.$parent.windowname , 'value': this.txtarg.value}
-    this.$store.dispatch('addcommandwidgetmass', res)
+    // const res = {'namewidget': this.txtarg.Name, 'namewindow': this.$parent.$parent.windowname , 'value': this.txtarg.value}
+    // this.$store.dispatch('addcommandwidgetmass', res)
     // if( this.type.startsWith("tiles") || (this.$parent.typewindow == 'head' ) || this.name.startsWith("Number") || this.name.startsWith("Flag")) {
       if (this.$parent.$parent.subscreenname){ 
         this.txtarg.Namesub = this.txtarg.Name + '/' + this.$parent.$parent.subscreenname
@@ -85,8 +88,10 @@ export default {
         setInterval(() => {
           let changedelem = this.$store.getters.elemByName(ress)?.properties
           if (changedelem) {
-            if (changedelem.value) this.txtarg.value = changedelem.value
-            console.log(this.txtarg.value)
+            if (changedelem.value){
+              this.txtarg.value = changedelem.value
+              this.txtarg.prevvalue = this.txtarg.value
+            } 
           }
         },1000)
       // }, 1000 - Math.abs(500 - currentDateMilliseconds));
@@ -100,7 +105,8 @@ export default {
         "--y": (this.params.y / 1) * this.$parent.$parent.multiplier + "px",
         "--width": (this.params.width / 1) * this.$parent.$parent.multiplier + "px",
         "--height": (this.params.height / 1) * this.$parent.$parent.multiplier + "px",
-        "--margin": this.params.margin.split(" : ")[0] + "px",
+        "--margin": [ this.txtarg.value == this.txtarg.prevvalue ? this.params.margin.split(" : ")[0] + "px" : ''],
+        "--widthstar": [ this.txtarg.value != this.txtarg.prevvalue ? this.params.margin.split(" : ")[0] + "px" : ''],
         "--background": "#" + this.params.background,
         "--borderBrush": "#" + this.params.borderBrush,
         "--foreground": "#" + this.params.foreground,
@@ -138,6 +144,10 @@ export default {
 }
 .txtarg_value:focus {
   outline: none;
+}
+.txtarg_star{
+  width: var(--widthstar);
+  font-size: var(--fontsize);
 }
 
 </style>

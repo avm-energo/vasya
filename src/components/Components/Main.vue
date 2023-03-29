@@ -149,6 +149,7 @@ export default {
         this.$store.dispatch('mainmultiplier', [false, this.multiplier])
       }
       this.multiplier =  multiplierwindow
+      this.$parent.multiplier = this.multiplier
     },
     closejson(){
       this.$store.dispatch('closewindow', this.windowname)
@@ -175,6 +176,7 @@ export default {
       this.multiplierwindow = window.innerWidth / (this.myJson.canvas.width + 50)
     }
     this.multiplier = this.multiplierwindow
+    this.$parent.multiplier = this.multiplier
     this.$store.dispatch('mainmultiplier', [true, this.multiplier])
     this.myJson.widgets.forEach(element => {
       let res = element;

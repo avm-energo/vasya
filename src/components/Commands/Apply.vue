@@ -42,25 +42,24 @@ export default {
       } else{
         json_obj = null
       }
-      if (this.params.writeParams) {
+      // if (this.params.writeParams) {
         console.log(json_obj)
         const headers = { 
             'Content-Type': 'application/json',
         };
-        console.log(this.$parent.$parent.windowpath)
         // console.log(this.$parent.$parent.namewindow.split('\\').join('\\') )
         await axios.post(`http://${this.ip}/api/nodes/${this.encript((new TextEncoder()).encode(this.$parent.$parent.windowpath))}/widget/${this.encript((new TextEncoder()).encode(this.name))}/query/apply-form`, json_obj, { headers })
         this.$store.dispatch('clearcommandwidgets', this.$parent.$parent.windowname)
-      } else {
-        const headers = { 
-            'Content-Type': 'application/json',
-        };
-        json_obj = {}
-        await axios.post(`http://${this.ip}/api/nodes/${this.encript((new TextEncoder()).encode(this.$parent.$parent.windowpath))}/widget/${this.encript((new TextEncoder()).encode(this.name))}/query/write-command`, json_obj, { headers }).
-        then(response =>{
-          console.log(response)
-        })
-      }
+      // } else {
+      //   const headers = { 
+      //       'Content-Type': 'application/json',
+      //   };
+      //   json_obj = {}
+      //   await axios.post(`http://${this.ip}/api/nodes/${this.encript((new TextEncoder()).encode(this.$parent.$parent.windowpath))}/widget/${this.encript((new TextEncoder()).encode(this.name))}/query/write-command`, json_obj, { headers }).
+      //   then(response =>{
+      //     console.log(response)
+        // })
+      // }
     },
     encript(values) {
       const Alphabet = "12345678" + "9ABDEFGH" + "JKLMNPQR" + "STUVWXYZ";

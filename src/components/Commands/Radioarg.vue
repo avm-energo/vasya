@@ -25,6 +25,8 @@ export default {
   },
   methods: {
     async some(){
+      const res = {'namewidget': this.radioarg.Name, 'namewindow': this.$parent.$parent.windowname , 'value': this.radioarg.value}
+      this.$store.dispatch('addcommandwidgetmass', res)
       if (this.params.setOnCheck) {
         const article =`
           ${this.radioarg.value}
@@ -33,9 +35,6 @@ export default {
             'Content-Type': 'application/json',
         };
         await axios.post(`http://${this.ip}/api/nodes/${this.encript((new TextEncoder()).encode(this.$parent.$parent.windowpath))}/widget/${this.encript((new TextEncoder()).encode(this.radioarg.Name))}/query/write-arg`, article, { headers })
-      } else {
-        const res = {'namewidget': this.radioarg.Name, 'namewindow': this.$parent.$parent.windowname , 'value': this.radioarg.value}
-        this.$store.dispatch('addcommandwidgetmass', res)
       }
     },
     encript(values) {

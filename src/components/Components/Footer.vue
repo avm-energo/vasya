@@ -48,7 +48,7 @@
       </div>
     </div>
   </div>
-  <div id="history_background" v-show="historystate" @click.self="clickhistory">
+  <div id="history_background" v-show="historystate" @click.self="clickhistory" :style="cssPropsHistory">
     <div id="history_window">
       <div id="head">
         <div style="margin: 8px 0 0 8px">EVENTS HISTORY</div>
@@ -58,9 +58,9 @@
         <div id="history_window_head_datefilter">
           <div id="history_window_head_datefilter_date">
             &#160;&#160;From:&#160;&#160;
-            <div style="width: 40%"><datepicker v-model="starttime" /></div>
+            <div style="width: 40%"><datepicker v-model="starttime" :style="cssPropsHistory" class="dattepicker" :dark="true"/></div>
             &#160;&#160;To:&#160;&#160;
-            <div style="width: 40%"><datepicker v-model="endtime" /></div>
+            <div style="width: 40%"><datepicker v-model="endtime" :style="cssPropsHistory" class="dattepicker" :dark="true"/></div>
             <a class="icons__item" @click="updatedata">
               <svg
                 width="30"
@@ -76,7 +76,7 @@
           </div>
           <div id="history_window_head_datefilter_filter">
             <p style="margin-right: 10px;">
-              <input type="text" placeholder="Filter" v-model="eventsfilter" style="height:25px; font-size:18px"/>
+              <input type="text" placeholder="Filter" v-model="eventsfilter" style="height:25px; font-size:18px;"/>
             </p>
           </div>
         </div>
@@ -137,7 +137,7 @@ export default {
       upHere: false,
       currentSort: "message",
       currentSortDir: "asc",
-      tick:null
+      tick:null,
     };
   },
   props: {
@@ -148,6 +148,7 @@ export default {
     Datepicker,
   },
   created() {
+    
     this.$store.dispatch("changemainheight", 24);
     this.data = this.myJson.data;
     this.footertitle = this.myJson.data["footer-title"];
@@ -215,6 +216,9 @@ export default {
 
   },
   computed: {
+    multiplier(){
+      return this.$parent.multiplier
+    },
     filteredHistoryList() {
       return this.historymas
         .sort((a, b) => {
@@ -246,6 +250,11 @@ export default {
     cssProps() {
       return {
         "--backgroundColor": this.footercolor
+      }
+    },
+    cssPropsHistory(){
+      return{
+        "--fontsize": 18 * this.multiplier + 'px'
       }
     }
   },
@@ -476,7 +485,7 @@ tbody{
   top: 0px;
   width: 100%;
   height: 100%;
-  font-size: 18;
+  font-size: var(--fontsize);
 }
 #history_window {
   border: solid 1px blue;
@@ -494,6 +503,9 @@ tbody{
   display: flex;
   flex-direction: row;
   align-items: center;
+}
+#datepicker{
+  font-size: var(--fontsize);
 }
 #history_window_head_datefilter_filter {
   width: 50%;
@@ -526,6 +538,27 @@ tbody{
   text-align: left;
   margin: 0 auto;
   color: white;
-  font-size: 20px;
+  font-size: var(--fontsize);
+}
+.dp__theme_dark {
+   --dp-background-color: #212121;
+   --dp-text-color: #ffffff;
+   --dp-hover-color: #484848;
+   --dp-hover-text-color: #ffffff;
+   --dp-hover-icon-color: #959595;
+   --dp-primary-color: #005cb2;
+   --dp-primary-text-color: #ffffff;
+   --dp-secondary-color: #a9a9a9;
+   --dp-border-color: #2d2d2d;
+   --dp-menu-border-color: #2d2d2d;
+   --dp-border-color-hover: #aaaeb7;
+   --dp-disabled-color: #737373;
+   --dp-scroll-bar-background: #212121;
+   --dp-scroll-bar-color: #484848;
+   --dp-success-color: #00701a;
+   --dp-success-color-disabled: #428f59;
+   --dp-icon-color: #959595;
+   --dp-danger-color: #e53935;
+   --dp-highlight-color: rgba(0, 92, 178, 0.2);
 }
 </style>

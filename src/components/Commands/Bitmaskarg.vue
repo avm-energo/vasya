@@ -39,6 +39,7 @@ export default {
       leftside:null,
       widthtable:null,
       bitmaskarg: {
+        Namesub: null,
         Name: null,
         value: 0,
         masvalue: null,
@@ -53,6 +54,8 @@ export default {
       }
     },
     async some(){
+      const res = {'namewidget': this.bitmaskarg.Name, 'namewindow': this.$parent.$parent.windowname , 'value': this.bitmaskarg.value}
+      this.$store.dispatch('addcommandwidgetmass', res)
       if (this.params.personalSend) {
         const article =`
           ${this.bitmaskargvalue}
@@ -63,12 +66,8 @@ export default {
         await axios.post(`http://${this.ip}/api/nodes/${this.encript((new TextEncoder()).encode(this.$parent.$parent.windowpath))}/widget/${this.encript((new TextEncoder()).encode(this.bitmaskarg.Name))}/query/write-arg`, article, { headers }).
         then(response =>{
           console.log(response)
-        })
-        
-      } else {
-        const res = {'namewidget': this.bitmaskarg.Name, 'namewindow': this.$parent.$parent.windowname , 'value': this.bitmaskarg.value}
-        this.$store.dispatch('addcommandwidgetmass', res)
-      }
+        }) 
+      } 
     },
     encript(values) {
       const Alphabet = "12345678" + "9ABDEFGH" + "JKLMNPQR" + "STUVWXYZ";
@@ -105,11 +104,63 @@ export default {
     }
   },
   created(){
-    // this.bitmaskarg.value = this.params.value
-    this.bitmaskarg.masvalue = this.params.settings
     this.bitmaskarg.Name = this.name
-    setTimeout(()=>{this.bitmaskarg.window = false},1  )
-    // console.log(this.params.x * this.$parent.$parent.multiplier)
+    console.log(this.bitmaskarg.Name)
+    if (this.$parent.$parent.subscreenname){ 
+      this.bitmaskarg.Namesub = this.bitmaskarg.Name + '/' + this.$parent.$parent.subscreenname
+    } else {
+      this.bitmaskarg.Namesub = this.bitmaskarg.Name
+    }
+    this.bitmaskarg.value = this.params.value
+    // const res = {'namewidget': this.bitmaskarg.Name, 'namewindow': this.$parent.$parent.windowname , 'value': this.bitmaskarg.value}
+    // this.$store.dispatch('addcommandwidgetmass', res)
+    this.bitmaskarg.masvalue = this.params.settings
+    // console.log(this.bitmaskarg.masvalue)
+    // console.log(this.bitmaskarg.value.toString(2))
+    // console.log(this.bitmaskarg.value.toString(2).split('1').reverse())
+    let j= 0
+    let sum = 0
+    this.bitmaskarg.value.toString(2).split('1').reverse().forEach((i, idx, array)=>{
+      if (idx === array.length - 1){} else{
+        for (let k=0 ; k<i.split('0').length - 1; k++){
+          j++
+        }
+        sum = sum + Math.pow(2,j) 
+        console.log(Math.pow(2,j))
+        this.bitmaskarg.masvalue[j].value = true
+        j++
+      }  
+    })
+    console.log(sum.toString(16))
+    setTimeout(()=>{this.bitmaskarg.window = false},1)
+    const today = new Date();
+    var currentDateMilliseconds = today.getMilliseconds();
+    const ress = {'namewidget': this.bitmaskarg.Namesub, 'namewindow': this.$parent.$parent.windowname}
+    setTimeout(() => {
+      setInterval(() => {
+        let changedelem = this.$store.getters.elemByName(ress)?.properties
+        if (changedelem) {
+          if (changedelem.value){
+            this.bitmaskarg.value = changedelem.value
+            let j= 0
+            let sum = 0
+            this.bitmaskarg.value.toString(2).split('0').reverse().forEach((i, idx, array)=>{
+              if (idx === array.length - 1){} else{
+                for (let k=0 ; k<i.split('1').length - 1; k++){
+                  j++
+                }
+                sum = sum + Math.pow(2,j) 
+                console.log(Math.pow(2,j))
+                this.bitmaskarg.masvalue[j].value = false
+                j++
+              }  
+            })
+          } 
+        }
+      },1000)
+    // }, 1000 - Math.abs(500 - currentDateMilliseconds));
+    }, 1000 - currentDateMilliseconds);
+   // console.log(this.params.x * this.$parent.$parent.multiplier)
     
   },
   mounted(){

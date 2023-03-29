@@ -29,6 +29,8 @@ export default {
   },
   methods: {
     async some(){
+      const res = {'namewidget': this. ipadressarg.Name, 'namewindow': this.$parent.$parent.windowname , 'value': this. ipadressarg.value}
+      this.$store.dispatch('addcommandwidgetmass', res)
       if (this.params.setOnEnter) {
         const article =`
           ${this.ipadressarg.value}
@@ -37,9 +39,6 @@ export default {
             'Content-Type': 'application/json',
         };
         await axios.post(`http://${this.ip}/api/nodes/${this.encript((new TextEncoder()).encode(this.$parent.$parent.windowpath))}/widget/${this.encript((new TextEncoder()).encode(this.ipadressarg.Name))}/query/write-arg`, article, { headers })
-      } else {
-        const res = {'namewidget': this. ipadressarg.Name, 'namewindow': this.$parent.$parent.windowname , 'value': this. ipadressarg.value}
-        this.$store.dispatch('addcommandwidgetmass', res)
       }
     },
     encript(values) {

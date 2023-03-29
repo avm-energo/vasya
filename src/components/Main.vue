@@ -31,6 +31,7 @@ export default {
       innactivetime: 0,
       innactive: false,
       height: null,
+      multiplier: null,
     };
   },
 

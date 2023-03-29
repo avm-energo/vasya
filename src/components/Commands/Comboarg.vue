@@ -27,6 +27,8 @@ export default {
   },
   methods:{
     async some(){
+      const res = {'namewidget': this.comboarg.Name, 'namewindow': this.$parent.$parent.windowname , 'value': this.comboarg.value}
+      this.$store.dispatch('addcommandwidgetmass', res)
       if (this.params.trigger == "ChangeOnEnd") {
         const article =`
           ${this.comboarg.value}
@@ -35,9 +37,6 @@ export default {
             'Content-Type': 'application/json',
         };
         await Axios.post(`http://${this.ip}/api/nodes/${this.encript((new TextEncoder()).encode(this.$parent.$parent.windowpath))}/widget/${this.encript((new TextEncoder()).encode(this.comboarg.Name))}/query/write-arg`, article, { headers })
-      } else {
-        const res = {'namewidget': this.comboarg.Name, 'namewindow': this.$parent.$parent.windowname , 'value': this.comboarg.value}
-        this.$store.dispatch('addcommandwidgetmass', res)
       }
     },
     encript(values) {

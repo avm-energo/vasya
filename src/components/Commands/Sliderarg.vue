@@ -2,7 +2,7 @@
   <!-- <div class="sliderarg1" :style="[ sliderarg1.Orientation == 'Vertical' ? { transform: 'rotate(-90deg)' } : '', ]"> -->
   <div class="sliderarg" :style="cssProps">
       <vue3-slider v-model="sliderarg.value" color="blue" track-color="#F2F2F2" :min="this.params.lowRange" :max="this.params.hiRange" :orientation="this.params.orientation.toLowerCase()" :step="this.params.changingTick" :tooltip=true
-      @drag-end="[this.sliderarg.trigger == 'ChangeOnEnd' ? some() : this.sliderarg.trigger == 'ButtonApply' ? somepush() : '']" @change="[this.sliderarg.trigger == 'ChangeRealtime' ? some() : '']"/>
+      @drag-end="some()" @change="[this.sliderarg.trigger == 'ChangeRealtime' ? some() : '']"/>
   </div>
 </template>
 
@@ -34,6 +34,8 @@ export default {
 
   methods: {
     async some() {
+      const res = {'namewidget': this.sliderarg.Name, 'namewindow': this.$parent.$parent.windowname , 'value': this.sliderarg.value}
+      this.$store.dispatch('addcommandwidgetmass', res)
       if (this.sliderarg.value != this.sliderarg.lastvalue){
         const article =`
           ${this.sliderarg.value}
@@ -46,10 +48,6 @@ export default {
         // this.chartDataArr = await axios.post(`http://localhost:5201/api/nodes/${this.encript((new TextEncoder()).encode(this.$parent.$parent.windowname.split(':').join(':\\')))}/widget/${this.encript((new TextEncoder()).encode(this.name))}/query/trend-history`, article, { headers })
       }
       this.sliderarg.lastvalue = this.sliderarg.value
-    },
-    somepush(){
-      const res = {'namewidget': this.sliderarg.Name, 'namewindow': this.$parent.$parent.windowname , 'value': this.sliderarg.value}
-      this.$store.dispatch('addcommandwidgetmass', res)
     },
     encript(values) {
       const  Alphabet = "12345678" + "9ABDEFGH" + "JKLMNPQR" + "STUVWXYZ";
