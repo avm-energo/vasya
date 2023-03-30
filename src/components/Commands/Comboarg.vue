@@ -63,22 +63,22 @@ export default {
     this.comboarg.masvalue = this.params.cases
     this.comboarg.Name = this.name
     if (this.$parent.$parent.subscreenname){ 
-        this.comboarg.Namesub = this.comboarg.Name + '/' + this.$parent.$parent.subscreenname
-      } else {
-        this.comboarg.Namesub = this.comboarg.Name
-      }
-      const today = new Date();
-      var currentDateMilliseconds = today.getMilliseconds();
-      const ress = {'namewidget': this.comboarg.Namesub, 'namewindow': this.$parent.$parent.windowname}
-      setTimeout(() => {
-        setInterval(() => {
-          let changedelem = this.$store.getters.elemByName(ress)?.properties
-          if (changedelem) {
-            if (typeof(changedelem.value)!= "indefined") this.comboarg.value = changedelem.value
-          }
-        },1000)
-      // }, 1000 - Math.abs(500 - currentDateMilliseconds));
-      }, 1000 - currentDateMilliseconds);
+      this.comboarg.Namesub = this.comboarg.Name + '/' + this.$parent.$parent.subscreenname
+    } else {
+      this.comboarg.Namesub = this.comboarg.Name
+    }
+    const today = new Date();
+    var currentDateMilliseconds = today.getMilliseconds();
+    const ress = {'namewidget': this.comboarg.Namesub, 'namewindow': this.$parent.$parent.windowname}
+    setTimeout(() => {
+      setInterval(() => {
+        let changedelem = this.$store.getters.elemByName(ress)?.properties
+        if (changedelem) {
+          if (typeof(changedelem.value)!= "indefined") this.comboarg.value = changedelem.value
+        }
+      },1000)
+    // }, 1000 - Math.abs(500 - currentDateMilliseconds));
+    }, 1000 - currentDateMilliseconds);
   },
   computed: {
     cssProps() {

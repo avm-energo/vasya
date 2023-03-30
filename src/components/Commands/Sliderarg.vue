@@ -27,16 +27,33 @@ export default {
     };
   },
   created(){
+    console.log(this.params)
     this.sliderarg.trigger = this.params.trigger
     this.sliderarg.value = this.params.value
     this.sliderarg.Name = this.name
+    if (this.$parent.$parent.subscreenname){ 
+        this.sliderarg.Namesub = this.sliderarg.Name + '/' + this.$parent.$parent.subscreenname
+    } else {
+        this.sliderarg.Namesub = this.sliderarg.Name
+    }
+    const today = new Date();
+    var currentDateMilliseconds = today.getMilliseconds();
+    const ress = {'namewidget': this.sliderarg.Namesub, 'namewindow': this.$parent.$parent.windowname}
+    setTimeout(() => {
+      setInterval(() => {
+        let changedelem = this.$store.getters.elemByName(ress)?.properties
+        if (changedelem) {
+          if (typeof(changedelem.value)!= "indefined") this.sliderarg.value = changedelem.value
+        }
+      },1000)
+    }, 1000 - currentDateMilliseconds);
   },
 
   methods: {
     async some() {
       const res = {'namewidget': this.sliderarg.Name, 'namewindow': this.$parent.$parent.windowname , 'value': this.sliderarg.value}
       this.$store.dispatch('addcommandwidgetmass', res)
-      if (this.sliderarg.value != this.sliderarg.lastvalue){
+      if (this.sliderarg.value != this.sliderarg.lastvalue && this.sliderarg.trigger == "ChangeOnEnd"){
         const article =`
           ${this.sliderarg.value}
         `;

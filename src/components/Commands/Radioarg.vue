@@ -1,8 +1,8 @@
 <template>
   <div class="radioarg" :style="cssProps">
     <div v-for="elem in radioarg.masvalue" :key="elem.id" @change="some()">
-      <input type="radio" :value="elem.value" v-model="radioarg.value" :id="elem.id" class="custom-radio"/>
-      <label :for="elem.id">{{ elem.title}}</label>
+      <input type="radio" :value="elem.value" v-model="radioarg.value" :id="elem.id" class="custom-radio" :checked="elem.isSelected"/>
+      <label :for="elem.id">{{ elem.title}}</label> 
     </div>
   </div>
 </template>
@@ -11,7 +11,7 @@
 
 import axios from 'axios';
 
-export default {
+export default {  
   name: "app",
   props: ['params','name', 'ip'], 
   data() {
@@ -20,6 +20,7 @@ export default {
         masvalue: null,
         Name: null,
         value: null,
+        Namesub: null,
       },
     };
   },
@@ -27,6 +28,7 @@ export default {
     async some(){
       const res = {'namewidget': this.radioarg.Name, 'namewindow': this.$parent.$parent.windowname , 'value': this.radioarg.value}
       this.$store.dispatch('addcommandwidgetmass', res)
+      console.log(this.radioarg.masvalue)
       if (this.params.setOnCheck) {
         const article =`
           ${this.radioarg.value}
@@ -58,9 +60,28 @@ export default {
     
   },
   created(){
+    console.log(this.params)
     this.radioarg.Name = this.name
     this.radioarg.masvalue = this.params.state
     // this.radioarg.value = this.radioarg.masvalue.find((t) => t.isSelected == true).value
+    if (this.$parent.$parent.subscreenname){ 
+      this.radioarg.Namesub = this.radioarg.Name + '/' + this.$parent.$parent.subscreenname
+    } else {
+      this.radioarg.Namesub = this.radioarg.Name
+    }
+    const today = new Date();
+    var currentDateMilliseconds = today.getMilliseconds();
+    const ress = {'namewidget': this.radioarg.Namesub, 'namewindow': this.$parent.$parent.windowname}
+    setTimeout(() => {
+      setInterval(() => {
+        let changedelem = this.$store.getters.elemByName(ress)?.properties
+        if (changedelem) {
+          if (this.radioarg.masvalue.findIndex(elem => elem.isSelected == true) != -1) this.radioarg.masvalue[this.radioarg.masvalue.findIndex(elem => elem.isSelected == true)].isSelected = false
+          this.radioarg.masvalue[changedelem.state.findIndex(elem => elem.isSelected == true)].isSelected = true
+          this.radioarg.value = this.radioarg.masvalue[changedelem.state.findIndex(elem => elem.isSelected == true)].value
+        }
+      },1000)
+    }, 1000 - currentDateMilliseconds);
   },
   computed: {
     cssProps() {

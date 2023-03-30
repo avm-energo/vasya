@@ -18,7 +18,7 @@
           <td>{{ elem.position }}</td>
           <td style="padding:0 5px 0 5px;">{{ elem.description }}</td>
           <td>
-            <input type="checkbox" v-model="elem.value" @change="[elem.value ? BigInt(bitmaskarg.value += Math.pow(2, elem.position)) : BigInt(bitmaskarg.value -= Math.pow(2, elem.position)),], some(bitmaskarg)"/>
+            <input type="checkbox" v-model="elem.value" @change="[elem.value ? BigInt(bitmaskarg.value += Math.pow(2, elem.position)) : BigInt(bitmaskarg.value -= Math.pow(2, elem.position)),], some()"/>
           </td>
         </tr>
       </table>
@@ -58,14 +58,14 @@ export default {
       this.$store.dispatch('addcommandwidgetmass', res)
       if (this.params.personalSend) {
         const article =`
-          ${this.bitmaskargvalue}
+          ${this.bitmaskarg.value}
         `;
         const headers = { 
             'Content-Type': 'application/json',
         };
         await axios.post(`http://${this.ip}/api/nodes/${this.encript((new TextEncoder()).encode(this.$parent.$parent.windowpath))}/widget/${this.encript((new TextEncoder()).encode(this.bitmaskarg.Name))}/query/write-arg`, article, { headers }).
         then(response =>{
-          console.log(response)
+          
         }) 
       } 
     },
@@ -118,20 +118,6 @@ export default {
     // console.log(this.bitmaskarg.masvalue)
     // console.log(this.bitmaskarg.value.toString(2))
     // console.log(this.bitmaskarg.value.toString(2).split('1').reverse())
-    let j= 0
-    let sum = 0
-    this.bitmaskarg.value.toString(2).split('1').reverse().forEach((i, idx, array)=>{
-      if (idx === array.length - 1){} else{
-        for (let k=0 ; k<i.split('0').length - 1; k++){
-          j++
-        }
-        sum = sum + Math.pow(2,j) 
-        console.log(Math.pow(2,j))
-        this.bitmaskarg.masvalue[j].value = true
-        j++
-      }  
-    })
-    console.log(sum.toString(16))
     setTimeout(()=>{this.bitmaskarg.window = false},1)
     const today = new Date();
     var currentDateMilliseconds = today.getMilliseconds();
@@ -142,20 +128,7 @@ export default {
         if (changedelem) {
           if (changedelem.value){
             this.bitmaskarg.value = changedelem.value
-            let j= 0
-            let sum = 0
-            this.bitmaskarg.value.toString(2).split('0').reverse().forEach((i, idx, array)=>{
-              if (idx === array.length - 1){} else{
-                for (let k=0 ; k<i.split('1').length - 1; k++){
-                  j++
-                }
-                sum = sum + Math.pow(2,j) 
-                console.log(Math.pow(2,j))
-                this.bitmaskarg.masvalue[j].value = false
-                j++
-              }  
-            })
-          } 
+          }
         }
       },1000)
     // }, 1000 - Math.abs(500 - currentDateMilliseconds));
@@ -192,6 +165,24 @@ export default {
       }
     }
   },
+  watch:{
+    'bitmaskarg.value'(){
+      this.bitmaskarg.masvalue.forEach((res)=>{res.value = false})
+      let j= 0
+      let sum = 0
+      this.bitmaskarg.value.toString(2).split('1').reverse().forEach((i, idx, array)=>{
+        if (idx === array.length - 1){} else{
+          for (let k=0 ; k<i.split('0').length - 1; k++){
+            j++
+          }
+          sum = sum + Math.pow(2,j) 
+          // console.log(Math.pow(2,j))
+          this.bitmaskarg.masvalue[j].value = true
+          j++
+        }  
+      })
+    }
+  }
 };
 </script>
 

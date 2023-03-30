@@ -1,9 +1,9 @@
 <template>
   <div class="ipadressarg" :style="cssProps">
-    <!-- <span class="ipadressarg1_star" v-show=" ipadressarg.value != ipadressarg.Notification && ipadressarg.ShowNotification ">*</span> -->
-    <input class="ipadressarg1_value" v-model="ipadressarg.value" type="text" placeholder="0.0.0.0" @input="ipchange()" @change="ipchange()"
+    <span class="ipadressarg_star" v-show="ipadressarg.value != ipadressarg.prevvalue">*</span>
+    <input class="ipadressarg_value" v-model="ipadressarg.value" type="text" placeholder="0.0.0.0" pattern="/^(?:(?:2[0-4]\d|25[0-5]|1\d{2}|[1-9]?\d)\.){3}(?:2[0-4]\d|25[0-5]|1\d{2}|[1-9]?\d)$/"
       @blur="[ipadressarg.isValid ? some() : '']" @keyup.enter="[ipadressarg.isValid ? $event.target.blur() : '']" :disabled="ipadressarg.disabled"/>
-    <div class="ipadressarg1_error" v-if="!ipadressarg.isValid">
+    <div class="ipadressarg_error" v-if="!ipadressarg.isValid">
       Ip is Invalid
     </div>
   </div>
@@ -20,6 +20,7 @@ export default {
     return {
       ipadressarg: {
         Name: null,
+        Namesub: null,
         value: null,
         isValid: true,
         regex:
@@ -38,7 +39,9 @@ export default {
         const headers = { 
             'Content-Type': 'application/json',
         };
-        await axios.post(`http://${this.ip}/api/nodes/${this.encript((new TextEncoder()).encode(this.$parent.$parent.windowpath))}/widget/${this.encript((new TextEncoder()).encode(this.ipadressarg.Name))}/query/write-arg`, article, { headers })
+        await axios.post(`http://${this.ip}/api/nodes/${this.encript((new TextEncoder()).encode(this.$parent.$parent.windowpath))}/widget/${this.encript((new TextEncoder()).encode(this.ipadressarg.Name))}/query/write-arg`, article, { headers }).then(()=>{
+          this.ipadressarg.prevvalue = this.ipadressarg.value
+        })
       }
     },
     encript(values) {
@@ -59,15 +62,30 @@ export default {
       }
       return ans.join("")
     },
-    ipchange() {
-      this.ipadressarg.isValid = this.ipadressarg.regex.test(
-        this.ipadressarg.value
-      );
-    },
   },
   created(){
+    console.log(this.params)
     this.ipadressarg.value = this.params.ipByte1 + '.' + this.params.ipByte2 + '.' + this.params.ipByte3 + '.' + this.params.ipByte4 
     this.ipadressarg.Name = this.name
+    this.ipadressarg.prevvalue = this.ipadressarg.value
+    if (this.$parent.$parent.subscreenname){ 
+      this.ipadressarg.Namesub = this.ipadressarg.Name + '/' + this.$parent.$parent.subscreenname
+    } else {
+      this.ipadressarg.Namesub = this.ipadressarg.Name
+    }
+    const today = new Date();
+    var currentDateMilliseconds = today.getMilliseconds();
+    const ress = {'namewidget': this.ipadressarg.Namesub, 'namewindow': this.$parent.$parent.windowname}
+    setTimeout(() => {
+      setInterval(() => {
+        let changedelem = this.$store.getters.elemByName(ress)?.properties
+        if (changedelem) {
+          this.ipadressarg.value = changedelem.ipByte1 + '.' + changedelem.ipByte2 + '.' + changedelem.ipByte3 + '.' + changedelem.ipByte4 
+          this.ipadressarg.prevvalue = this.ipadressarg.value
+        }
+      },1000)
+    // }, 1000 - Math.abs(500 - currentDateMilliseconds));
+    }, 1000 - currentDateMilliseconds);
   },
   computed: {
     cssProps() {
@@ -79,10 +97,17 @@ export default {
         "--background": "#" + this.params.background,
         "--borderBrush": "#" + this.params.borderBrush,
         "--foreground": "#" + this.params.foreground,
-        "--fontsize": this.params.fontSize * this.$parent.$parent.multiplier + "px",
+        "--fontsize": this.params.textSize * this.$parent.$parent.multiplier * 1.2 + "px",
       };
     }
   },
+  watch:{
+    'ipadressarg.value'(){
+      this.ipadressarg.isValid = this.ipadressarg.regex.test(
+        this.ipadressarg.value
+      );
+    }
+  }
 };
 </script>
 
@@ -100,19 +125,24 @@ export default {
   align-items: center;
   justify-content: center;
 }
-.ipadressarg1_star {
-  width: 10px;
-}
-.ipadressarg1_value {
+.ipadressarg_star {
+  width: var(--widthstar);
+  font-size: var(--fontsize);
   height: 100%;
+  background-color: white;
+  color: black;
+}
+.ipadressarg_value {
+  height: 92%;
   width: 100%;
   border: none;
   border-radius: none;
+  font-size: var(--fontsize);
 }
-.ipadressarg1_value:focus {
+.ipadressarg_value:focus {
   outline: none;
 }
-.ipadressarg1_error {
+.ipadressarg_error {
   position: absolute;
   top: var(--height);
   width: var(--width);

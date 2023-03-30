@@ -30,6 +30,7 @@ export default {
   },
   methods:{
     async some(){
+      console.log(this.params)
       let res = this.$store.getters.commandwidgets(this.$parent.$parent.windowname)
       let json_obj
       if (res){
@@ -42,24 +43,20 @@ export default {
       } else{
         json_obj = null
       }
-      // if (this.params.writeParams) {
-        console.log(json_obj)
-        const headers = { 
-            'Content-Type': 'application/json',
-        };
-        // console.log(this.$parent.$parent.namewindow.split('\\').join('\\') )
-        await axios.post(`http://${this.ip}/api/nodes/${this.encript((new TextEncoder()).encode(this.$parent.$parent.windowpath))}/widget/${this.encript((new TextEncoder()).encode(this.name))}/query/apply-form`, json_obj, { headers })
-        this.$store.dispatch('clearcommandwidgets', this.$parent.$parent.windowname)
-      // } else {
-      //   const headers = { 
-      //       'Content-Type': 'application/json',
-      //   };
-      //   json_obj = {}
-      //   await axios.post(`http://${this.ip}/api/nodes/${this.encript((new TextEncoder()).encode(this.$parent.$parent.windowpath))}/widget/${this.encript((new TextEncoder()).encode(this.name))}/query/write-command`, json_obj, { headers }).
-      //   then(response =>{
-      //     console.log(response)
-        // })
-      // }
+      if (this.params.writeParams) {
+        if (json_obj != null) {
+          const headers = {'Content-Type': 'application/json'};
+          // console.log(this.$parent.$parent.namewindow.split('\\').join('\\') )
+          await axios.post(`http://${this.ip}/api/nodes/${this.encript((new TextEncoder()).encode(this.$parent.$parent.windowpath))}/widget/${this.encript((new TextEncoder()).encode(this.name))}/query/apply-form`, json_obj, { headers })
+          this.$store.dispatch('clearcommandwidgets', this.$parent.$parent.windowname)
+        }
+      } 
+      const headers = {'Content-Type': 'application/json'};
+      json_obj = {}
+      await axios.post(`http://${this.ip}/api/nodes/${this.encript((new TextEncoder()).encode(this.$parent.$parent.windowpath))}/widget/${this.encript((new TextEncoder()).encode(this.name))}/query/apply-command`, json_obj, { headers }).
+      then(response =>{
+        console.log(response)
+      })
     },
     encript(values) {
       const Alphabet = "12345678" + "9ABDEFGH" + "JKLMNPQR" + "STUVWXYZ";

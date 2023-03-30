@@ -6,6 +6,7 @@
 
 <script>
 
+import { nullLiteral } from '@babel/types';
 import axios from 'axios';
 
 export default {
@@ -14,6 +15,7 @@ export default {
   data() {
     return {
       boolarg: {
+        Namesub: null,
         Name: null,
         value: null,
       },
@@ -56,6 +58,22 @@ export default {
   created(){
     this.boolarg.Name = this.name
     this.boolarg.value = this.params.value
+    if (this.$parent.$parent.subscreenname){ 
+      this.boolarg.Namesub = this.boolarg.Name + '/' + this.$parent.$parent.subscreenname
+    } else {
+      this.boolarg.Namesub = this.boolarg.Name
+    }
+    const today = new Date();
+    var currentDateMilliseconds = today.getMilliseconds();
+    const ress = {'namewidget': this.boolarg.Namesub, 'namewindow': this.$parent.$parent.windowname}
+    setTimeout(() => {
+      setInterval(() => {
+        let changedelem = this.$store.getters.elemByName(ress)?.properties
+        if (changedelem) {
+          this.boolarg.value = changedelem.value
+        }
+      },1000)
+    }, 1000 - currentDateMilliseconds);
   },
   computed: {
     cssProps() {
