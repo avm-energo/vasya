@@ -2,7 +2,7 @@
   <div id="box" :style="cssProps">
     <div id="box_title">
       <div id="buttons" style="flex-grow: 6">
-        <div id ="button_play" @click="[liveview() + !this.viewlive ? startlive(this.$parent.$parent.windowpath, this.name, this.seriesArr, this.controller) : '']" :class="[!this.viewlive ? 'button_hover': '']" :title="[!this.viewlive ? 'Realtime mod': '']">
+        <div id ="button_play" @click="[liveview() + !this.viewlive ? startlive(this.$parent.$parent.windowpath, this.name, this.seriesArr, this.controller, this.interval) : '']" :class="[!this.viewlive ? 'button_hover': '']" :title="[!this.viewlive ? 'Realtime mod': '']">
           <svg width="80%" height="100%" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
           <rect width="24" height="24" fill="none"/>
           <path fill-rule="evenodd" clip-rule="evenodd" d="M3 5.49686C3 3.17662 5.52116 1.73465 7.52106 2.91106L18.5764 9.41423C20.5484 10.5742 20.5484 13.4259 18.5764 14.5858L7.52106 21.089C5.52116 22.2654 3 20.8234 3 18.5032V5.49686Z" :fill="[!this.viewlive ? '#FFFFFF' : '#696969']"/>
@@ -143,6 +143,7 @@ export default {
       starttimeexcel: null,
       endtimeexcel: null,
       controller: null,
+      interval: null,
     }
   },
   components: {
@@ -153,6 +154,8 @@ export default {
   created(){
     const controller = new AbortController();
     this.controller = controller
+    this.interval = this.params["trends-interval"]
+    console.log(this.params)
     // document.tooltip({show:null})
   },
   methods: {
@@ -225,6 +228,7 @@ export default {
           "lowerTime": "${moment(new Date(this.starttime).getTime()).format("YYYY-MM-DDTHH:mm:ss")}",
           "upperTime": "${moment(new Date(this.endtime).getTime()).format("YYYY-MM-DDTHH:mm:ss")}"
       }`;
+      console.log((moment(new Date(this.endtime)) - moment(new Date(this.starttime)))/60000*60)
       console.log('new body created');
       return body
     },
@@ -232,14 +236,32 @@ export default {
    
     generateDataObj(point) {
       return {
-        // argument: new Date(point.argument).getTime() - 44*60000,
         argument: new Date(point.argument).getTime(),
         value: point.value
       };
     },
-    generateDatas(i) {
+    generateDatas(num) {
       let dataArr = [];
-      this.chartDataArr.resultData[i].points.forEach((elem) => {
+      // console.log(this.chartDataArr.resultData[num].points.length)
+      //   const del = 400
+      //   var k = this.chartDataArr.resultData[num].points.length / del
+      //   console.log(Math.trunc(k)*del)
+      //   console.log(Math.round((k - Math.trunc(k))*del))
+      //   if (num == 0){
+      //     for (let i = 0; i<k-1; i++){
+      //       setTimeout(()=>{
+      //         for (let j = i * del ; j<i*del+del; j++)
+      //           dataArr.push(this.generateDataObj( this.chartDataArr.resultData[num].points[j]));
+      //         }, i * 3000)
+      //     }
+      //     setTimeout(()=>{
+      //       for (let i = Math.trunc(k)*del; i<Math.trunc(k)*del + Math.round((k - Math.trunc(k))*del); i++){
+      //         dataArr.push(this.generateDataObj( this.chartDataArr.resultData[num].points[i]));
+      //       }
+      //       return dataArr
+      //     }, (k-1) * 3000)
+      //   }
+      this.chartDataArr.resultData[num].points.forEach((elem) => {
           dataArr.push(this.generateDataObj(elem));
         })
       return dataArr
@@ -250,6 +272,7 @@ export default {
       if (this.chartDataArr !== undefined){
         for (let i = 0; i < this.chart.series.values.length; i++) {
           var data = this.generateDatas(i);
+          console.log('asd')
           this.seriesArr[i].data.setAll(data)
         }
       }
@@ -262,7 +285,7 @@ export default {
   async mounted() {
     let root = am5.Root.new(this.$refs.chartdiv);
     this.root = root;
-    this.starttime = new Date(Date.now() - 86400000 * 1);
+    this.starttime = new Date(Date.now() - 86400000 * 1 * 21);
     this.endtime = new Date(Date.now() + 86400000 * 1)
 
     root.setThemes([
@@ -288,17 +311,17 @@ export default {
     var xAxis = chart.xAxes.push(am5xy.DateAxis.new(root, {
       // maxDeviation: 0.2,
       minZoomCount: 3,
-      groupData: true,
-      baseInterval: { timeUnit: "second", count: 60 },
-      groupIntervals: [
-        { timeUnit: "second", count: 60 },
-        { timeUnit: "minute", count: 10 },
-        { timeUnit: "hour", count: 1 },
-        { timeUnit: "day", count: 1 },
-        { timeUnit: "week", count: 1 },
-        { timeUnit: "month", count: 1 },
-        { timeUnit: "year", count: 1 }
-      ],
+      // groupData: true,
+      baseInterval: { timeUnit: "second", count: this.params["trends-interval"]/1000 },
+      // groupIntervals: [
+      //   { timeUnit: "second", count: 60 },
+      //   { timeUnit: "minute", count: 10 },
+      //   { timeUnit: "hour", count: 1 },
+      //   { timeUnit: "day", count: 1 },
+      //   { timeUnit: "week", count: 1 },
+      //   { timeUnit: "month", count: 1 },
+      //   { timeUnit: "year", count: 1 }
+      // ],
       renderer: am5xy.AxisRendererX.new(root, {}),
       tooltip: am5.Tooltip.new(root, {}),
       tooltipDateFormat: "yy-MMM-dd HH:mm:ss",
@@ -448,7 +471,7 @@ export default {
 
     var refreshId
     var timeoutId
-    this.startlive = async function startlive(winn,namee,seriesArr, controllerr){
+    this.startlive = async function startlive(winn,namee,seriesArr, controllerr, interval){
       console.log("я тут")
       this.gettingdata()
       var series = seriesArr
@@ -482,7 +505,7 @@ export default {
       .catch(function (error) {
       })
       console.log(series)
-      console.log((60000 - moment().second()*1000 + 1000)/1000)
+      console.log((interval - moment().second()*1000 + 1000)/1000)
       if (!controller.signal.aborted) {
         timeoutId = setTimeout(()=>{
           addData(series, ip, win, name);
@@ -492,8 +515,8 @@ export default {
             var winn = win
             var namee = name
             addData(seriesArr, ipp, winn, namee);
-          }, 60000)
-        },60000 - moment().second()*1000 + 1000)
+          }, interval)
+        },interval - moment().second()*1000 + 1000)
       }
     }
 
@@ -534,20 +557,6 @@ export default {
       var article = `"${moment(seriesArr[0].data.values[seriesArr[0].data.values.length-1].argument + 1000).format("YYYY-MM-DDTHH:mm:ss")}"`;
       await axios.post(`http://${ip}/api/nodes/${encript((new TextEncoder()).encode(win))}/widget/${encript((new TextEncoder()).encode(name))}/query/trend-increment`, article, { headers })
       .then(response => {
-        // if (response.data.resultData[0].points[0]){
-        //   console.log(response)
-        //   seriesArr.forEach(series =>{
-        //     series.data.removeIndex(0)
-        //   })
-        //   response.data.resultData.forEach(res =>{
-        //    series = seriesArr.find(s => s.uid === res.uid)
-        //    console.log(res.points)
-        //     series.data.push({
-        //       argument: new Date(res.points[0].argument).getTime(),
-        //       value: res.points[0].value,
-        //     })
-        //   })
-        // }
         if(response.data.resultData) {
           if (response.data.resultData[0].points[0]){
             console.log(response)
@@ -568,35 +577,6 @@ export default {
         }
       })
       
-      // var lastDataItem = series.dataItems[series.dataItems.length - 1];
-      // var lastValue = lastDataItem.get("valueY");
-      // var newValue =  ((Math.random() < 0.5 ? 1 : -1) * Math.random() * 5);
-      // var lastDate = new Date(lastDataItem.get("valueX"));
-      // var time = am5.time.add(new Date(lastDate), "second", 1).getTime();
-      // series.data.removeIndex(0);
-
-      // var newDataItem = series.dataItems[series.dataItems.length - 1];
-      // newDataItem.animate({
-      //   key: "valueYWorking",
-      //   to: newValue,
-      //   from: lastValue,
-      //   duration: 600,
-      //   easing: easing
-      // });
-      // var animation = newDataItem.animate({
-      //   key: "locationX",
-      //   to: 0.5,
-      //   from: -0.5,
-      //   duration: 600
-      // });
-      // if (animation) {
-      //   var tooltip = xAxis.get("tooltip");
-      //   if (tooltip && !tooltip.isHidden()) {
-      //     animation.events.on("stopped", function () {
-      //       xAxis.updateTooltip();
-      //     })
-      //   }
-      // }
     }
     var exporting = am5plugins_exporting.Exporting.new(root, {});
     this.print =  function downloadChartImage() {
@@ -639,17 +619,17 @@ export default {
         console.log('new data loaded ');
       }
     },
-    // seriesArr:{
-    //   handler() {
-    //     if (this.viewlive) {
-    //       this.endtime = new Date(this.seriesArr[0].data.values[this.seriesArr[0].data.values.length-1].argument)
-    //       this.starttime = new Date(this.seriesArr[0].data.values[0].argument)
-    //       this.starttimeexcel = moment(this.starttime).format("HH:mm:ss DD.MM.YY")
-    //       this.endtimeexcel = moment(this.endtime).format("HH:mm:ss DD.MM.YY")
-    //     }
-    //   },
-    //   deep: true
-    // },
+    seriesArr:{
+      handler() {
+        if (this.viewlive) {
+          this.endtime = new Date(this.seriesArr[0].data.values[this.seriesArr[0].data.values.length-1].argument)
+          this.starttime = new Date(this.seriesArr[0].data.values[0].argument)
+          this.starttimeexcel = moment(this.starttime).format("HH:mm:ss DD.MM.YY")
+          this.endtimeexcel = moment(this.endtime).format("HH:mm:ss DD.MM.YY")
+        }
+      },
+      deep: true
+    },
     endtime() {
       if (this.endtime < this.starttime) this.starttime = new Date(this.endtime.getTime() - 86400000)
     }
