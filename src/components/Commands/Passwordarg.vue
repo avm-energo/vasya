@@ -28,12 +28,15 @@ export default {
       },
     };
   },
+  created(){
+    console.log()
+  },
   methods:{
     some(){
       console.log('asd')
     }
-  }
-};
+  }  
+}
 </script>
 
 <style scoped>

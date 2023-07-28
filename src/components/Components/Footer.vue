@@ -173,10 +173,10 @@ export default {
           // console.log(obj)
           // if (obj.data["footer-title"]!=null) {this.footertitle = obj.data["footer-title"]}
           if (obj.data["footer-title"]){
-            console.log('yest')
+            // console.log('yest')
             this.footertitle = obj.data["footer-title"]
           } else {
-            console.log('net')
+            // console.log('net')
           }
           this.footercolor = obj.data['footer-state']
           this.footerflashing = obj.data['footer-flashing']
@@ -192,7 +192,7 @@ export default {
                 elem.needAck = true
                 this.events.push(elem)
               } else {
-                console.log('было: ' + event.statusEventSignaling + 'стало: ' + elem.statusEventSignaling)
+                // console.log('было: ' + event.statusEventSignaling + 'стало: ' + elem.statusEventSignaling)
                 if (elem.comeTime != event.comeTime || elem.leaveTime != "0" || elem.statusEventSignaling != event.statusEventSignaling){
                   elem.comeTime ? this.events[eventid].comeTime = elem.comeTime : null
                   elem.leaveTime ? this.events[eventid].leaveTime = elem.leaveTime : null
@@ -201,7 +201,7 @@ export default {
                   elem.ackTime ? this.events[eventid].ackTime = elem.ackTime : null
                   this.events[eventid].needAck = true
                   // this.events[eventid].leaveTime = null
-                  console.log(elem)
+                  // console.log(elem)
                 }
               }
               if (elem.visible == false) {
@@ -235,6 +235,7 @@ export default {
         });
     },
     filteredEventsList() {
+      if (this.events) {
       return this.events
         .sort((a, b) => {
           let modifier = 1;
@@ -243,6 +244,9 @@ export default {
           if (a[this.currentSort] > b[this.currentSort]) return 1 * modifier;
           return 0;
         })
+      } else {
+        return []
+      }
     },
     historymas() {
       return this.$store.getters.historymas;
@@ -279,9 +283,11 @@ export default {
       console.log(this.events)
     },
     Acknowledgedall(){
-      this.events.forEach(elem => {
-        if (!elem.ackTime ) this.some(elem.id)
-      })
+      if (this.events){
+        this.events.forEach(elem => {
+          if (!elem.ackTime ) this.some(elem.id)
+        })
+      }
     },
 
     sort(s) {

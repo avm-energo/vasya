@@ -1,5 +1,5 @@
 <template>
-  <div class="tiles" :class="[ this.name.startsWith('Tiles/Number') ? tiles.Flashing ? 'flash' : '' : '', ]" :style="cssProps" :title="'Состояние элемента ' + tiles.tooltip" v-show="tiles.Visible" >
+  <div class="tiles" :class="[ this.name.startsWith('Tiles/Number') ? tiles.Flashing ? 'flash' : '' : '', ]" :style="cssProps" v-show="tiles.Visible" >
     <p :style="cssProps" :id="this.name" v-show="tiles.value!='text'">{{tiles.value}}</p>
   </div>
 </template>
@@ -52,8 +52,8 @@ export default {
     this.tiles.Flashing = false,
     this.tiles.AlarmInfo = "Good",
     this.tiles.Visible = this.params.visible,
-    this.tiles.Enabled = true,
-    this.tiles.tooltip = "подсказка!"
+    this.tiles.Enabled = true
+    // this.tiles.tooltip = "подсказка!"
     if( this.type.startsWith("tiles") || (this.$parent.typewindow == 'head' ) || this.name.startsWith("Number") || this.name.startsWith("Flag")) {
       const today = new Date();
       var currentDateMilliseconds = today.getMilliseconds();
@@ -70,12 +70,14 @@ export default {
       // }, 1000 - Math.abs(500 - currentDateMilliseconds));
       }, 1000 - currentDateMilliseconds);
     }
+    
   },
   computed: {
     cssProps() {
       return {
         "--x": this.params.x  * this.$parent.multiplier + (this.params.width*this.params.scale - this.params.width)/2*this.$parent.multiplier + "px",
         "--y": this.params.y  * this.$parent.multiplier + (this.params.height*this.params.scale - this.params.height)/2*this.$parent.multiplier + "px",
+        // при 1 X вылезает поверх всех окон
         "--z": [this.params.text == 'X' ? 0 : ''],
         "--width": this.params.width  * this.$parent.multiplier + "px",
         "--height": this.params.height  * this.$parent.multiplier + "px",

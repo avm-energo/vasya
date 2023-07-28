@@ -41,7 +41,9 @@ export default {
         };
         await axios.post(`http://${this.ip}/api/nodes/${this.encript((new TextEncoder()).encode(this.$parent.$parent.windowpath))}/widget/${this.encript((new TextEncoder()).encode(this.ipadressarg.Name))}/query/write-arg`, article, { headers }).then(()=>{
           this.ipadressarg.prevvalue = this.ipadressarg.value
-        })
+        }) 
+      } else {
+        this.ipadressarg.prevvalue = this.ipadressarg.value
       }
     },
     encript(values) {
@@ -131,6 +133,9 @@ export default {
   height: 100%;
   background-color: white;
   color: black;
+  border-bottom: solid 1px black;
+  /* border-top: solid 1px black; */
+  
 }
 .ipadressarg_value {
   height: 92%;

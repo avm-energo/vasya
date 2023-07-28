@@ -20,4 +20,5 @@ pnpm-debug.log*
 
 netcore.bat 
 serv.bat 
-node_modules
+node_modules/
+dist/

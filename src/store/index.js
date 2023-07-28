@@ -214,7 +214,7 @@ export default createStore({
           `http://${state.ip}/api/nodes/${encript((new TextEncoder()).encode(data.name))}/current`
         );
         if (response.ok){
-          console.log(`http://${state.ip}/api/nodes/${encript((new TextEncoder()).encode(data.name))}/current`)
+          // console.log(`http://${state.ip}/api/nodes/${encript((new TextEncoder()).encode(data.name))}/current`)
           const res = JSON.parse(await response.text());
           res.title = data.title
           res.screenPercentage = data.screenPercentage

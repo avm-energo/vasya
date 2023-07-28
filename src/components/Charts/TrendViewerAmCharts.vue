@@ -76,7 +76,7 @@
           </svg>
         </div>
           <div class ="button" @click="exporttoexcel()" :class="[!this.viewlive ? 'button_hover': '']" :title="[!this.viewlive ? 'Export as table': '']">
-            <exportexcel :data="this.datajson" :header ="this.starttimeexcel + ' - ' + this.endtimeexcel" style="width: 100%; height: 100%">
+            <exportexcel :data="this.datajson" :header ="[this.params.header, this.starttimeexcel + ' - ' + this.endtimeexcel]" :name="this.params.header + ' ' + this.starttimeexcel + '-' + this.endtimeexcel + '.xls'" style="width: 100%; height: 100%">
             <svg height="100%" width="65%" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" 
               viewBox="0 0 26 26" xml:space="preserve">
             <g>
@@ -154,9 +154,10 @@ export default {
   created(){
     const controller = new AbortController();
     this.controller = controller
-    this.interval = this.params["trends-interval"]
-    console.log(this.params)
+    // this.interval = this.params["trends-interval"]
+    this.interval = 60000
     // document.tooltip({show:null})
+    // console.log(this.params)
   },
   methods: {
     async some(){
@@ -211,7 +212,7 @@ export default {
        },)
       .then(response => {
         // console.log(this.controller)
-        console.log(response.data)
+        // console.log(response.data)
         this.gettingdata()
         console.log('получил')
         return response.data
@@ -228,7 +229,7 @@ export default {
           "lowerTime": "${moment(new Date(this.starttime).getTime()).format("YYYY-MM-DDTHH:mm:ss")}",
           "upperTime": "${moment(new Date(this.endtime).getTime()).format("YYYY-MM-DDTHH:mm:ss")}"
       }`;
-      console.log((moment(new Date(this.endtime)) - moment(new Date(this.starttime)))/60000*60)
+      // console.log((moment(new Date(this.endtime)) - moment(new Date(this.starttime)))/60000*60)
       console.log('new body created');
       return body
     },
@@ -285,7 +286,7 @@ export default {
   async mounted() {
     let root = am5.Root.new(this.$refs.chartdiv);
     this.root = root;
-    this.starttime = new Date(Date.now() - 86400000 * 1 * 21);
+    this.starttime = new Date(Date.now() - 86400000 * 1 * 1);
     this.endtime = new Date(Date.now() + 86400000 * 1)
 
     root.setThemes([
@@ -312,7 +313,7 @@ export default {
       // maxDeviation: 0.2,
       minZoomCount: 3,
       // groupData: true,
-      baseInterval: { timeUnit: "second", count: this.params["trends-interval"]/1000 },
+      baseInterval: { timeUnit: "second", count: this.interval/1000 },
       // groupIntervals: [
       //   { timeUnit: "second", count: 60 },
       //   { timeUnit: "minute", count: 10 },
@@ -330,7 +331,7 @@ export default {
     this.xAxis = xAxis
 
     var yAxis = chart.yAxes.push(am5xy.ValueAxis.new(root, {
-      numberFormat: "#.0a",
+      // numberFormat: "#.0a",
       // numberFormat: "#.##e",
       renderer: am5xy.AxisRendererY.new(root, {
         opposite: true
@@ -356,6 +357,7 @@ export default {
           renderer: yRenderer
         })
       );
+      this.yAxis = yAxis
 
       if (chart.yAxes.indexOf(yAxis) > 0) {
         yAxis.set("syncWithAxis", chart.yAxes.getIndex(0));
@@ -463,7 +465,6 @@ export default {
     }));
     legend.data.setAll(chart.series.values);
     this.showlegend = function showl(state){
-      console.log(state)
       legend.setAll({
         visible: state
       });
@@ -472,7 +473,6 @@ export default {
     var refreshId
     var timeoutId
     this.startlive = async function startlive(winn,namee,seriesArr, controllerr, interval){
-      console.log("я тут")
       this.gettingdata()
       var series = seriesArr
       var ip = this.ip
@@ -485,12 +485,12 @@ export default {
       var article = `"${moment(series[0].data.values[series[0].data.values.length-1].argument + 1000).format("YYYY-MM-DDTHH:mm:ss")}"`;
       await axios.post(`http://${ip}/api/nodes/${this.encript((new TextEncoder()).encode(win))}/widget/${this.encript((new TextEncoder()).encode(name))}/query/trend-increment`, article, { headers, signal: controller.signal })
       .then(response => {
-        console.log(response)
+        // console.log(response)
         if(response.data.resultData) {
           if (response.data.resultData[0].points[0]){
             response.data.resultData.forEach(res =>{
               var seriesfind = series.find(s => s.uid === res.uid)
-              console.log(res)
+              // console.log(res)
               for (let i = 0; i < res.points.length; i++) {
                 seriesfind.data.push({
                   argument: new Date(res.points[i].argument).getTime(),
@@ -504,8 +504,7 @@ export default {
       })
       .catch(function (error) {
       })
-      console.log(series)
-      console.log((interval - moment().second()*1000 + 1000)/1000)
+      // console.log(series)
       if (!controller.signal.aborted) {
         timeoutId = setTimeout(()=>{
           addData(series, ip, win, name);
@@ -521,8 +520,6 @@ export default {
     }
 
     this.stoplive = function stoplive(){
-      console.log(refreshId)
-      console.log(timeoutId)
       clearInterval(refreshId)
       clearTimeout(timeoutId)
     }
@@ -559,13 +556,13 @@ export default {
       .then(response => {
         if(response.data.resultData) {
           if (response.data.resultData[0].points[0]){
-            console.log(response)
+            // console.log(response)
             seriesArr.forEach(series =>{
               series.data.removeIndex(0)
             })
             response.data.resultData.forEach(res =>{
               var seriesfind = seriesArr.find(s => s.uid === res.uid)
-              console.log(res)
+              // console.log(res)
               for (let i = 0; i < res.points.length; i++) {
                 seriesfind.data.push({
                   argument: new Date(res.points[i].argument).getTime(),
@@ -621,11 +618,11 @@ export default {
     },
     seriesArr:{
       handler() {
+        this.starttimeexcel = moment(new Date(this.seriesArr[0].data.values[0].argument)).format("HH:mm:ss DD.MM.YY")
+        this.endtimeexcel = moment(new Date(this.seriesArr[0].data.values[this.seriesArr[0].data.values.length-1].argument)).format("HH:mm:ss DD.MM.YY")
         if (this.viewlive) {
           this.endtime = new Date(this.seriesArr[0].data.values[this.seriesArr[0].data.values.length-1].argument)
           this.starttime = new Date(this.seriesArr[0].data.values[0].argument)
-          this.starttimeexcel = moment(this.starttime).format("HH:mm:ss DD.MM.YY")
-          this.endtimeexcel = moment(this.endtime).format("HH:mm:ss DD.MM.YY")
         }
       },
       deep: true
@@ -675,8 +672,9 @@ export default {
           element["Time"] = moment(this.seriesArr[0].data.values[i].argument).format(`YYYY.MM.DD`) + " " + moment(this.seriesArr[0].data.values[i].argument).format(`HH:mm:ss`)
           sum = 0
           for (let j = 0; j < this.seriesArr.length; j++) {
-            if (this.seriesArr[j].data._values[i].value) {
-              element[this.seriesArr[j]._settings.name] = this.seriesArr[j].data._values[i].value.toFixed(3).toString()
+            if (this.seriesArr[j].data._values[i]?.value) {
+              // element[this.seriesArr[j]._settings.name] = (this.seriesArr[j].data._values[i].value).toFixed(3).toString() + 'a'
+              element[this.seriesArr[j]._settings.name] = 'a'
             } else{
               element[this.seriesArr[j]._settings.name] = '***'
               sum = sum + 1

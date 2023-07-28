@@ -16,7 +16,7 @@ import  Axios  from "axios";
 
 export default {
   name: "app",
-  props:['params','name', 'ip'],
+  props:['params','name', 'ip', 'type'],
   data() {
     return {
       txtarg: {
@@ -47,7 +47,7 @@ export default {
       } else {
         // const res = {'namewidget': this.txtarg.Name, 'namewindow': this.$parent.$parent.windowname , 'value': this.txtarg.value}
         // this.$store.dispatch('addcommandwidgetmass', res)
-        
+        this.txtarg.prevvalue = this.txtarg.value
       }
     },
     encript(values) {
