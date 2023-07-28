@@ -1,0 +1,10 @@
+Package: sonica-vasya
+Version: 0.9.3
+Provides: sonica-vasya
+Maintainer: Evel <forevel@yandex.ru>
+Architecture: all
+Section: web
+Description: Web for Sonica.
+ Web interface for Sonica.
+Depends: nginx-light
+Installed-Size: 15000
