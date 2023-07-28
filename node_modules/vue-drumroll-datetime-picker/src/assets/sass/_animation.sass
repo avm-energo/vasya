@@ -1,0 +1,19 @@
+.v-drumroll-picker__slide-transition
+  &-enter-active, &-leave-active
+      transition: 300ms ease-in-out
+
+  &-enter
+    @media screen and (min-width: 961px)
+      opacity: 0
+      transform: translateY(-2em)
+
+    @media screen and (max-width: 960px)
+      transform: translateY(100%)
+
+  &-leave-to
+    @media screen and (min-width: 961px)
+      opacity: 0
+      transform: translateY(-2em)
+
+    @media screen and (max-width: 960px)
+      transform: translateY(100%)
