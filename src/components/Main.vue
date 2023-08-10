@@ -131,9 +131,12 @@ body {
 
 .sonica-linker {
   position: absolute;
-  width: 98%;
-  height: 95%;
+  width: 100%;
+  height: 100%;
   z-index: 999;
+  top: 0;
+
+  overflow-y: hidden;
 }
 
 </style>

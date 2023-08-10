@@ -21,7 +21,6 @@
       />
       </tbody>
     </table>
-    <div v-else>Элементы подгружаются</div>
   </div>
 </template>
 
@@ -86,7 +85,6 @@ export default {
       required: true,
     },
     selectedItems: {
-      type: String,
       required: true,
     },
     length: {
@@ -128,7 +126,6 @@ export default {
       const onMouseMove = (e) => {
         let offset = e.clientX - oldClientX - 1;
         target.style.width = oldWidth + offset + "px";
-        // console.log(oldWidth + offset)
         this.columnsWidth[target.id] = oldWidth + offset;
       }
 
@@ -136,15 +133,6 @@ export default {
       onMouseMove(e);
 
       this.columnsResize[target.id] = true;
-      console.log(this.columnsResize[target.id])
-
-      // const cells = document.getElementsByClassName(target.id);
-      // console.log(cells)
-      //
-      // Array.from(cells).forEach(item => {
-      //   item.style.maxWidth = "0"
-      // })
-
 
       if (target.id !== "mode")
         document.addEventListener('mousemove', onMouseMove);
@@ -158,13 +146,7 @@ export default {
       if (e.target.scrollTop + e.target.clientHeight + 100 >= e.target.scrollHeight) {
         if (this.visibleAtoms <= this.conditionsTable.length) {
           this.visibleAtoms += 100;
-          console.log("Докрутил")
-          // this.columnsWidth.path = this.$refs.path[0].offsetWidth;
-
         }
-
-        // this.columnsWidth.name = this.$refs.name[0].offsetWidth;
-        // this.columnsWidth.description = this.$refs.description[0].offsetWidth;
       }
     },
   },

@@ -1,11 +1,11 @@
 <template>
-  <ul v-memo="tree" v-for="subTree of tree.blocks" :id="subTree.tag" :class="[{closed : subTree.tag !== '>'}, 'list']">
-    <li class="list-item" :style="{ paddingLeft: padding + 'px' }">
-      <span @click="sidebarToggle" v-if="subTree.blocks.length !== 0" class="list-item-btn">▶</span>
+  <ul v-memo="tree" v-for="subTree of tree.blocks" :id="subTree.tag" :class="[{closed : subTree.tag !== '>' }, 'list']">
+    <li :class="['list-item']" :style="{ paddingLeft: padding + 'px' }">
+      <span @click="sidebarToggle" v-if="subTree.blocks.length !== 0" :class="[{first: subTree.tag === '>'},'list-item-btn']">▶</span>
       <span class="list-item-color" :style="{background: menuColors[subTree.state]}"></span>
       <span class="list-item-text">{{ subTree.tag }}</span>
     </li>
-    <linker-menu :padding="this.padding + 20" :tree="subTree"/>
+    <linker-menu :selectedItems="selectedItems" :padding="this.padding + 20" :tree="subTree"/>
   </ul>
 </template>
 
@@ -21,6 +21,9 @@ export default {
     padding: {
       type: Number,
       required: true,
+    },
+    selectedItems: {
+      required: true,
     }
   },
   data() {
@@ -33,7 +36,12 @@ export default {
         3: "#ffe560",
         4: "#ff5045",
         5: "#9a30c7",
-      }
+      },
+    }
+  },
+  mounted() {
+    if (this.tree.tag === '>') {
+      document.getElementsByClassName('list-item-btn')[0].click();
     }
   },
   methods: {
@@ -92,7 +100,15 @@ export default {
 }
 
 .list-item-btn:hover {
+  color: #257cf9;
+}
+
+.list-item-btn:active {
   color: #2667c5;
+}
+
+.selected {
+  background: #2667c5;
 }
 
 .list-item-color {
