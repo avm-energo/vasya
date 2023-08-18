@@ -1,10 +1,5 @@
 {
-<<<<<<< HEAD
   "ip" : "localhost:5201",
   "Caption" : "Vasya",
-=======
-  "ip" : "avmenergo.ru:5201",
-  "Caption" : "Krasnoyarsk",
->>>>>>> beta
   "version" : "0.9.5"
 }
