@@ -21,6 +21,7 @@ const logger = app.config.globalProperties.$log;
 
 export {VueLogger, vlOptions, logger};
 
+
 // export async function writeLog(typeLog, log){
 //     console.log(typeLog + ' ' + log)
 
