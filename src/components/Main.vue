@@ -10,6 +10,9 @@
       :namewindow="elem.typename"
       typewindow="modalwindow"
     />
+    <div v-if="linkerShow" class="sonica-linker">
+      <sonica-linker @close="linkerClose" />
+    </div>
     <!-- develop -->
   </div>
   
@@ -20,6 +23,7 @@ import SonicaWindow from "./Components/Window.vue";
 import SonicaFooter from "./Components/Footer.vue";
 import SonicaHead from './Components/Head.vue'
 import SonicaMain from './Components/Main.vue'
+import SonicaLinker from './Linker/Linker.vue'
 
 export default {
   name: "Main",
@@ -32,16 +36,21 @@ export default {
       innactive: false,
       height: null,
       multiplier: null,
+      linkerShow: false
     };
   },
 
-  components: { SonicaWindow, SonicaFooter, SonicaHead, SonicaMain },
+  components: { SonicaWindow, SonicaFooter, SonicaHead, SonicaMain, SonicaLinker },
 
   methods: {
     resetTimer() {
       this.innactivetime = 0;
       this.innactive = false;
     },
+
+    linkerClose() {
+      this.linkerShow = false;
+    }
   },
   created() {
     this.height = window.innerHeight
@@ -56,11 +65,25 @@ export default {
       }
     }, 60000);
     addEventListener ('mousemove', this.resetTimer)
+
   },
-  // mounted(){
-  //   this.$store.dispatch("updateElems", '>:\\Logic')
-  // },
+  mounted(){
+    this.linkerRedirect = function (e) {
+      if (e.code === 'KeyL' && e.ctrlKey) {
+        e.preventDefault();
+        this.linkerShow = true;
+      }
+    };
+    // this.$store.dispatch("updateElems", '>:\\Logic')
+    document.addEventListener('keydown', this.linkerRedirect.bind(this))
+  },
   computed: {
+    // atoms() {
+    //   return this.$store.getters.atoms;
+    // },
+    // tree() {
+    //   return this.$store.getters.tree;
+    // },
     elems() {
       return this.$store.getters.elems;
     },
@@ -88,6 +111,8 @@ export default {
 
   beforeCreate() {
     this.$store.dispatch("fetchElems");
+    // this.$store.dispatch("fetchTree");
+    // setInterval(() => this.$store.dispatch("fetchAtoms"), 1000);
   },
 };
 </script>
@@ -103,4 +128,15 @@ body {
   align-items: center;
   height: v-bind('height');
 }
+
+.sonica-linker {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  z-index: 999;
+  top: 0;
+
+  overflow-y: hidden;
+}
+
 </style>

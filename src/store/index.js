@@ -12,6 +12,8 @@ export default createStore({
     // buttonstate: [],
     footer: null,
     elems: [],
+    atoms: [],
+    tree: {blocks: []},
     tickmas: [],
     commandwidgetmass: [],
     tick: null,
@@ -32,6 +34,8 @@ export default createStore({
     head: (state) => state.head,
     footer: (state) => state.footer,
     elems: (state) => state.elems,
+    atoms: (state) => state.atoms,
+    tree: (state) => state.tree,
     elemByName: (state) => (res) =>
       state.tickmas[state.tickmas.findIndex((s)=> s.name === res.namewindow)]?.mas.find((t) => t.name === res.namewidget),
     historymas: (state) => state.historymas,
@@ -40,6 +44,34 @@ export default createStore({
       state.commandwidgetmass.find((s)=> s.namewindow === res)?.widgets,
   },
   mutations: {
+    async fetchAtoms(state) {
+      let config = await fetch('defaults.json')
+      const a = JSON.parse(await config.text())
+      state.ip = a.ip
+      let response = await fetch(
+          `http://${state.ip}/api/linker/atoms/info`,{
+            method: "GET",
+            mode: "cors",
+          }
+      );
+      const atoms = JSON.parse(await response.text());
+      state.atoms = atoms;
+    },
+
+    async fetchTree(state) {
+      let config = await fetch('defaults.json')
+      const a = JSON.parse(await config.text())
+      state.ip = a.ip
+      let response = await fetch(
+          `http://${state.ip}/api/linker/tree`,{
+            method: "GET",
+            mode: "cors",
+          }
+      );
+      const tree = JSON.parse(await response.text());
+      state.tree.blocks = tree;
+    },
+
     async fetchElems(state) {
       
       state.mainheight = window.innerHeight
@@ -333,6 +365,12 @@ export default createStore({
 
   },
   actions: {
+    fetchAtoms({ commit }, elems) {
+      commit("fetchAtoms", elems);
+    },
+    fetchTree({ commit }, elems) {
+      commit("fetchTree", elems);
+    },
     fetchElems({ commit }, elems) {
       commit("fetchElems", elems);
     },
