@@ -1,3 +1,0 @@
-rm -rf /var/www/vasya
-rm /etc/nginx/conf.d/vasya.conf
-rm -rf /usr/local/share/vasya
