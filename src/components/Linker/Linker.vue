@@ -43,14 +43,17 @@
       </div>
       <div class="navbar-item">
         <span class="selected">(Selected {{ this.length }})</span>
+      </div>
+      <div class="navbar-right">
         <input
             v-model.lazy="searchQuery"
             type="text"
             class="search"
             placeholder="Search..."
         />
+        <div @click="linkerClose" class="navbar-close">×</div>
       </div>
-    <div @click="linkerClose" class="navbar-close">×</div>
+
 
     </div>
     <div class="content">
@@ -58,6 +61,7 @@
 <!--        <template v-if="defer(2)">-->
           <linker-menu
               :padding=5
+              :selectedItems="selectedItems"
               :tree="tree"
           />
 <!--        </template>-->
@@ -95,16 +99,6 @@ export default {
     LinkerList,
     Tooltip,
   },
-  // props: {
-  //   atoms: {
-  //     type: Array,
-  //     required: true,
-  //   },
-  //   tree: {
-  //     type: Object,
-  //     required: true,
-  //   }
-  // },
   emits: ['close'],
   data() {
     return {
@@ -118,23 +112,27 @@ export default {
       // Query from Search textbox
       searchQuery: "",
       // Path from LinkerTree
-      selectedItems: ">",
+      selectedItems: null,
+      selectedNode: null,
       atomsInterval: null,
     }
   },
   methods: {
     linkerClose() {
-      // console.log("Close")
       this.$emit('close');
     },
     UpdateNumberOfAtoms(len) {
       this.length = len;
     },
     selectItems(e) {
-      console.log(e.target)
       if (e.target.className === "list-item" || e.target.className === "list-item-text") {
-
-        let node = e.target.parentNode;
+        let node = null;
+        if (e.target.className === "list-item") node = e.target;
+        else if (e.target.className === "list-item-text") node = e.target.parentNode;
+        node.style.background = "#2667c5";
+        if (this.selectedNode === null) this.selectedNode = node;
+        if (this.selectedNode !== node) this.selectedNode.style.background = null;
+        this.selectedNode = node;
         let arr = [];
         while (node.id.localeCompare(">") !== 0) {
           arr.push(node.id);
@@ -167,7 +165,6 @@ export default {
     this.atomsInterval = setInterval(() => this.$store.dispatch("fetchAtoms"), 1000);
   },
   beforeUnmount() {
-    // console.log("DeforeUnmount")
     clearInterval(this.atomsInterval);
   },
   computed: {
@@ -198,11 +195,15 @@ export default {
   font-size: 14px;
 }
 
+.navbar-right {
+  float: right;
+}
+
 .navbar-close {
   display: inline-block;
-  float: right;
   font-size: 20px;
   padding: 5px 20px;
+  margin-left: 10px;
   cursor: pointer;
 }
 
@@ -212,10 +213,12 @@ export default {
 
 .selected {
   padding: 0 10px;
+  /*margin-bottom: 10px;*/
+  line-height: 0.9;
 }
 .content {
   display: flex;
-  height: calc(95vh - 50px);
+  height: calc(100vh - 50px);
 }
 .sidebar {
   min-width: 200px;
