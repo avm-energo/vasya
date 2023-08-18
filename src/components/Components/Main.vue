@@ -178,7 +178,7 @@ export default {
     this.multiplier = this.multiplierwindow
     this.$parent.multiplier = this.multiplier
     this.$store.dispatch('mainmultiplier', [true, this.multiplier])
-    this.myJson.widgets.forEach(element => {
+    Object.values(this.myJson.widgets).forEach(element => {
       let res = element;
       
       if (res.type.startsWith("primitives/Line")) {

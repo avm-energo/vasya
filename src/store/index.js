@@ -192,7 +192,7 @@ export default createStore({
             // console.log("number= " + ticknumber + " tick=" + state.tickmas[ticknumber])
             const data = JSON.parse(await response.text());
             state.tickmas[ticknumber].tick = data.tick
-            data.widgets.forEach((element) => {
+            Object.values(data.widgets).forEach((element) => {
               if (element.name.startsWith("Sub") || element.name.startsWith("Ren")) {
                 element.properties.screen.widgets.forEach((elements) => {
                   elements.name += '/' + element.name

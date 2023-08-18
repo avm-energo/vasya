@@ -52,6 +52,7 @@
     "vue3-progress": "^0.0.1-beta4",
     "vue3-slider": "^1.8.0",
     "vuejs-datetimepicker": "^1.1.13",
+    "vuejs3-logger": "^1.0.0",
     "vuex": "^4.0.0",
     "yarn": "^1.22.19"
   },
