@@ -178,6 +178,7 @@ export default {
     this.multiplier = this.multiplierwindow
     this.$parent.multiplier = this.multiplier
     this.$store.dispatch('mainmultiplier', [true, this.multiplier])
+    console.log(this.myJson.widgets)
     Object.values(this.myJson.widgets).forEach(element => {
       let res = element;
       
