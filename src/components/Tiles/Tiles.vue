@@ -43,10 +43,11 @@ export default {
     // }
 
     let size = this.params.text.search(/\S|$/)
+    let newline = this.params.text.search(/\r|\n/)
     let text = ""
     for (var i = 0; i < size; i++) {text = text + `\u2002`}
     this.tiles.value = text + this.params.text.slice(size)
-    
+    if (newline > 0 ) this.tiles.value = (this.params.text.slice(0 , newline) + '\u0356' + this.params.text.slice(newline))
     this.tiles.ForegroundColor = this.params.foreground,
     this.tiles.BackgroundColor = this.params.background,
     this.tiles.Flashing = false,

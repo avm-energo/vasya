@@ -64,8 +64,7 @@
         </svg>
       </div>
     </div>
-    <p class="p" :style="cssProps" v-if="this.params.properties.width!=this.params.properties.height || this.params.properties.leftIcon == 'None'">{{button.value}}</p>
-    <!-- <p class="p" :style="cssProps" v-else-if="(this.params.properties.width > 60 && this.params.properties.width!=this.params.properties.height) || this.params.properties.angle != 0">{{button.value}}</p> -->
+    <p class="p" :style="cssProps" v-if="(this.params.properties.width!=this.params.properties.height & this.params.properties.text != 'Navigator') || this.params.properties.leftIcon == 'None'">{{button.value}}</p>    <!-- <p class="p" :style="cssProps" v-else-if="(this.params.properties.width > 60 && this.params.properties.width!=this.params.properties.height) || this.params.properties.angle != 0">{{button.value}}</p> -->
   </div>
 </template>
 
@@ -181,6 +180,7 @@ export default {
   background-color: var(--backgroundColor);
   color: var(--color);
   display: flex;
+  justify-content: center;
   flex-direction: var(--flexdir);
   border-radius: var(--borderRadius);
   border-color: var(--borderBrush);

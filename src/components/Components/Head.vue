@@ -86,7 +86,7 @@ export default {
     if (this.myJson.canvas.width * this.multiplierwindow > window.innerWidth) {
       this.multiplierwindow = window.innerWidth / (this.myJson.canvas.width + 50)
     }
-    this.myJson.widgets.forEach(element => {
+    ;(this.myJson.widgets.$id == undefined ? this.myJson.widgets : this.myJson.widgets.$values).forEach(element => {
       let res = element;
       if (res.type.startsWith("primitives/Line")) {
         this.lines.push(res);

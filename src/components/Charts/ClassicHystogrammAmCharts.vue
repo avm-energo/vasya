@@ -151,12 +151,18 @@ export default {
     this.data.pop()
 
     let mas = []
-    let j = this.params.table.length/this.params.sectors.length
+    if (this.params.table.$id == undefined) {
+      var array = this.params.table
+    } else {
+      var array = this.params.table.$values
+    }
+    let j = array.length/this.params.sectors.length
     for (let i=0; i<j;i++){
+      console.log(1)
       mas.push({name: '',data: []})
       mas[i].name = this.params.graphs[i].name
-    } 
-    this.params.table.forEach((element) => {
+    }
+    array.forEach((element) => {
       mas[element.rowId].data.push(element.currentValue);
     })
 
