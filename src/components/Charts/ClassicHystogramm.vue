@@ -137,6 +137,7 @@ export default {
     if (this.$parent.$parent.subscreenname){ 
       this.chart.Name += '/' + this.$parent.$parent.subscreenname
     }
+    console.log(this.params.sectors)
     this.params.sectors.forEach((element) => {
       this.chartOptions.xaxis.categories.push(element.alias)
     })

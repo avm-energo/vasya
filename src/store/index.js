@@ -189,14 +189,15 @@ export default createStore({
                 state.tickmas[ticknumber].tick
               }`
             );
-            // console.log("number= " + ticknumber + " tick=" + state.tickmas[ticknumber])
+            // console.log(state.tickmas[ticknumber])
             const data = JSON.parse(await response.text());
             state.tickmas[ticknumber].tick = data.tick
             ;(data.widgets.$id  == undefined ? data.widgets : data.widgets.$values).forEach(element => {
               if (element.name.startsWith("Sub") || element.name.startsWith("Ren")) {
-                element.properties.screen.widgets.forEach((elements) => {
-                  elements.name += '/' + element.name
-                  state.tickmas[ticknumber].mas.push(elements)
+                // element.properties.screen.widgets.forEach((elements) => {
+                  (element.properties.screen.widgets.$id  == undefined ? element.properties.screen.widgets : element.properties.screen.widgets.$values).forEach(elements => {
+                    elements.name += '/' + element.name
+                    state.tickmas[ticknumber].mas.push(elements)
                 });
               } else {
                 state.tickmas[ticknumber].mas.push(element)
