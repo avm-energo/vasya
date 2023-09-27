@@ -301,6 +301,17 @@ export default {
       console.log(this.endtime)
       // Если нам нужно больше данных, чемк у нас есть в chartDataArr, то получаем их в getChartData
       await this.getChartData()
+      // Сколько точек пришло
+      console.log("Число точек", this.chartDataArr.resultData[0].points.length)
+      if ( this.chartDataArr.resultData[0].points.length < 1450 ) {
+        this.setTimeFrame(1);
+      } else if ( this.chartDataArr.resultData[0].points.length < 2900 ) {
+        this.setTimeFrame(10);
+      } else if ( this.chartDataArr.resultData[0].points.length < 20200 ) {
+        this.setTimeFrame(30);
+      } else if ( this.chartDataArr.resultData[0].points.length >= 20200 ) {
+        this.setTimeFrame(60);
+      }
       // Если нам их хватает, то просто computed свойство само ограничит таймлайн
       console.log("Готово")
       // Перерисовка граифика с computed свойства
@@ -370,7 +381,7 @@ export default {
 
     await this.getChartData()
     this.getChartsInfo()
-
+    this.setTimeFrame(10);
     this.seriesArr = []
 
     for (let i = 0; i < this.chartDataArr.resultData.length; i++) {
