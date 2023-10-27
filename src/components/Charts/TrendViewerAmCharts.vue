@@ -97,6 +97,12 @@
     </div>
       
     <div id="box_chart">
+      <div id="box_timeframe" @click="changeTimeframe">
+        <span id="timeframe_1" class="timeframe">Min</span>
+        <span id="timeframe_2" class="timeframe">10 Min</span>
+        <span id="timeframe_3" class="timeframe">30 Min</span>
+        <span id="timeframe_4" class="timeframe">Hour</span>
+      </div>
       <div id="chartdiv" ref="chartdiv"></div>
     </div>
   </div>
@@ -144,6 +150,8 @@ export default {
       endtimeexcel: null,
       controller: null,
       interval: null,
+    //
+      timeFrame: 60,
     }
   },
   components: {
@@ -155,11 +163,37 @@ export default {
     const controller = new AbortController();
     this.controller = controller
     // this.interval = this.params["trends-interval"]
-    this.interval = 60000
+    this.interval = 60000 * this.timeFrame;
     // document.tooltip({show:null})
     // console.log(this.params)
   },
   methods: {
+
+
+    setTimeFrame(value) {
+      this.timeFrame = value;
+    },
+
+    changeTimeframe(e) {
+      console.log(e.target.id)
+      switch (e.target.id) {
+        case "timeframe_1":
+          this.setTimeFrame(1);
+          break;
+        case "timeframe_2":
+          this.setTimeFrame(10);
+          break;
+        case "timeframe_3":
+          this.setTimeFrame(30);
+          break;
+        case "timeframe_4":
+          this.setTimeFrame(60);
+          break;
+        default:
+          break;
+      }
+    },
+
     async some(){
       this.endtime = moment(this.seriesArr[0].data.values[this.seriesArr[0].data.values.length-1].argument).toISOString()
     },
@@ -212,7 +246,7 @@ export default {
        },)
       .then(response => {
         // console.log(this.controller)
-        // console.log(response.data)
+        console.log(response.data)
         this.gettingdata()
         console.log('получил')
         return response.data
@@ -233,7 +267,17 @@ export default {
       console.log('new body created');
       return body
     },
-    
+
+
+    updateChart() {
+      if (this.chartDataArr !== undefined) {
+        for (let i = 0; i < this.chart.series.values.length; i++) {
+          var data = this.generateDatas(i);
+          console.log('asd')
+          this.seriesArr[i].data.setAll(data)
+        }
+      }
+    },
    
     generateDataObj(point) {
       return {
@@ -243,41 +287,37 @@ export default {
     },
     generateDatas(num) {
       let dataArr = [];
-      // console.log(this.chartDataArr.resultData[num].points.length)
-      //   const del = 400
-      //   var k = this.chartDataArr.resultData[num].points.length / del
-      //   console.log(Math.trunc(k)*del)
-      //   console.log(Math.round((k - Math.trunc(k))*del))
-      //   if (num == 0){
-      //     for (let i = 0; i<k-1; i++){
-      //       setTimeout(()=>{
-      //         for (let j = i * del ; j<i*del+del; j++)
-      //           dataArr.push(this.generateDataObj( this.chartDataArr.resultData[num].points[j]));
-      //         }, i * 3000)
-      //     }
-      //     setTimeout(()=>{
-      //       for (let i = Math.trunc(k)*del; i<Math.trunc(k)*del + Math.round((k - Math.trunc(k))*del); i++){
-      //         dataArr.push(this.generateDataObj( this.chartDataArr.resultData[num].points[i]));
-      //       }
-      //       return dataArr
-      //     }, (k-1) * 3000)
-      //   }
-      this.chartDataArr.resultData[num].points.forEach((elem) => {
-          dataArr.push(this.generateDataObj(elem));
-        })
+
+      for (let i = 0; i < this.chartDataArr.resultData[num].points.length - this.timeFrame ; i+=this.timeFrame) {
+        dataArr.push(this.generateDataObj( this.chartDataArr.resultData[num].points[i] ));
+      }
       return dataArr
     },
     async updateChartSeries() {
+      // Indicator
       this.gettingdata()
+      // на данном этапе нужно проверить сроки
+      console.log(this.starttime)
+      console.log(this.endtime)
+      // Если нам нужно больше данных, чемк у нас есть в chartDataArr, то получаем их в getChartData
       await this.getChartData()
-      if (this.chartDataArr !== undefined){
-        for (let i = 0; i < this.chart.series.values.length; i++) {
-          var data = this.generateDatas(i);
-          console.log('asd')
-          this.seriesArr[i].data.setAll(data)
-        }
+      // Сколько точек пришло
+      console.log("Число точек", this.chartDataArr.resultData[0].points.length)
+      if ( this.chartDataArr.resultData[0].points.length < 1450 ) {
+        this.setTimeFrame(1);
+      } else if ( this.chartDataArr.resultData[0].points.length < 2900 ) {
+        this.setTimeFrame(10);
+      } else if ( this.chartDataArr.resultData[0].points.length < 20200 ) {
+        this.setTimeFrame(30);
+      } else if ( this.chartDataArr.resultData[0].points.length >= 20200 ) {
+        this.setTimeFrame(60);
       }
+      // Если нам их хватает, то просто computed свойство само ограничит таймлайн
+      console.log("Готово")
+      // Перерисовка граифика с computed свойства
+      this.updateChart()
     },
+    //
     gettingdata(){
       this.getdata = !this.getdata
     }
@@ -286,7 +326,7 @@ export default {
   async mounted() {
     let root = am5.Root.new(this.$refs.chartdiv);
     this.root = root;
-    this.starttime = new Date(Date.now() - 86400000 * 1 * 1);
+    this.starttime = new Date(Date.now() - 86400000 * 3 * 1);
     this.endtime = new Date(Date.now() + 86400000 * 1)
 
     root.setThemes([
@@ -337,12 +377,11 @@ export default {
         opposite: true
       })
     }));
-    
     this.yAxis = yAxis
 
     await this.getChartData()
     this.getChartsInfo()
-
+    this.setTimeFrame(10);
     this.seriesArr = []
 
     for (let i = 0; i < this.chartDataArr.resultData.length; i++) {
@@ -413,51 +452,6 @@ export default {
       strokeWidth: 1,
       strokeDasharray: []
     });
-
-    // Scrollbar X
-    // var scrollbarX = am5.Scrollbar.new(root, {
-    //   orientation: "horizontal"
-    // });
-    
-    // chart.set("scrollbarX", scrollbarX);
-    // chart.bottomAxesContainer.children.push(scrollbarX);
-
-    // scrollbarX.thumb.setAll({
-    //   fill: am5.color(0xffffff),
-    //   fillOpacity: 0.2,
-    // });
-
-
-    // scrollbarX.get("background").setAll({
-    //   fill: am5.color(0x000000),
-    //   fillOpacity: 0.2,
-    //   cornerRadiusTR: 0,
-    //   cornerRadiusBR: 0,
-    //   cornerRadiusTL: 0,
-    //   cornerRadiusBL: 0
-    // });
-
-    // Scrollbar Y
-    // var scrollbarY = am5.Scrollbar.new(root, {
-    //   orientation: "vertical"
-    // });
-    
-    // chart.set("scrollbarY", scrollbarY);
-    // chart.leftAxesContainer.children.push(scrollbarY);
-
-    // scrollbarY.thumb.setAll({
-    //   fill: am5.color(0xffffff),
-    //   fillOpacity: 0.2,
-    // });
-
-    // scrollbarY.get("background").setAll({
-    //   fill: am5.color(0x000000),
-    //   fillOpacity: 0.2,
-    //   cornerRadiusTR: 0,
-    //   cornerRadiusBR: 0,
-    //   cornerRadiusTL: 0,
-    //   cornerRadiusBL: 0
-    // });
 
     var legend = chart.topAxesContainer.children.push(am5.Legend.new(root, {
       centerX: am5.percent(50),
@@ -611,11 +605,16 @@ export default {
     
   },
   watch: {
+    timeFrame() {
+      this.updateChart();
+    },
+    //
     chartDataArr() {
       if (this.root) {
         console.log('new data loaded ');
       }
     },
+    //
     seriesArr:{
       handler() {
         this.starttimeexcel = moment(new Date(this.seriesArr[0].data.values[0].argument)).format("HH:mm:ss DD.MM.YY")
@@ -638,6 +637,14 @@ export default {
     }
   },
   computed: {
+    currentChartDataArr() {
+      const arr = Object.assign(this.chartDataArr)
+      // for (let i = 0; i < arr.length; i++) {
+      //   arr.resultData[i].points.filter(item => item.argument.getTime() >= (new Date(this.starttime)).getTime() )
+      // }
+      return arr
+      // return this.chartDataArr
+    },
     cssProps() {
       return {
         "--x": this.params.x * this.$parent.$parent.multiplier + "px",
@@ -650,19 +657,6 @@ export default {
         "--fontSize": this.params.fontSize * this.$parent.$parent.multiplier + "px",
       };
     },
-    // sterttimeexcle(){
-    //   console.log(this.starttime)
-    //   return moment(this.starttime).format("HH:mm:ss DD.MM.YY")
-    // },
-    // endtimeexcel(){
-    //   console.log(this.endtime)
-    //   return moment(this.endtime).format("HH:mm:ss DD.MM.YY")
-    // },
-    // starttimefixed(){
-    //   if (moment(this.starttime) > moment()){
-    //     return moment.
-    //   }
-    // },
     datajson(){
       if (this.seriesArr) {
         var items = [];
@@ -735,7 +729,8 @@ export default {
 }
 #box{
   position: absolute;
-  /* border: solid 1px green; */
+  /*text-align: left;*/
+  /* border: solid 1p x green; */
   width: var(--width);
   height: var(--height);
   left: var(--x);
@@ -794,5 +789,18 @@ export default {
   display: flex;
   flex-direction: row;
   justify-content: center;
+}
+
+#box_timeframe {
+  padding: 10px 0;
+}
+
+.timeframe {
+  padding: 10px;
+  cursor: pointer;
+}
+
+.timeframe:hover {
+  color: #267dff;
 }
 </style>
