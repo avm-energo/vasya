@@ -4,7 +4,7 @@
     <div id="C2H4" class="gas">{{duval.c2h4 ? duval.c2h4 : '' }}% C&#8322;H&#8324; </div>
     <div id="CH4" class="gas">{{duval.ch4 ? duval.ch4 : ''}}% CH&#8324; </div>
     <div class="duval_description">
-      <input @change="changeDuvalMode" v-model="duvalMode" type="checkbox" class="checkbox" id="duval_mode">
+      <input v-model="duvalMode" type="checkbox" class="checkbox" id="duval_mode">
       <label for="duval_mode">История измерений</label>
     </div>
     <canvas ref="canvas" width=410 height=390></canvas>
@@ -57,8 +57,6 @@ export default {
         c2h4: null,
         ch4: null,
       },
-      duvalArray: [],
-      ARRAY_LIMIT: 20,
       duvalMode: false,
     }
   },
@@ -76,24 +74,22 @@ export default {
       var imageData = ctx.getImageData(0,0,410,400);
       setInterval(()=>{
         let changedelem= this.$store.getters.elemByName(res)?.properties
+        console.log(changedelem)
         if (changedelem) {
           if (this.duvalMode === false) {
             ctx.putImageData(imageData, 0, 0);
-            this.drawDot(changedelem.CH4, changedelem.CH4X, changedelem.CH4Y, changedelem.C2H2, changedelem.C2H2X, changedelem.C2H2Y, changedelem.C2H4, changedelem.C2H4X, changedelem.C2H4Y)
-          } else if (this.duvalMode === true) {
+            const l = changedelem.CH4.length - 1
+            this.drawFirstDot(changedelem.CH4[l], changedelem.C2H2[l], changedelem.C2H4[l], "yellow")
+          }
+          else if (this.duvalMode === true) {
             ctx.putImageData(imageData, 0, 0);
-            this.duvalArray.push(changedelem);
-            if (this.duvalArray.length > this.ARRAY_LIMIT) this.duvalArray.shift();
-            this.drawArray();
+            this.drawArray(changedelem);
           }
         }
       }, 1000)
     }, 1000 - currentDateMilliseconds);
   },
   methods:{
-    changeDuvalMode() {
-      this.duvalArray.length = 0;
-    },
     drawDuval(){
       const { ctx } = this;
       var { imageData } = this;
@@ -270,7 +266,7 @@ export default {
         ctx.stroke();
       }
     },
-    drawDot(CH4, CH4X, CH4Y, C2H2, C2H2X, C2H2Y, C2H4, C2H4X, C2H4Y){
+    drawDot(CH4, C2H2, C2H4, color){
       var MinLeft = 5;
       var MaxLeft = 400;
       var MinTop = 11;
@@ -291,6 +287,46 @@ export default {
       var PointLeft = (100 - x) * leftstep + 5;
       var PointTop = (100 * Math.cos(Math.PI / 6) - y) * topstep + 11;
       const {ctx} = this
+      ctx.beginPath();
+      ctx.arc(PointLeft, PointTop, 4, 0, 2 * Math.PI, false);
+      ctx.fillStyle = color;
+      ctx.fill();
+      ctx.lineWidth = 1;
+      ctx.strokeStyle = color;
+      ctx.stroke();
+    },
+    drawFirstDot(CH4, C2H2, C2H4, color) {
+      var MinLeft = 5;
+      var MaxLeft = 400;
+      var MinTop = 11;
+      var MaxTop = 354;
+      var summa = CH4 + C2H2 + C2H4;
+      var ch4per = CH4 / summa * 100;
+      var c2h2per = C2H2 / summa * 100;
+      var c2h4per = C2H4 / summa * 100;
+      this.duval.ch4 = parseInt(ch4per);
+      this.duval.c2h4 = parseInt(c2h4per);
+      this.duval.c2h2 = parseInt(c2h2per);
+      var left = ch4per * Math.cos(Math.PI / 6);
+      var down = c2h2per;
+      var x = down + left / Math.tan(Math.PI / 3);
+      var y = left;
+      var topstep = (MaxTop - MinTop) / (100 * Math.cos(Math.PI / 6));
+      const leftstep = (MaxLeft - MinLeft) / 100;
+      var PointLeft = (100 - x) * leftstep + 5;
+      var PointTop = (100 * Math.cos(Math.PI / 6) - y) * topstep + 11;
+
+
+      const CH4X = (MaxTop - PointTop) / Math.tan(Math.PI / 3) + MinLeft;
+      const CH4Y = (PointTop);
+
+      const C2H4X = (c2h4per * Math.cos(Math.PI / 3) + 50) * leftstep + 5;
+      const C2H4Y = c2h4per * Math.cos(Math.PI / 6) * topstep + 11;
+
+      const C2H2X = PointLeft + (MaxTop - PointTop) / Math.tan(Math.PI / 3);
+      const C2H2Y = MaxTop;
+
+      const {ctx} = this
       ctx.setLineDash([8, 4]);
       ctx.beginPath();
       ctx.moveTo(CH4X,CH4Y,4,4)
@@ -306,69 +342,25 @@ export default {
       ctx.stroke()
       ctx.beginPath();
       ctx.arc(PointLeft, PointTop, 4, 0, 2 * Math.PI, false);
-      ctx.fillStyle = 'yellow';
+      ctx.fillStyle = color;
       ctx.fill();
       ctx.lineWidth = 1;
-      ctx.strokeStyle = 'yellow';
+      ctx.strokeStyle = color;
       ctx.stroke();
     },
-    drawArray() {
-      this.duvalArray.forEach((elem, index) => {
-        let MinLeft = 5;
-        let MaxLeft = 400;
-        let MinTop = 11;
-        let MaxTop = 354;
-        let summa = elem.CH4 + elem.C2H2 + elem.C2H4;
-        let ch4per = elem.CH4 / summa * 100;
-        let c2h2per = elem.C2H2 / summa * 100;
-        let c2h4per = elem.C2H4 / summa * 100;
-        this.duval.ch4 = parseInt(ch4per);
-        this.duval.c2h4 = parseInt(c2h4per);
-        this.duval.c2h2 = parseInt(c2h2per);
-        let left = ch4per * Math.cos(Math.PI / 6);
-        let down = c2h2per;
-        let x = down + left / Math.tan(Math.PI / 3);
-        let y = left;
-        let topstep = (MaxTop - MinTop) / (100 * Math.cos(Math.PI / 6));
-        const leftstep = (MaxLeft - MinLeft) / 100;
-        let PointLeft = (100 - x) * leftstep + 5;
-        let PointTop = (100 * Math.cos(Math.PI / 6) - y) * topstep + 11;
-        const {ctx} = this
-        if (index === this.duvalArray.length - 1) {
-          ctx.setLineDash([8, 4]);
-          ctx.beginPath();
-          ctx.moveTo(elem.CH4X,elem.CH4Y,4,4)
-          ctx.lineWidth = 1
-          ctx.strokeStyle="white"
-          ctx.lineTo(PointLeft,PointTop)
-          ctx.stroke()
-          ctx.moveTo(elem.C2H2X,elem.C2H2Y,4,4)
-          ctx.lineTo(PointLeft,PointTop)
-          ctx.stroke()
-          ctx.moveTo(elem.C2H4X,elem.C2H4Y,4,4)
-          ctx.lineTo(PointLeft,PointTop)
-          ctx.stroke()
-          ctx.beginPath();
-          ctx.arc(PointLeft, PointTop, 4, 0, 2 * Math.PI, false);
-          ctx.fillStyle = '#bc1b1b';
-          ctx.fill();
-          ctx.lineWidth = 1;
-          ctx.strokeStyle = 'white';
-          ctx.stroke();
-        } else {
-          ctx.beginPath();
-          ctx.arc(PointLeft, PointTop, 4, 0, 2 * Math.PI, false);
-          if (index > this.duvalArray.length - 1 - 5) ctx.fillStyle = '#fc6700';
-          else if (index > this.duvalArray.length - 1 - 10) ctx.fillStyle = '#ffcb33';
-          else if (index > this.duvalArray.length - 1 - 15) ctx.fillStyle = '#feff67';
-          else ctx.fillStyle = 'white';
-          ctx.fill();
-          ctx.lineWidth = 1;
-          ctx.strokeStyle = 'white';
-          ctx.stroke();
-        }
+    drawArray(elem) {
+      for (let i = 0; i < elem.CH4.length; i++) {
+        if (i === elem.CH4.length - 1) this.drawFirstDot(elem.CH4[i], elem.C2H2[i], elem.C2H4[i], "red")
 
-      })
+        else {
+          let color = null;
+          if (i > elem.CH4.length - 1 - 5) color = '#fc6700';
+          else if (i > elem.CH4.length - 1 - 10) color = '#ffcb33';
+          else if (i > elem.CH4.length - 1 - 15) color = '#feff67';
+          else color = 'white';
+          this.drawDot(elem.CH4[i], elem.C2H2[i], elem.C2H4[i], color)
+        }
+      }
     },
   },
   mounted(){
