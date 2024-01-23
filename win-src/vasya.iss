@@ -16,6 +16,7 @@ OutputBaseFilename="{#EngName}"
 OutputDir="..\output"
 UsePreviousLanguage=No
 LicenseFile="license.txt"
+AlwaysRestart=yes
 
 [Languages]
 Name: Russian; MessagesFile: "compiler:Languages\Russian.isl" 
@@ -27,7 +28,9 @@ Source: "nginx-1.24.0.zip"; DestDir: "{tmp}";
 Source: "install.bat"; DestDir: "{tmp}";
 Source: "install_autorun.bat"; DestDir: "{tmp}";
 Source: "nginx.bat"; DestDir: "{tmp}";
-Source: "nginx.conf"; DestDir: "{tmp}";
+Source: "*.conf"; DestDir: "{tmp}";
+Source: "settings.ini"; DestDir: "{localappdata}\Sonica\Vasya\Settings";
+Source: "A"; DestDir: "{localappdata}\Sonica\Vasya\Settings";
 
 [Run]
 Filename: "{tmp}\install.bat"; StatusMsg: "Installing Nginx...";
