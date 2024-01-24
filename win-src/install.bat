@@ -12,5 +12,5 @@ if exist c:\nginx (
   xcopy nginx.conf C:\nginx\conf\ /y
   xcopy vasya.conf C:\nginx\conf\conf.d /y
   powershell -command "Start-Process cmd -ArgumentList '/c cd /d %CD% && install_autorun.bat' -Verb runas"
-  schtasks /run /tn "NGINX\NginxStart"
+  rem schtasks /run /tn "NGINX\NginxStart"
 )
