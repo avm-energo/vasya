@@ -405,12 +405,28 @@ export default {
       );
       this.yAxis = yAxis
 
+      var linecolor = am5.color("#" + this.chartInfo[i].sColor.slice(0,6))
+
+      const parentID = this.params.strends[i]["parentID"];
+      const saxes = this.params.saxes.filter(item => item.id === parentID);
+      console.log(saxes[0].uom);
+
+      yAxis.children.push(
+          am5.Label.new(root, {
+            text: saxes[0].uom ?? "",
+            textAlign: 'center',
+            fill: linecolor,
+            y: -40,
+            x: 0,
+            fontWeight: 'bold',
+          })
+      );
+
       if (chart.yAxes.indexOf(yAxis) > 0) {
         yAxis.set("syncWithAxis", chart.yAxes.getIndex(0));
       }
       // Set up data processor to parse string dates
       // https://www.amcharts.com/docs/v5/concepts/data/#Pre_processing_data
-      var linecolor = am5.color("#" + this.chartInfo[i].sColor.slice(0,6))
       var series = chart.series.push(
         am5xy.LineSeries.new(root, {
           name: this.chartInfo[i].name,
