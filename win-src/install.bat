@@ -11,6 +11,4 @@ if exist c:\nginx\nginx.exe (
   xcopy nginx.bat C:\nginx\ /y
   xcopy nginx.conf C:\nginx\conf\ /y
   xcopy vasya.conf C:\nginx\conf\conf.d /y
-  rem powershell -command "Start-Process cmd -ArgumentList '/c cd /d %CD% && install_autorun.bat' -Verb runas"
-  rem schtasks /run /tn "NGINX\NginxStart"
 )
