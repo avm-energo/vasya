@@ -72,9 +72,12 @@ export default {
       const res = {'namewidget': this.duval.Name, 'namewindow': this.$parent.windowname}
       const { ctx } = this;
       var imageData = ctx.getImageData(0,0,410,400);
+      ctx.putImageData(imageData, 0, 0);
+      this.drawFirstDot(this.params.CH4[0], this.params.C2H2[0], this.params.C2H4[0], "yellow");
       setInterval(()=>{
         let changedelem= this.$store.getters.elemByName(res)?.properties
         console.log(changedelem)
+        if (changedelem?.valuePointVisibility) console.log("valuePointVisibility Существует!");
         if (changedelem) {
           if (this.duvalMode === false) {
             ctx.putImageData(imageData, 0, 0);

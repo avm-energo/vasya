@@ -2,41 +2,41 @@
   <div id="box" :style="cssProps">
     <div id="box_title">
       <div id="buttons" style="flex-grow: 6">
-        <div id ="button_play" @click="[liveview() + !this.viewlive ? startlive(this.$parent.$parent.windowpath, this.name, this.seriesArr, this.controller, this.interval) : '']" :class="[!this.viewlive ? 'button_hover': '']" :title="[!this.viewlive ? 'Realtime mod': '']">
+        <div id ="button_play" @click="[liveview() + !this.viewlive ? startlive(this.$parent.$parent.windowpath, this.name, this.seriesArr, this.controller, this.interval) : '']" :class="[!this.viewlive ? 'button_hover': '']" :title="[!this.viewlive ? 'Режим реального времени': '']">
           <svg width="80%" height="100%" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
           <rect width="24" height="24" fill="none"/>
           <path fill-rule="evenodd" clip-rule="evenodd" d="M3 5.49686C3 3.17662 5.52116 1.73465 7.52106 2.91106L18.5764 9.41423C20.5484 10.5742 20.5484 13.4259 18.5764 14.5858L7.52106 21.089C5.52116 22.2654 3 20.8234 3 18.5032V5.49686Z" :fill="[!this.viewlive ? '#FFFFFF' : '#696969']"/>
           </svg>
         </div>
-        <div id ="button_pause" @click="[this.viewlive ? [stoplive()] : ''], liveview()" :class="[this.viewlive ? 'button_hover': '']" :title="[this.viewlive ? 'Stop realtime mod': '']">
+        <div id ="button_pause" @click="[this.viewlive ? [stoplive()] : ''], liveview()" :class="[this.viewlive ? 'button_hover': '']" :title="[this.viewlive ? 'Откл. режим реального времени': '']">
           <svg width="80%" height="100%" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path d="M10.65 19.11V4.89C10.65 3.54 10.08 3 8.64 3H5.01C3.57 3 3 3.54 3 4.89V19.11C3 20.46 3.57 21 5.01 21H8.64C10.08 21 10.65 20.46 10.65 19.11Z" :fill="[this.viewlive ? '#FFFFFF' : '#696969']"/>
           <path d="M21.0016 19.11V4.89C21.0016 3.54 20.4316 3 18.9916 3H15.3616C13.9316 3 13.3516 3.54 13.3516 4.89V19.11C13.3516 20.46 13.9216 21 15.3616 21H18.9916C20.4316 21 21.0016 20.46 21.0016 19.11Z" :fill="[this.viewlive ? '#FFFFFF' : '#696969']"/>
           </svg>
         </div>
       </div>
-      <div style="display: flex; align-items: center;" class="ms">&nbsp;From:&nbsp;<datepicker :close-on-auto-apply="false" v-model="starttime" class="box_title_datepicker" :dark="true" :disabled="this.viewlive" :clearable="false" :max-date="this.endtime"/></div>
-      <div style="display: flex; align-items: center;" class="ms">&nbsp;To:&nbsp;<datepicker v-model="endtime" class="box_title_datepicker" :dark="true" :disabled="this.viewlive" :clearable="false" show-now-button/></div>
+      <div style="display: flex; align-items: center;" class="ms">&nbsp;От:&nbsp;<datepicker :close-on-auto-apply="false" format="dd MMM yyyy, HH:mm" :format-locale="locale" locale="ru" cancelText="Назад" selectText="Далее"  v-model="starttime" class="box_title_datepicker" :dark="true" :disabled="this.viewlive" :clearable="false" :max-date="this.endtime"/></div>
+      <div style="display: flex; align-items: center;" class="ms">&nbsp;До:&nbsp;<datepicker format="dd MMM yyyy, HH:mm" :format-locale="locale" locale="ru" cancelText="Назад" selectText="Далее" now-button-label="Сегодня" v-model="endtime" class="box_title_datepicker" :dark="true" :disabled="this.viewlive" :clearable="false" show-now-button/></div>
       <div id="buttons">
-        <div class ="button button_hover" @click="showlegend(this.legendbool = !this.legendbool)" title="Show legend">
+        <div class ="button button_hover" @click="showlegend(this.legendbool = !this.legendbool)" title="Показать легенду">
           <svg width="80%" height="100%" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M4 5V19C4 19.5523 4.44772 20 5 20H19" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
             <path d="M18 9L13 13.9999L10.5 11.4998L7 14.9998" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
         </div>
-        <div class="box_title_update_icon" @click="[!this.viewlive ? updateChartSeries() : '']" :class="[!this.viewlive ? 'button_hover': '']" :title="[!this.viewlive ? 'Refresh data': '']">
+        <div class="box_title_update_icon" @click="[!this.viewlive ? updateChartSeries() : '']" :class="[!this.viewlive ? 'button_hover': '']" :title="[!this.viewlive ? 'Обновить данные': '']">
           <svg width="80%" height="100%" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path d="M7.83334 13.6C8.25804 14.4031 8.97945 15.0676 9.88888 15.4934C10.7983 15.9191 11.8465 16.083 12.8755 15.9604C13.9045 15.8378 14.8586 15.4353 15.594 14.8136L17 13.7451M17 16V13.6H14.5M16.1667 10.4C15.742 9.59687 15.0206 8.93238 14.1111 8.50664C13.2017 8.08091 12.1535 7.91699 11.1245 8.03959C10.0955 8.16219 9.1414 8.56467 8.40599 9.18637L7 10.2549M7 8V10.4H9.5M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z" :stroke="[!this.viewlive ? '#FFFFFF' : '#696969']" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
         </div>
-        <div class ="button" @click="[!this.viewlive ? print() : '']" :class="[!this.viewlive ? 'button_hover': '']" :title="[!this.viewlive ? 'Print': '']">
+        <div class ="button" @click="[!this.viewlive ? print() : '']" :class="[!this.viewlive ? 'button_hover': '']" :title="[!this.viewlive ? 'Печать': '']">
           <svg width="80%" height="100%" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M18 16.75H16C15.8011 16.75 15.6103 16.671 15.4697 16.5303C15.329 16.3897 15.25 16.1989 15.25 16C15.25 15.8011 15.329 15.6103 15.4697 15.4697C15.6103 15.329 15.8011 15.25 16 15.25H18C18.3315 15.25 18.6495 15.1183 18.8839 14.8839C19.1183 14.6495 19.25 14.3315 19.25 14V10C19.25 9.66848 19.1183 9.35054 18.8839 9.11612C18.6495 8.8817 18.3315 8.75 18 8.75H6C5.66848 8.75 5.35054 8.8817 5.11612 9.11612C4.8817 9.35054 4.75 9.66848 4.75 10V14C4.75 14.3315 4.8817 14.6495 5.11612 14.8839C5.35054 15.1183 5.66848 15.25 6 15.25H8C8.19891 15.25 8.38968 15.329 8.53033 15.4697C8.67098 15.6103 8.75 15.8011 8.75 16C8.75 16.1989 8.67098 16.3897 8.53033 16.5303C8.38968 16.671 8.19891 16.75 8 16.75H6C5.27065 16.75 4.57118 16.4603 4.05546 15.9445C3.53973 15.4288 3.25 14.7293 3.25 14V10C3.25 9.27065 3.53973 8.57118 4.05546 8.05546C4.57118 7.53973 5.27065 7.25 6 7.25H18C18.7293 7.25 19.4288 7.53973 19.9445 8.05546C20.4603 8.57118 20.75 9.27065 20.75 10V14C20.75 14.7293 20.4603 15.4288 19.9445 15.9445C19.4288 16.4603 18.7293 16.75 18 16.75Z" :fill="[!this.viewlive ? '#FFFFFF' : '#696969']"/>
             <path d="M16 8.75C15.8019 8.74741 15.6126 8.66756 15.4725 8.52747C15.3324 8.38737 15.2526 8.19811 15.25 8V4.75H8.75V8C8.75 8.19891 8.67098 8.38968 8.53033 8.53033C8.38968 8.67098 8.19891 8.75 8 8.75C7.80109 8.75 7.61032 8.67098 7.46967 8.53033C7.32902 8.38968 7.25 8.19891 7.25 8V4.5C7.25 4.16848 7.3817 3.85054 7.61612 3.61612C7.85054 3.3817 8.16848 3.25 8.5 3.25H15.5C15.8315 3.25 16.1495 3.3817 16.3839 3.61612C16.6183 3.85054 16.75 4.16848 16.75 4.5V8C16.7474 8.19811 16.6676 8.38737 16.5275 8.52747C16.3874 8.66756 16.1981 8.74741 16 8.75Z" :fill="[!this.viewlive ? '#FFFFFF' : '#696969']"/>
             <path d="M15.5 20.75H8.5C8.16848 20.75 7.85054 20.6183 7.61612 20.3839C7.3817 20.1495 7.25 19.8315 7.25 19.5V12.5C7.25 12.1685 7.3817 11.8505 7.61612 11.6161C7.85054 11.3817 8.16848 11.25 8.5 11.25H15.5C15.8315 11.25 16.1495 11.3817 16.3839 11.6161C16.6183 11.8505 16.75 12.1685 16.75 12.5V19.5C16.75 19.8315 16.6183 20.1495 16.3839 20.3839C16.1495 20.6183 15.8315 20.75 15.5 20.75ZM8.75 19.25H15.25V12.75H8.75V19.25Z" :fill="[!this.viewlive ? '#FFFFFF' : '#696969']"/>
           </svg>
         </div>
-        <div class ="button" @click="[!this.viewlive ? downloadpng() : '']" :class="[!this.viewlive ? 'button_hover': '']" :title="[!this.viewlive ? 'Save as .png': '']">
+        <div class ="button" @click="[!this.viewlive ? downloadpng() : '']" :class="[!this.viewlive ? 'button_hover': '']" :title="[!this.viewlive ? 'Сохранить как .png': '']">
           <svg :fill="[!this.viewlive ? '#FFFFFF' : '#696969']" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" 
             width="70%" height="100%" viewBox="0 0 550.801 550.801"
             xml:space="preserve">
@@ -75,7 +75,7 @@
           </g>
           </svg>
         </div>
-          <div class ="button" @click="exporttoexcel()" :class="[!this.viewlive ? 'button_hover': '']" :title="[!this.viewlive ? 'Export as table': '']">
+          <div class ="button" @click="exporttoexcel()" :class="[!this.viewlive ? 'button_hover': '']" :title="[!this.viewlive ? 'Экспортировать в формате таблицы': '']">
             <exportexcel :data="this.datajson" :header ="[this.params.header, this.starttimeexcel + ' - ' + this.endtimeexcel]" :name="this.params.header + ' ' + this.starttimeexcel + '-' + this.endtimeexcel + '.xls'" style="width: 100%; height: 100%">
             <svg height="100%" width="65%" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" 
               viewBox="0 0 26 26" xml:space="preserve">
@@ -98,10 +98,10 @@
       
     <div id="box_chart">
       <div id="box_timeframe" @click="changeTimeframe">
-        <span id="timeframe_1" class="timeframe">Min</span>
-        <span id="timeframe_2" class="timeframe">10 Min</span>
-        <span id="timeframe_3" class="timeframe">30 Min</span>
-        <span id="timeframe_4" class="timeframe">Hour</span>
+        <span id="timeframe_1" class="timeframe">Мин</span>
+        <span id="timeframe_2" class="timeframe">10 Мин</span>
+        <span id="timeframe_3" class="timeframe">30 Мин</span>
+        <span id="timeframe_4" class="timeframe">Час</span>
       </div>
       <div id="chartdiv" ref="chartdiv"></div>
     </div>
@@ -110,7 +110,7 @@
     <div id="box_loading_center">
       <div id="box_loading_top">
         <svg xmlns:svg="http://www.w3.org/2000/svg" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.0" width="64px" height="64px" viewBox="0 0 128 128" xml:space="preserve"><rect x="0" y="0" width="100%" height="100%" fill="#232323" /><g><path d="M71 39.2V.4a63.6 63.6 0 0 1 33.96 14.57L77.68 42.24a25.53 25.53 0 0 0-6.7-3.03z" fill="#000000"/><path d="M71 39.2V.4a63.6 63.6 0 0 1 33.96 14.57L77.68 42.24a25.53 25.53 0 0 0-6.7-3.03z" fill="#e1e1e1" transform="rotate(45 64 64)"/><path d="M71 39.2V.4a63.6 63.6 0 0 1 33.96 14.57L77.68 42.24a25.53 25.53 0 0 0-6.7-3.03z" fill="#e1e1e1" transform="rotate(90 64 64)"/><path d="M71 39.2V.4a63.6 63.6 0 0 1 33.96 14.57L77.68 42.24a25.53 25.53 0 0 0-6.7-3.03z" fill="#e1e1e1" transform="rotate(135 64 64)"/><path d="M71 39.2V.4a63.6 63.6 0 0 1 33.96 14.57L77.68 42.24a25.53 25.53 0 0 0-6.7-3.03z" fill="#bebebe" transform="rotate(180 64 64)"/><path d="M71 39.2V.4a63.6 63.6 0 0 1 33.96 14.57L77.68 42.24a25.53 25.53 0 0 0-6.7-3.03z" fill="#979797" transform="rotate(225 64 64)"/><path d="M71 39.2V.4a63.6 63.6 0 0 1 33.96 14.57L77.68 42.24a25.53 25.53 0 0 0-6.7-3.03z" fill="#6e6e6e" transform="rotate(270 64 64)"/><path d="M71 39.2V.4a63.6 63.6 0 0 1 33.96 14.57L77.68 42.24a25.53 25.53 0 0 0-6.7-3.03z" fill="#3c3c3c" transform="rotate(315 64 64)"/><animateTransform attributeName="transform" type="rotate" values="0 64 64;45 64 64;90 64 64;135 64 64;180 64 64;225 64 64;270 64 64;315 64 64" calcMode="discrete" dur="720ms" repeatCount="indefinite"></animateTransform></g><g><circle fill="#000000" cx="63.66" cy="63.16" r="12"/><animate attributeName="opacity" dur="720ms" begin="0s" repeatCount="indefinite" keyTimes="0;0.5;1" values="1;0;1"/></g></svg>
-        <div style="margin-left: 10px;">Loading...</div>
+        <div style="margin-left: 10px;">Загрузка...</div>
       </div>
       <button @click="stopfetch(), stoplive()" v-show="this.seriesArr != null">Отмена</button>
     </div>  
@@ -122,6 +122,9 @@ import * as am5 from '@amcharts/amcharts5';
 import * as am5xy from '@amcharts/amcharts5/xy';
 import am5themes_Animated from '@amcharts/amcharts5/themes/Animated';
 import * as am5plugins_exporting from "@amcharts/amcharts5/plugins/exporting";
+import am5lang_ru_RU from './locales/am5lang_ru_RU'
+import {ru} from 'date-fns/locale'
+
 
 import Datepicker from "@vuepic/vue-datepicker";
 import moment from "moment";
@@ -150,6 +153,7 @@ export default {
       endtimeexcel: null,
       controller: null,
       interval: null,
+      locale: ru,
     //
       timeFrame: 60,
     }
@@ -332,6 +336,9 @@ export default {
     root.setThemes([
       am5themes_Animated.new(root)
     ]);
+
+    root.locale = am5lang_ru_RU;
+
     root.interfaceColors.set("text", am5.color(0xffffff));
     let chart = root.container.children.push(
       am5xy.XYChart.new(root, {
@@ -365,7 +372,7 @@ export default {
       // ],
       renderer: am5xy.AxisRendererX.new(root, {}),
       tooltip: am5.Tooltip.new(root, {}),
-      tooltipDateFormat: "yy-MMM-dd HH:mm:ss",
+      tooltipDateFormat: "dd MMM yyyy, HH:mm",
       tooltipIntervalOffset: 0,
     }));
     this.xAxis = xAxis
@@ -398,12 +405,28 @@ export default {
       );
       this.yAxis = yAxis
 
+      var linecolor = am5.color("#" + this.chartInfo[i].sColor.slice(0,6))
+
+      const parentID = this.params.strends[i]["parentID"];
+      const saxes = this.params.saxes.filter(item => item.id === parentID);
+      console.log(saxes[0].uom);
+
+      yAxis.children.push(
+          am5.Label.new(root, {
+            text: saxes[0].uom ?? "",
+            textAlign: 'center',
+            fill: linecolor,
+            y: -40,
+            x: 0,
+            fontWeight: 'bold',
+          })
+      );
+
       if (chart.yAxes.indexOf(yAxis) > 0) {
         yAxis.set("syncWithAxis", chart.yAxes.getIndex(0));
       }
       // Set up data processor to parse string dates
       // https://www.amcharts.com/docs/v5/concepts/data/#Pre_processing_data
-      var linecolor = am5.color("#" + this.chartInfo[i].sColor.slice(0,6))
       var series = chart.series.push(
         am5xy.LineSeries.new(root, {
           name: this.chartInfo[i].name,
@@ -695,7 +718,7 @@ export default {
 }
 #chartdiv {
   width: 100%;
-  height: 100%;
+  height: 92%;
   /* border: solid 1px gray; */
 }
 #box_loading{
