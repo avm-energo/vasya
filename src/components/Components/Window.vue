@@ -200,7 +200,7 @@ export default {
     this.multiplier = this.multiplierwindow
     this.multiplierwindoww = this.multiplier 
     this.multiplierwindowww = this.mainmultiplier[1]
-    this.myJson.widgets.forEach(element => {
+    ;(this.myJson.widgets.$id == undefined ? this.myJson.widgets : this.myJson.widgets.$values).forEach(element => {
       let res = element;
       if (res.type.startsWith("primitives/Line")) {
         this.lines.push(res);

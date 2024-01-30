@@ -56,7 +56,7 @@ export default {
 
     createData(changedelem) {
       let data = this.data
-      changedelem.forEach((element) =>{
+      ;(changedelem.$id  == undefined ? changedelem : changedelem.$values).forEach(element => {
         let ColumnId = element.columnId
         data[ColumnId].period = element.settingSector.alias
         data[ColumnId][`${element.settingEntity.name}`] = element.currentValue
@@ -144,19 +144,25 @@ export default {
     this.legend = legend
     
     this.data = [{}];
-    this.params.sectors.forEach((element, index) => {
+    ;(this.params.sectors.$id  == undefined ? this.params.sectors : this.params.sectors.$values).forEach((element, index) => {
       this.data.push({"period": ''})
       this.data[index].period = element.alias
     })
     this.data.pop()
 
     let mas = []
-    let j = this.params.table.length/this.params.sectors.length
+    if (this.params.table.$id == undefined) {
+      var array = this.params.table
+    } else {
+      var array = this.params.table.$values
+    }
+    let j = array.length/this.params.sectors.length
     for (let i=0; i<j;i++){
+      console.log(1)
       mas.push({name: '',data: []})
       mas[i].name = this.params.graphs[i].name
-    } 
-    this.params.table.forEach((element) => {
+    }
+    ;(array.$id  == undefined ? array : array.$values).forEach(element => {
       mas[element.rowId].data.push(element.currentValue);
     })
 
@@ -177,7 +183,7 @@ export default {
     this.params.graphs.forEach((graph, index) => {
       this.makeSeries(xAxis, yAxis, graph.name, graph.name, index);
     })
-    this.seriesArr.forEach((series) => {
+    ;(this.seriesArr.$id  == undefined ? this.seriesArr : this.seriesArr.$values).forEach(series => {
       series.data.setAll(this.data)
     })
     
@@ -186,7 +192,7 @@ export default {
         let changedelem= this.$store.getters.elemByName(res)?.properties.table
         if (changedelem) {
           this.data = this.createData(changedelem)
-          this.seriesArr.forEach((series) => {
+          ;(this.seriesArr.$id  == undefined ? this.seriesArr : this.seriesArr.$values).forEach(series => {
             series.data.setAll(this.data)
           })
         }

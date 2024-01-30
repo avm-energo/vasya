@@ -179,7 +179,7 @@ export default {
     this.$parent.multiplier = this.multiplier
     this.$store.dispatch('mainmultiplier', [true, this.multiplier])
     console.log(this.myJson.widgets)
-    Object.values(this.myJson.widgets).forEach(element => {
+    ;(this.myJson.widgets.$id == undefined ? this.myJson.widgets : this.myJson.widgets.$values).forEach(element => {
       let res = element;
       
       if (res.type.startsWith("primitives/Line")) {

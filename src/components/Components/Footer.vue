@@ -155,7 +155,8 @@ export default {
     this.footercolor = this.myJson.data['footer-state'];
     this.footerflashing = this.myJson.data['footer-flashing']
     this.tick = this.myJson.tick;
-    this.events = this.data.events;
+    this.events = (this.data.events.$id  == undefined ? this.data.events : this.data.events.$values)
+
 
     const today = new Date();
     var currentDateMilliseconds = today.getMilliseconds();
@@ -167,7 +168,6 @@ export default {
           }`
         );
         let obj = JSON.parse(await response.text())
-        // console.log(obj)
         this.tick = obj.tick
         if (obj.data!=null){
           // console.log(obj)
@@ -181,7 +181,7 @@ export default {
           this.footercolor = obj.data['footer-state']
           this.footerflashing = obj.data['footer-flashing']
           if (obj.data.events){
-            obj.data.events.forEach(elem =>{  
+            (obj.data.events.$id  == undefined ? obj.data.events : obj.data.events.$values).forEach(elem =>{  
               if (!this.events){
                 this.events = []
                 this.events.push(elem)

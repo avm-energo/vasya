@@ -190,7 +190,7 @@ import { range } from '@amcharts/amcharts5/.internal/core/util/Animation';
       this.legend = legend
       //Первоначальная устанвока значений при первой отрисовки
       this.dataArr = [];
-      this.params.dataSeries.forEach((PointsArr) => {
+      ;(this.params.dataSeries.$id  == undefined ? this.params.dataSeries : this.params.dataSeries.$values).forEach(PointsArr => {
         let dataArrEx = []
         PointsArr.points.forEach((element, index) => {
           dataArrEx.push({"argument": '', "value": ''})
@@ -216,8 +216,7 @@ import { range } from '@amcharts/amcharts5/.internal/core/util/Animation';
       const res = {'namewidget': this.chartName, 'namewindow': this.$parent.$parent.windowname}
       //Массив обхектов графиков для дальнейшего перебора
       this.seriesArr = []
-
-      this.params.dataSeries.forEach((dataArr, index) => {
+      ;(this.params.dataSeries.$id  == undefined ? this.params.dataSeries : this.params.dataSeries.$values).forEach(dataArr => {
         this.makeSeries(xAxis, yAxis, dataArr.id, root);
       })
       this.seriesArr.forEach((series, index) => {
