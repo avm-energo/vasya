@@ -73,16 +73,16 @@ export default {
       const { ctx } = this;
       var imageData = ctx.getImageData(0,0,410,400);
       ctx.putImageData(imageData, 0, 0);
-      this.drawFirstDot(this.params.CH4[0], this.params.C2H2[0], this.params.C2H4[0], "yellow");
+      this.drawFirstDot(this.params.CH4[0].value, this.params.C2H2[0].value, this.params.C2H4[0].value, "yellow");
       setInterval(()=>{
         let changedelem= this.$store.getters.elemByName(res)?.properties
-        console.log(changedelem)
-        if (changedelem?.valuePointVisibility) console.log("valuePointVisibility Существует!");
+        console.log(changedelem?.CH4)
+        // if (changedelem?.valuePointVisibility) console.log("valuePointVisibility Существует!");
         if (changedelem) {
           if (this.duvalMode === false) {
             ctx.putImageData(imageData, 0, 0);
             const l = changedelem.CH4.length - 1
-            this.drawFirstDot(changedelem.CH4[l], changedelem.C2H2[l], changedelem.C2H4[l], "yellow")
+            this.drawFirstDot(changedelem.CH4[l].value, changedelem.C2H2[l].value, changedelem.C2H4[l].value, "yellow")
           }
           else if (this.duvalMode === true) {
             ctx.putImageData(imageData, 0, 0);
@@ -353,15 +353,14 @@ export default {
     },
     drawArray(elem) {
       for (let i = 0; i < elem.CH4.length; i++) {
-        if (i === elem.CH4.length - 1) this.drawFirstDot(elem.CH4[i], elem.C2H2[i], elem.C2H4[i], "red")
-
+        if (i === elem.CH4.length - 1) this.drawFirstDot(elem.CH4[i].value, elem.C2H2[i].value, elem.C2H4[i].value, "red")
         else {
           let color = null;
           if (i > elem.CH4.length - 1 - 5) color = '#fc6700';
           else if (i > elem.CH4.length - 1 - 10) color = '#ffcb33';
           else if (i > elem.CH4.length - 1 - 15) color = '#feff67';
           else color = 'white';
-          this.drawDot(elem.CH4[i], elem.C2H2[i], elem.C2H4[i], color)
+          this.drawDot(elem.CH4[i].value, elem.C2H2[i].value, elem.C2H4[i].value, color)
         }
       }
     },
