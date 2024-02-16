@@ -1,4 +1,4 @@
-# sonicageneration
+# Vasya
 
 ## Project setup
 ```
