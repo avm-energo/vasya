@@ -155,7 +155,7 @@ export default {
     this.footercolor = this.myJson.data['footer-state'];
     this.footerflashing = this.myJson.data['footer-flashing']
     this.tick = this.myJson.tick;
-    this.events = (this.data.events.$id  == undefined ? this.data.events : this.data.events.$values)
+    if (this.data.events) this.events = (this.data.events.$id  == undefined ? this.data.events : this.data.events.$values)
 
 
     const today = new Date();
