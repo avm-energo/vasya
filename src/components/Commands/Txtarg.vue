@@ -5,8 +5,12 @@
       class="txtarg_value" v-model="txtarg.value" @blur="submitForm(txtarg)" @keyup.enter="$event.target.blur()" id="txtarg" :disabled="txtarg.disabled"/>
   </div> -->
   <div class="txtarg" :style="cssProps">
-    <span class="txtarg_star" v-show="txtarg.value != txtarg.prevvalue">*</span>
-    <input class="txtarg_value" v-model="txtarg.value" @blur="some()" @keyup.enter="$event.target.blur()" :style="cssProps" />
+    <div class="txtarg_star" v-show="txtarg.value != txtarg.prevvalue" :style="{backgroundColor: !showTooltip && !validate ? 'red' : ''}">*</div>
+    <input class="txtarg_value" v-model="txtarg.value" @blur="[some(), showTooltip = false]" @keyup.enter="$event.target.blur()" :style="[cssProps, {backgroundColor: !showTooltip && !validate ? 'red' : ''}]" @focus="showTooltip = true"/>
+    <div v-if="showTooltip && (this.params.lowRange || this.params.hiRange) && !validate" class="txtarg_check">
+      <p v-if="txtarg.value < this.params.lowRange"> Введенное значение {{ value }} <br> меньше нижней границы {{ this.params.lowRange }} </p>
+      <p v-else-if="txtarg.value > this.params.hiRange"> Введенное значение {{ value }} <br> больше верхней границы {{ this.params.hiRange }} </p>
+    </div>
   </div>
 </template>
 
@@ -19,6 +23,9 @@ export default {
   props:['params','name', 'ip', 'type'],
   data() {
     return {
+      showTooltip: false,
+      validate: true,
+      value: null,
       txtarg: {
         Name: null,
         Namesub: null,
@@ -33,7 +40,7 @@ export default {
       // console.log(`http://${this.ip}/api/nodes/${this.encript((new TextEncoder()).encode(this.$parent.$parent.namewindow))}/widget/${this.encript((new TextEncoder()).encode(this.txtarg.Name))}/query/write-arg`)
       const res = {'namewidget': this.txtarg.Name, 'namewindow': this.$parent.$parent.windowname , 'value': this.txtarg.value}
       this.$store.dispatch('addcommandwidgetmass', res)
-      if (this.params.trigger != `ButtonApply`) {
+      if (this.params.trigger != `ButtonApply` && this.validate) {
         const article =`${this.txtarg.value}`;
         const headers = { 
             'Content-Type': 'application/json',
@@ -98,6 +105,20 @@ export default {
       }, 1000 - currentDateMilliseconds);
     // }
   },
+  watch: {
+    'txtarg.value'(newValue){
+      if (parseFloat(newValue).toLocaleString('ru-RU').replace(/\s/g, '').length > 10 ){
+        this.value = parseFloat(newValue).toExponential()
+      } else {
+        this.value = newValue
+      }
+      if (/^\d+$/.test(newValue) && this.params.lowRange)
+        this.validate = newValue >= this.params.lowRange && newValue <= this.params.hiRange
+      else {
+        this.validate = true
+      }
+    }
+  },
   computed: {
     cssProps() {
       return {
@@ -105,13 +126,17 @@ export default {
         "--y": (this.params.y / 1) * this.$parent.$parent.multiplier + "px",
         "--width": (this.params.width / 1) * this.$parent.$parent.multiplier + "px",
         "--height": (this.params.height / 1) * this.$parent.$parent.multiplier + "px",
-        "--margin": [ this.txtarg.value == this.txtarg.prevvalue ? this.params.margin.split(" : ")[0] + "px" : ''],
-        "--widthstar": [ this.txtarg.value != this.txtarg.prevvalue ? this.params.margin.split(" : ")[0] + "px" : ''],
+        "--margin": [ this.txtarg.value == this.txtarg.prevvalue ? this.params.margin.split(" : ")[0] * this.$parent.$parent.multiplier + "px" : ''],
+        "--widthstar": [ this.txtarg.value != this.txtarg.prevvalue ? this.params.margin.split(" : ")[0] * this.$parent.$parent.multiplier + "px" : ''],
         "--background": "#" + this.params.background,
-        "--borderBrush": "#" + this.params.borderBrush,
+        "--borderBrush": this.validate ?  "#" + this.params.borderBrush : 'red',
         "--foreground": "#" + this.params.foreground,
         "--fontsize": this.params.fontSize * this.$parent.$parent.multiplier + "px",
         "--fontcolor": "#" + this.params.foreground,
+        "--hAlignment": this.params.hAlignment ? this.params.hAlignment : '',
+        "--validateWidth" : 200 * this.$parent.$parent.multiplier + "px",
+        "--validateHeight" : 32 * this.$parent.$parent.multiplier + "px",
+        "--validateFont": 12 * this.$parent.$parent.multiplier + "px",
       };
     }
   },
@@ -129,7 +154,6 @@ export default {
   display: flex;
   background-color: var(--background);
   border: solid 1px var(--borderBrush);
-  align-items: center;
 }
 .txtarg_value {
   box-sizing: border-box;
@@ -138,16 +162,41 @@ export default {
   border-radius: none;
   width: 100%;
   height: 100%;
-  margin-left: var(--margin);
+  padding-left: var(--margin);
   font-size: var(--fontsize);
   color: var(--fontcolor);
+  text-align: var(--hAlignment);
 }
 .txtarg_value:focus {
   outline: none;
 }
 .txtarg_star{
+  flex: 0 0 auto;
+  margin: 0;
   width: var(--widthstar);
   font-size: var(--fontsize);
 }
-
+.txtarg_check{
+  z-index: 3;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  font-size: var(--validateFont);
+  background-color: red;
+  height: var(--validateHeight);
+  left: var(--width);
+  top: -1px;
+  min-width: var(--validateWidth);
+  width: max-content;
+}
+.txtarg_check p {
+  text-align: left;
+  padding: 5px 5px 5px 5px;
+  user-select: none;
+  width: fit-content;
+}
+.txtarg_check:hover{
+  filter: opacity(25%)
+}
 </style>
