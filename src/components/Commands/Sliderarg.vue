@@ -51,9 +51,11 @@ export default {
 
   methods: {
     async some() {
-      const res = {'namewidget': this.sliderarg.Name, 'namewindow': this.$parent.$parent.windowname , 'value': this.sliderarg.value}
-      this.$store.dispatch('addcommandwidgetmass', res)
-      if (this.sliderarg.value != this.sliderarg.lastvalue && this.sliderarg.trigger == "ChangeOnEnd"){
+      if (this.sliderarg.value != this.sliderarg.lastvalue) {
+        const res = {'namewidget': this.sliderarg.Name, 'namewindow': this.$parent.$parent.windowname , 'value': this.sliderarg.value}
+        this.$store.dispatch('addcommandwidgetmass', res)
+      }
+      if ((this.sliderarg.value != this.sliderarg.lastvalue && this.sliderarg.trigger == "ChangeOnEnd") || this.sliderarg.trigger == 'ChangeRealtime'){
         const article =`
           ${this.sliderarg.value}
         `;
