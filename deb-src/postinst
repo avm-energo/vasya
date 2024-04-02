@@ -2,3 +2,5 @@ rm /etc/nginx/sites-enabled/default 2>/dev/null
 cp /usr/local/share/vasya/vasya.conf /etc/nginx/conf.d/
 chown -R www-data:www-data /var/www/vasya
 systemctl restart nginx
+mkdir -p /avtuk/sonica/vasya/settings
+cp /usr/local/share/vasya/settings.ini /avtuk/sonica/vasya/settings/ 2>/dev/null

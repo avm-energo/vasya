@@ -1,3 +1,1 @@
-@taskkill /f /im nginx.exe
-del /s /q c:\nginx
-rmdir /s /q c:\nginx
+del /s /q C:\nginx\conf\conf.d\vasya.conf
