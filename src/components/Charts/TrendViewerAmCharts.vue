@@ -4,14 +4,14 @@
       <div id="buttons" style="flex-grow: 6">
         <div id ="button_play" @click="[liveview() + !this.viewlive ? startlive(this.$parent.$parent.windowpath, this.name, this.seriesArr, this.controller, this.interval) : '']" :class="[!this.viewlive ? 'button_hover': '']" :title="[!this.viewlive ? 'Режим реального времени': '']">
           <svg width="80%" height="100%" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <rect width="24" height="24" fill="none"/>
-          <path fill-rule="evenodd" clip-rule="evenodd" d="M3 5.49686C3 3.17662 5.52116 1.73465 7.52106 2.91106L18.5764 9.41423C20.5484 10.5742 20.5484 13.4259 18.5764 14.5858L7.52106 21.089C5.52116 22.2654 3 20.8234 3 18.5032V5.49686Z" :fill="[!this.viewlive ? '#FFFFFF' : '#696969']"/>
+            <rect width="24" height="24" fill="none"/>
+            <path fill-rule="evenodd" clip-rule="evenodd" d="M3 5.49686C3 3.17662 5.52116 1.73465 7.52106 2.91106L18.5764 9.41423C20.5484 10.5742 20.5484 13.4259 18.5764 14.5858L7.52106 21.089C5.52116 22.2654 3 20.8234 3 18.5032V5.49686Z" :fill="[!this.viewlive ? '#FFFFFF' : '#696969']"/>
           </svg>
         </div>
         <div id ="button_pause" @click="[this.viewlive ? [stoplive()] : ''], liveview()" :class="[this.viewlive ? 'button_hover': '']" :title="[this.viewlive ? 'Откл. режим реального времени': '']">
           <svg width="80%" height="100%" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M10.65 19.11V4.89C10.65 3.54 10.08 3 8.64 3H5.01C3.57 3 3 3.54 3 4.89V19.11C3 20.46 3.57 21 5.01 21H8.64C10.08 21 10.65 20.46 10.65 19.11Z" :fill="[this.viewlive ? '#FFFFFF' : '#696969']"/>
-          <path d="M21.0016 19.11V4.89C21.0016 3.54 20.4316 3 18.9916 3H15.3616C13.9316 3 13.3516 3.54 13.3516 4.89V19.11C13.3516 20.46 13.9216 21 15.3616 21H18.9916C20.4316 21 21.0016 20.46 21.0016 19.11Z" :fill="[this.viewlive ? '#FFFFFF' : '#696969']"/>
+            <path d="M10.65 19.11V4.89C10.65 3.54 10.08 3 8.64 3H5.01C3.57 3 3 3.54 3 4.89V19.11C3 20.46 3.57 21 5.01 21H8.64C10.08 21 10.65 20.46 10.65 19.11Z" :fill="[this.viewlive ? '#FFFFFF' : '#696969']"/>
+            <path d="M21.0016 19.11V4.89C21.0016 3.54 20.4316 3 18.9916 3H15.3616C13.9316 3 13.3516 3.54 13.3516 4.89V19.11C13.3516 20.46 13.9216 21 15.3616 21H18.9916C20.4316 21 21.0016 20.46 21.0016 19.11Z" :fill="[this.viewlive ? '#FFFFFF' : '#696969']"/>
           </svg>
         </div>
       </div>
@@ -26,7 +26,7 @@
         </div>
         <div class="box_title_update_icon" @click="[!this.viewlive ? updateChartSeries() : '']" :class="[!this.viewlive ? 'button_hover': '']" :title="[!this.viewlive ? 'Обновить данные': '']">
           <svg width="80%" height="100%" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M7.83334 13.6C8.25804 14.4031 8.97945 15.0676 9.88888 15.4934C10.7983 15.9191 11.8465 16.083 12.8755 15.9604C13.9045 15.8378 14.8586 15.4353 15.594 14.8136L17 13.7451M17 16V13.6H14.5M16.1667 10.4C15.742 9.59687 15.0206 8.93238 14.1111 8.50664C13.2017 8.08091 12.1535 7.91699 11.1245 8.03959C10.0955 8.16219 9.1414 8.56467 8.40599 9.18637L7 10.2549M7 8V10.4H9.5M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z" :stroke="[!this.viewlive ? '#FFFFFF' : '#696969']" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M7.83334 13.6C8.25804 14.4031 8.97945 15.0676 9.88888 15.4934C10.7983 15.9191 11.8465 16.083 12.8755 15.9604C13.9045 15.8378 14.8586 15.4353 15.594 14.8136L17 13.7451M17 16V13.6H14.5M16.1667 10.4C15.742 9.59687 15.0206 8.93238 14.1111 8.50664C13.2017 8.08091 12.1535 7.91699 11.1245 8.03959C10.0955 8.16219 9.1414 8.56467 8.40599 9.18637L7 10.2549M7 8V10.4H9.5M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z" :stroke="[!this.viewlive ? '#FFFFFF' : '#696969']" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
         </div>
         <div class ="button" @click="[!this.viewlive ? print() : '']" :class="[!this.viewlive ? 'button_hover': '']" :title="[!this.viewlive ? 'Печать': '']">
@@ -37,9 +37,9 @@
           </svg>
         </div>
         <div class ="button" @click="[!this.viewlive ? downloadpng() : '']" :class="[!this.viewlive ? 'button_hover': '']" :title="[!this.viewlive ? 'Сохранить как .png': '']">
-          <svg :fill="[!this.viewlive ? '#FFFFFF' : '#696969']" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" 
-            width="70%" height="100%" viewBox="0 0 550.801 550.801"
-            xml:space="preserve">
+          <svg :fill="[!this.viewlive ? '#FFFFFF' : '#696969']" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+               width="70%" height="100%" viewBox="0 0 550.801 550.801"
+               xml:space="preserve">
           <g>
             <g>
               <path d="M151.951,414.103c-5.677,0-9.526,0.554-11.541,1.107v36.492c2.381,0.554,5.313,0.732,9.352,0.732
@@ -60,13 +60,13 @@
                 c-6.797-2.933-15.229-5.316-28.803-5.316c-23.282,0-40.891,13.205-40.891,39.973c0,25.497,15.957,40.532,38.887,40.532
                 c6.417,0,11.554-0.728,13.753-1.835v-25.861h-19.074v-21.821h46.032v65.105H449.086z M97.2,366.752V21.601h250.203v77.69h6.75
                 v42.599h42.156v1.026h57.29l0.011,223.836H97.2z"/>
-              <polygon points="184.328,269.687 226.178,269.687 226.178,227.093 184.022,227.093 184.022,184.491 226.178,184.491 
-                226.178,141.89 184.022,141.89 184.022,99.291 141.42,99.291 141.42,141.89 183.579,141.89 183.579,184.491 141.42,184.491 
-                141.42,227.093 183.579,227.093 183.579,269.687 141.739,269.687 141.739,312.293 183.898,312.293 183.898,354.887 
+              <polygon points="184.328,269.687 226.178,269.687 226.178,227.093 184.022,227.093 184.022,184.491 226.178,184.491
+                226.178,141.89 184.022,141.89 184.022,99.291 141.42,99.291 141.42,141.89 183.579,141.89 183.579,184.491 141.42,184.491
+                141.42,227.093 183.579,227.093 183.579,269.687 141.739,269.687 141.739,312.293 183.898,312.293 183.898,354.887
                 226.481,354.887 226.481,312.293 184.328,312.293 		"/>
-              <polygon points="269.401,269.687 311.249,269.687 311.249,227.093 269.093,227.093 269.093,184.491 311.249,184.491 
-                311.249,141.89 269.093,141.89 269.093,99.291 226.481,99.291 226.481,141.89 268.64,141.89 268.64,184.491 226.481,184.491 
-                226.481,227.093 268.64,227.093 268.64,269.687 226.8,269.687 226.8,312.293 268.958,312.293 268.958,354.887 311.555,354.887 
+              <polygon points="269.401,269.687 311.249,269.687 311.249,227.093 269.093,227.093 269.093,184.491 311.249,184.491
+                311.249,141.89 269.093,141.89 269.093,99.291 226.481,99.291 226.481,141.89 268.64,141.89 268.64,184.491 226.481,184.491
+                226.481,227.093 268.64,227.093 268.64,269.687 226.8,269.687 226.8,312.293 268.958,312.293 268.958,354.887 311.555,354.887
                 311.555,312.293 269.401,312.293 		"/>
               <path d="M311.555,141.89h42.113c-3.691-1.716-6.265-5.432-6.265-9.774V99.291h-35.849V141.89z"/>
               <path d="M353.711,141.906v42.585h-42.156v42.602h42.156v42.594H311.86v42.602h42.167v42.599h42.593v-42.599h-42.15v-42.602h41.84
@@ -75,10 +75,10 @@
           </g>
           </svg>
         </div>
-          <div class ="button" @click="exporttoexcel()" :class="[!this.viewlive ? 'button_hover': '']" :title="[!this.viewlive ? 'Экспортировать в формате таблицы': '']">
-            <exportexcel :data="this.datajson" :header ="[this.params.header, this.starttimeexcel + ' - ' + this.endtimeexcel]" :name="this.params.header + ' ' + this.starttimeexcel + '-' + this.endtimeexcel + '.xls'" style="width: 100%; height: 100%">
-            <svg height="100%" width="65%" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" 
-              viewBox="0 0 26 26" xml:space="preserve">
+        <div class ="button" @click="exporttoexcel()" :class="[!this.viewlive ? 'button_hover': '']" :title="[!this.viewlive ? 'Экспортировать в формате таблицы': '']">
+          <exportexcel :data="this.datajson" :header ="[this.params.header, this.starttimeexcel + ' - ' + this.endtimeexcel]" :name="this.params.header + ' ' + this.starttimeexcel + '-' + this.endtimeexcel + '.xls'" style="width: 100%; height: 100%">
+            <svg height="100%" width="65%" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+                 viewBox="0 0 26 26" xml:space="preserve">
             <g>
               <path :fill="[!this.viewlive ? '#FFFFFF' : '#696969']" d="M25.162,3H16v2.984h3.031v2.031H16V10h3v2h-3v2h3v2h-3v2h3v2h-3v3h9.162
                 C25.623,23,26,22.609,26,22.13V3.87C26,3.391,25.623,3,25.162,3z M24,20h-4v-2h4V20z M24,16h-4v-2h4V16z M24,12h-4v-2h4V12z M24,8
@@ -90,12 +90,12 @@
             </g>
             </svg>
           </exportexcel>
-          </div>
-          <!-- <button @click="some()">dsa</button> -->
+        </div>
+        <!-- <button @click="some()">dsa</button> -->
       </div>
       <div style="flex-grow: 6" ></div>
     </div>
-      
+
     <div id="box_chart">
       <div id="box_timeframe" @click="changeTimeframe">
         <span id="timeframe_1" class="timeframe">Мин</span>
@@ -113,7 +113,7 @@
         <div style="margin-left: 10px;">Загрузка...</div>
       </div>
       <button @click="stopfetch(), stoplive()" v-show="this.seriesArr != null">Отмена</button>
-    </div>  
+    </div>
   </div>
 </template>
 
@@ -154,7 +154,8 @@ export default {
       controller: null,
       interval: null,
       locale: ru,
-    //
+      saxes: [],
+      //
       timeFrame: 60,
     }
   },
@@ -163,7 +164,7 @@ export default {
     Datepicker,
     exportexcel,
   },
-  created(){
+  created() {
     const controller = new AbortController();
     this.controller = controller
     // this.interval = this.params["trends-interval"]
@@ -198,40 +199,45 @@ export default {
       }
     },
 
-    async some(){
-      this.endtime = moment(this.seriesArr[0].data.values[this.seriesArr[0].data.values.length-1].argument).toISOString()
+    async some() {
+      this.endtime = moment(this.seriesArr[0].data.values[this.seriesArr[0].data.values.length - 1].argument).toISOString()
     },
-    showlegend(){},
-    startlive(){},
-    stoplive(){},
-    print(){},
-    downloadpng(){},
-    async liveview(){
+    showlegend() {
+    },
+    startlive() {
+    },
+    stoplive() {
+    },
+    print() {
+    },
+    downloadpng() {
+    },
+    async liveview() {
       this.viewlive = !this.viewlive
 
     },
-    stopfetch(){
+    stopfetch() {
       this.viewlive = false
       this.getdata = !this.getdata
       this.controller.abort()
       this.controller = new AbortController();
     },
-    exporttoexcel(){},
+    exporttoexcel() {
+    },
     encript(values) {
-      const  Alphabet = "12345678" + "9ABDEFGH" + "JKLMNPQR" + "STUVWXYZ";
+      const Alphabet = "12345678" + "9ABDEFGH" + "JKLMNPQR" + "STUVWXYZ";
       var bitsCount = 8 * values.length;
-      var ans = new Array(Math.trunc(bitsCount / 5) + (bitsCount%5==0?0:1));
+      var ans = new Array(Math.trunc(bitsCount / 5) + (bitsCount % 5 == 0 ? 0 : 1));
       for (let i = 0; i < ans.length; i++) {
         var bitNum = i * 5;
         var byteNum = Math.trunc(bitNum / 8);
-        var byteOffset = bitNum % 8;  
+        var byteOffset = bitNum % 8;
         var symbol = values[byteNum] >> byteOffset;
-        if (byteOffset > 3 && byteNum<(values.length-1))
-        {
+        if (byteOffset > 3 && byteNum < (values.length - 1)) {
           var symbolOffset = 8 - byteOffset;
-          symbol |= values[byteNum+1]<<symbolOffset;
+          symbol |= values[byteNum + 1] << symbolOffset;
         }
-        symbol &= 0b11111; 
+        symbol &= 0b11111;
         ans[i] = Alphabet[symbol];
       }
       return ans.join("")
@@ -240,25 +246,25 @@ export default {
     async getChartData() {
       const article = this.updatedBody()
       console.log('запросил')
-      const headers = { 
-          'Content-Type': 'application/json',
+      const headers = {
+        'Content-Type': 'application/json',
       };
-      this.chartDataArr = await axios.post(`http://${this.ip}/api/nodes/${this.encript((new TextEncoder()).encode(this.$parent.$parent.windowpath))}/widget/${this.encript((new TextEncoder()).encode(this.name))}/query/trend-history`, article, 
-      { 
-        headers,
-        signal: this.controller.signal
-       },)
-      .then(response => {
-        // console.log(this.controller)
-        console.log(response.data)
-        this.gettingdata()
-        console.log('получил')
-        return response.data
-      })
-      .catch(function (error) {
-      });
+      this.chartDataArr = await axios.post(`http://${this.ip}/api/nodes/${this.encript((new TextEncoder()).encode(this.$parent.$parent.windowpath))}/widget/${this.encript((new TextEncoder()).encode(this.name))}/query/trend-history`, article,
+          {
+            headers,
+            signal: this.controller.signal
+          },)
+          .then(response => {
+            // console.log(this.controller)
+            console.log(response.data)
+            this.gettingdata()
+            console.log('получил')
+            return response.data
+          })
+          .catch(function (error) {
+          });
     },
-    
+
     getChartsInfo() {
       this.chartInfo = this.params.strends
     },
@@ -282,18 +288,19 @@ export default {
         }
       }
     },
-   
+
     generateDataObj(point) {
       return {
         argument: new Date(point.argument).getTime(),
+        category: 'category',
         value: point.value
       };
     },
     generateDatas(num) {
       let dataArr = [];
 
-      for (let i = 0; i < this.chartDataArr.resultData[num].points.length - this.timeFrame ; i+=this.timeFrame) {
-        dataArr.push(this.generateDataObj( this.chartDataArr.resultData[num].points[i] ));
+      for (let i = 0; i < this.chartDataArr.resultData[num].points.length - this.timeFrame; i += this.timeFrame) {
+        dataArr.push(this.generateDataObj(this.chartDataArr.resultData[num].points[i]));
       }
       return dataArr
     },
@@ -307,13 +314,13 @@ export default {
       await this.getChartData()
       // Сколько точек пришло
       console.log("Число точек", this.chartDataArr.resultData[0].points.length)
-      if ( this.chartDataArr.resultData[0].points.length < 1450 ) {
+      if (this.chartDataArr.resultData[0].points.length < 1450) {
         this.setTimeFrame(1);
-      } else if ( this.chartDataArr.resultData[0].points.length < 2900 ) {
+      } else if (this.chartDataArr.resultData[0].points.length < 2900) {
         this.setTimeFrame(10);
-      } else if ( this.chartDataArr.resultData[0].points.length < 20200 ) {
+      } else if (this.chartDataArr.resultData[0].points.length < 20200) {
         this.setTimeFrame(30);
-      } else if ( this.chartDataArr.resultData[0].points.length >= 20200 ) {
+      } else if (this.chartDataArr.resultData[0].points.length >= 20200) {
         this.setTimeFrame(60);
       }
       // Если нам их хватает, то просто computed свойство само ограничит таймлайн
@@ -322,7 +329,7 @@ export default {
       this.updateChart()
     },
     //
-    gettingdata(){
+    gettingdata() {
       this.getdata = !this.getdata
     }
   },
@@ -341,17 +348,17 @@ export default {
 
     root.interfaceColors.set("text", am5.color(0xffffff));
     let chart = root.container.children.push(
-      am5xy.XYChart.new(root, {
-        panX: true,
-        panY: true,
-        wheelY: "zoomXY",
-        pinchZoomX:true,
-        "valueAxes": [
-          {
-            "title": "Axis title"
-          }
-        ],
-      })
+        am5xy.XYChart.new(root, {
+          panX: true,
+          panY: true,
+          wheelY: "zoomXY",
+          pinchZoomX: true,
+          "valueAxes": [
+            {
+              "title": "Axis title"
+            }
+          ],
+        })
     );
 
     this.chart = chart
@@ -360,7 +367,7 @@ export default {
       // maxDeviation: 0.2,
       minZoomCount: 3,
       // groupData: true,
-      baseInterval: { timeUnit: "second", count: this.interval/1000 },
+      baseInterval: {timeUnit: "second", count: this.interval / 1000},
       // groupIntervals: [
       //   { timeUnit: "second", count: 60 },
       //   { timeUnit: "minute", count: 10 },
@@ -374,98 +381,176 @@ export default {
       tooltip: am5.Tooltip.new(root, {}),
       tooltipDateFormat: "dd MMM yyyy, HH:mm",
       tooltipIntervalOffset: 0,
+      // combineFields: 'category',
+      categoryField: "category",
     }));
+
+    // xAxis.combineFields = "category";
+
+
     this.xAxis = xAxis
 
-    var yAxis = chart.yAxes.push(am5xy.ValueAxis.new(root, {
-      // numberFormat: "#.0a",
-      // numberFormat: "#.##e",
-      renderer: am5xy.AxisRendererY.new(root, {
-        opposite: true
-      })
-    }));
-    this.yAxis = yAxis
+    let yAxis = null;
+    // chart.yAxes.push(am5xy.ValueAxis.new(root, {
+    //   // numberFormat: "#.0a",
+    //   // numberFormat: "#.##e",
+    //   renderer: am5xy.AxisRendererY.new(root, {
+    //     opposite: true
+    //   })
+    // }));
+    // this.yAxis = yAxis
 
     await this.getChartData()
     this.getChartsInfo()
-    this.setTimeFrame(10);
+    this.setTimeFrame(1);
     this.seriesArr = []
 
-    for (let i = 0; i < this.chartDataArr.resultData.length; i++) {
-      var yRenderer = am5xy.AxisRendererY.new(root, {
-        opposite: true
-      });
-      var yAxis = chart.yAxes.push(
-        am5xy.ValueAxis.new(root, {
-          numberFormat: "#.0a",
-          // numberFormat: "#.##e",
-          maxDeviation: 1,
-          renderer: yRenderer
-        })
-      );
-      this.yAxis = yAxis
 
-      var linecolor = am5.color("#" + this.chartInfo[i].sColor.slice(0,6))
+    console.log(this.chartDataArr, " ChartDataArr")
+
+    // НАЧАЛО ЦИКЛА SERIES ------------------------------------------------------
+    for (let i = 0; i < this.chartDataArr.resultData.length; i++) {
+
+
+      // var yRenderer = am5xy.AxisRendererY.new(root, {
+      //   opposite: true,
+      // });
+      // var yAxis = chart.yAxes.push(
+      //   am5xy.ValueAxis.new(root, {
+      //     // numberFormat: "#.0a",
+      //     // numberFormat: "#.##e",
+      //     maxDeviation: 1,
+      //     renderer: yRenderer
+      //   })
+      // );
+
+
+      // yAxis.min = 0;
+      // yAxis.max = 100;
+      //
+      // this.yAxis = yAxis
+
+      var linecolor = am5.color("#" + this.chartInfo[i].sColor.slice(0, 6))
 
       const parentID = this.params.strends[i]["parentID"];
       const saxes = this.params.saxes.filter(item => item.id === parentID);
-      console.log(saxes[0].uom);
+      console.log(saxes[0], " params");
 
-      yAxis.children.push(
-          am5.Label.new(root, {
-            text: saxes[0].uom ?? "",
-            textAlign: 'center',
-            fill: linecolor,
-            y: -40,
-            x: 0,
-            fontWeight: 'bold',
-          })
-      );
 
-      if (chart.yAxes.indexOf(yAxis) > 0) {
-        yAxis.set("syncWithAxis", chart.yAxes.getIndex(0));
+      if (this.saxes.filter(item => item.id === saxes[0].id).length === 0) {
+        this.saxes.push(saxes[0]);
+        //
+
+        var yRenderer = am5xy.AxisRendererY.new(root, {
+          opposite: true,
+          // maxGridDistance: 10,
+          minGridDistance: 30,
+        });
+        yAxis = chart.yAxes.push(
+            am5xy.ValueAxis.new(root, {
+              // numberFormat: "#.0a",
+              // numberFormat: "#.##e",
+              // maxDeviation: 1,
+              renderer: yRenderer
+            })
+        );
+        //   Теперь надписи
+
+        yAxis.children.push(
+            am5.Label.new(root, {
+              text: saxes[0].uom ?? "",
+              textAlign: 'center',
+              // fill: linecolor,
+              y: -40,
+              x: 0,
+              fontWeight: 'bold',
+            })
+        );
+
+        //
       }
+
+      // console.log(this.saxes);
+
+      // yAxis.children.push(
+      //     am5.Label.new(root, {
+      //       text: saxes[0].uom ?? "",
+      //       textAlign: 'center',
+      //       fill: linecolor,
+      //       y: -40,
+      //       x: 0,
+      //       fontWeight: 'bold',
+      //     })
+      // );
+
+      // if (chart.yAxes.indexOf(yAxis) > 0)   {
+      //   yAxis.set("syncWithAxis", chart.yAxes.getIndex(0));
+      // }
       // Set up data processor to parse string dates
       // https://www.amcharts.com/docs/v5/concepts/data/#Pre_processing_data
+
+      console.log(yAxis, " YAxis")
       var series = chart.series.push(
-        am5xy.LineSeries.new(root, {
-          name: this.chartInfo[i].name,
-          xAxis: xAxis,
-          yAxis: yAxis,
-          valueYField: "value",
-          valueXField: "argument",
-          connect: false,
-          fill: linecolor,
-          stroke: linecolor,
-          tooltip: am5.Tooltip.new(root, {
-            pointerOrientation: "horizontal",
-            showTooltipOn: "always",
-            labelText: "{name}: {valueY}"
-          }),
-      }));
+          am5xy.LineSeries.new(root, {
+            name: this.chartInfo[i].name,
+            xAxis: xAxis,
+            yAxis: yAxis,
+            valueYField: "value",
+            valueXField: "argument",
+            categoryXField: "category",
+            categoryField: "category",
+            // dataFields: {
+            //   valueY: "value1",
+            //   categoryX: "category",
+            // },
+            connect: false,
+            fill: linecolor,
+            stroke: linecolor,
+            tooltip: am5.Tooltip.new(root, {
+              pointerOrientation: "horizontal",
+              showTooltipOn: "always",
+              labelText: "{name}: {valueY}"
+            }),
+          }));
+
       series.uid = this.chartInfo[i].uid
 
       series.data.processor = am5.DataProcessor.new(root, {
         dateFormat: "yyyy-MM-dd",
         dateFields: ["date"]
       });
-      
-      series.strokes.template.setAll({ strokeWidth: 1 });
+
+      series.strokes.template.setAll({strokeWidth: 1});
       yRenderer.grid.template.set("strokeOpacity", 0.05);
-      yRenderer.labels.template.set("fill", series.get("fill"));
+      // yRenderer.labels.template.set("fill", series.get("fill"));
       yRenderer.setAll({
-        stroke: series.get("fill"),
+        stroke: 'white',
         strokeOpacity: 1,
         opacity: 1
       });
 
       this.seriesArr.push(series)
 
-      var data = this.generateDatas(i);
 
+      var data = this.generateDatas(i);
+      // console.log(data, "data")
       series.data.setAll(data);
-      series.appear();
+      // series.appear();
+      // console.log("Series");
+      // console.log(this.seriesArr[this.seriesArr.length - 1].data, " this.seriesArr")
+
+
     }
+
+
+    // }
+    // КОНЕЦ ЦИКЛА SERIES ------------------------------------------------------
+
+    // yAxis.combineFields = "category";
+
+    // this.xAxis = xAxis;
+
+    // КУРСОР
     let cursor = chart.set("cursor", am5xy.XYCursor.new(root, {
       behavior: "none",
     }));
@@ -475,13 +560,14 @@ export default {
       strokeWidth: 1,
       strokeDasharray: []
     });
-
+    //
+    // ЛЕГЕНДА Сверху
     var legend = chart.topAxesContainer.children.push(am5.Legend.new(root, {
       centerX: am5.percent(50),
-       x: am5.percent(50),
+      x: am5.percent(50),
     }));
     legend.data.setAll(chart.series.values);
-    this.showlegend = function showl(state){
+    this.showlegend = function showl(state) {
       legend.setAll({
         visible: state
       });
@@ -489,41 +575,44 @@ export default {
 
     var refreshId
     var timeoutId
-    this.startlive = async function startlive(winn,namee,seriesArr, controllerr, interval){
+    this.startlive = async function startlive(winn, namee, seriesArr, controllerr, interval) {
       this.gettingdata()
       var series = seriesArr
       var ip = this.ip
       var win = winn
       let name = namee
       var controller = controllerr
-      const headers = { 
-          'Content-Type': 'application/json',
+      const headers = {
+        'Content-Type': 'application/json',
       };
-      var article = `"${moment(series[0].data.values[series[0].data.values.length-1].argument + 1000).format("YYYY-MM-DDTHH:mm:ss")}"`;
-      await axios.post(`http://${ip}/api/nodes/${this.encript((new TextEncoder()).encode(win))}/widget/${this.encript((new TextEncoder()).encode(name))}/query/trend-increment`, article, { headers, signal: controller.signal })
-      .then(response => {
-        // console.log(response)
-        if(response.data.resultData) {
-          if (response.data.resultData[0].points[0]){
-            response.data.resultData.forEach(res =>{
-              var seriesfind = series.find(s => s.uid === res.uid)
-              // console.log(res)
-              for (let i = 0; i < res.points.length; i++) {
-                seriesfind.data.push({
-                  argument: new Date(res.points[i].argument).getTime(),
-                  value: res.points[i].value,
+      var article = `"${moment(series[0].data.values[series[0].data.values.length - 1].argument + 1000).format("YYYY-MM-DDTHH:mm:ss")}"`;
+      await axios.post(`http://${ip}/api/nodes/${this.encript((new TextEncoder()).encode(win))}/widget/${this.encript((new TextEncoder()).encode(name))}/query/trend-increment`, article, {
+        headers,
+        signal: controller.signal
+      })
+          .then(response => {
+            // console.log(response)
+            if (response.data.resultData) {
+              if (response.data.resultData[0].points[0]) {
+                response.data.resultData.forEach(res => {
+                  var seriesfind = series.find(s => s.uid === res.uid)
+                  // console.log(res)
+                  for (let i = 0; i < res.points.length; i++) {
+                    seriesfind.data.push({
+                      argument: new Date(res.points[i].argument).getTime(),
+                      value: res.points[i].value,
+                    })
+                  }
                 })
               }
-            })
-          }
-        }
-        this.gettingdata()
-      })
-      .catch(function (error) {
-      })
+            }
+            this.gettingdata()
+          })
+          .catch(function (error) {
+          })
       // console.log(series)
       if (!controller.signal.aborted) {
-        timeoutId = setTimeout(()=>{
+        timeoutId = setTimeout(() => {
           addData(series, ip, win, name);
           refreshId = setInterval(function () {
             var seriesArr = series
@@ -532,11 +621,11 @@ export default {
             var namee = name
             addData(seriesArr, ipp, winn, namee);
           }, interval)
-        },interval - moment().second()*1000 + 1000)
+        }, interval - moment().second() * 1000 + 1000)
       }
     }
 
-    this.stoplive = function stoplive(){
+    this.stoplive = function stoplive() {
       clearInterval(refreshId)
       clearTimeout(timeoutId)
     }
@@ -547,53 +636,54 @@ export default {
       // endtime = moment(seriesArr[0].data.values[seriesArr[0].data.values.length-1].argument).format('LLLL')
       // console.log(endtime)
       function encript(values) {
-        const  Alphabet = "12345678" + "9ABDEFGH" + "JKLMNPQR" + "STUVWXYZ";
+        const Alphabet = "12345678" + "9ABDEFGH" + "JKLMNPQR" + "STUVWXYZ";
         var bitsCount = 8 * values.length;
-        var ans = new Array(Math.trunc(bitsCount / 5) + (bitsCount%5==0?0:1));
+        var ans = new Array(Math.trunc(bitsCount / 5) + (bitsCount % 5 == 0 ? 0 : 1));
         for (let i = 0; i < ans.length; i++) {
           var bitNum = i * 5;
           var byteNum = Math.trunc(bitNum / 8);
-          var byteOffset = bitNum % 8;  
+          var byteOffset = bitNum % 8;
           var symbol = values[byteNum] >> byteOffset;
-          if (byteOffset > 3 && byteNum<(values.length-1))
-          {
+          if (byteOffset > 3 && byteNum < (values.length - 1)) {
             var symbolOffset = 8 - byteOffset;
-            symbol |= values[byteNum+1]<<symbolOffset;
+            symbol |= values[byteNum + 1] << symbolOffset;
           }
-          symbol &= 0b11111; 
+          symbol &= 0b11111;
           ans[i] = Alphabet[symbol];
         }
         return ans.join("")
       }
-      const headers = { 
-          'Content-Type': 'application/json',
+
+      const headers = {
+        'Content-Type': 'application/json',
       };
-      var article = `"${moment(seriesArr[0].data.values[seriesArr[0].data.values.length-1].argument + 1000).format("YYYY-MM-DDTHH:mm:ss")}"`;
-      await axios.post(`http://${ip}/api/nodes/${encript((new TextEncoder()).encode(win))}/widget/${encript((new TextEncoder()).encode(name))}/query/trend-increment`, article, { headers })
-      .then(response => {
-        if(response.data.resultData) {
-          if (response.data.resultData[0].points[0]){
-            // console.log(response)
-            seriesArr.forEach(series =>{
-              series.data.removeIndex(0)
-            })
-            response.data.resultData.forEach(res =>{
-              var seriesfind = seriesArr.find(s => s.uid === res.uid)
-              // console.log(res)
-              for (let i = 0; i < res.points.length; i++) {
-                seriesfind.data.push({
-                  argument: new Date(res.points[i].argument).getTime(),
-                  value: res.points[i].value,
+      var article = `"${moment(seriesArr[0].data.values[seriesArr[0].data.values.length - 1].argument + 1000).format("YYYY-MM-DDTHH:mm:ss")}"`;
+      await axios.post(`http://${ip}/api/nodes/${encript((new TextEncoder()).encode(win))}/widget/${encript((new TextEncoder()).encode(name))}/query/trend-increment`, article, {headers})
+          .then(response => {
+            if (response.data.resultData) {
+              if (response.data.resultData[0].points[0]) {
+                // console.log(response)
+                seriesArr.forEach(series => {
+                  series.data.removeIndex(0)
+                })
+                response.data.resultData.forEach(res => {
+                  var seriesfind = seriesArr.find(s => s.uid === res.uid)
+                  // console.log(res)
+                  for (let i = 0; i < res.points.length; i++) {
+                    seriesfind.data.push({
+                      argument: new Date(res.points[i].argument).getTime(),
+                      value: res.points[i].value,
+                    })
+                  }
                 })
               }
-            })
-          }
-        }
-      })
-      
+            }
+          })
+
     }
+
     var exporting = am5plugins_exporting.Exporting.new(root, {});
-    this.print =  function downloadChartImage() {
+    this.print = function downloadChartImage() {
       exporting.print();
     }
     this.downloadpng = function downloadChartImage() {
@@ -601,9 +691,9 @@ export default {
     }
 
 
-    series.appear(1000);
-    chart.appear(1000, 100);
-    
+    // series.appear(1000);
+    // chart.appear(1000, 100);
+
     cursor.snapToSeries = series;
 
     // chart.preloader.disabled = true;
@@ -615,7 +705,7 @@ export default {
     //   indicator.background.fillOpacity = 0.8;
     //   indicator.width = am4core.percent(100);
     //   indicator.height = am4core.percent(100);
-      
+
     //   var indicatorLabel = indicator.createChild(am4core.Label);
     //   indicatorLabel.text = "Loading stuff...";
     //   indicatorLabel.align = "center";
@@ -624,8 +714,8 @@ export default {
     // }
 
     // showIndicator();
-    
-    
+
+
   },
   watch: {
     timeFrame() {
@@ -638,12 +728,12 @@ export default {
       }
     },
     //
-    seriesArr:{
+    seriesArr: {
       handler() {
         this.starttimeexcel = moment(new Date(this.seriesArr[0].data.values[0].argument)).format("HH:mm:ss DD.MM.YY")
-        this.endtimeexcel = moment(new Date(this.seriesArr[0].data.values[this.seriesArr[0].data.values.length-1].argument)).format("HH:mm:ss DD.MM.YY")
+        this.endtimeexcel = moment(new Date(this.seriesArr[0].data.values[this.seriesArr[0].data.values.length - 1].argument)).format("HH:mm:ss DD.MM.YY")
         if (this.viewlive) {
-          this.endtime = new Date(this.seriesArr[0].data.values[this.seriesArr[0].data.values.length-1].argument)
+          this.endtime = new Date(this.seriesArr[0].data.values[this.seriesArr[0].data.values.length - 1].argument)
           this.starttime = new Date(this.seriesArr[0].data.values[0].argument)
         }
       },
@@ -680,7 +770,7 @@ export default {
         "--fontSize": this.params.fontSize * this.$parent.$parent.multiplier + "px",
       };
     },
-    datajson(){
+    datajson() {
       if (this.seriesArr) {
         var items = [];
         var sum
@@ -692,12 +782,12 @@ export default {
             if (this.seriesArr[j].data._values[i]?.value) {
               // element[this.seriesArr[j]._settings.name] = (this.seriesArr[j].data._values[i].value).toFixed(3).toString() + 'a'
               element[this.seriesArr[j]._settings.name] = 'a'
-            } else{
+            } else {
               element[this.seriesArr[j]._settings.name] = '***'
               sum = sum + 1
             }
           }
-          if (this.seriesArr.length!= sum) items.push(JSON.parse(JSON.stringify(element)))
+          if (this.seriesArr.length != sum) items.push(JSON.parse(JSON.stringify(element)))
         }
         return items
       } else {
@@ -707,22 +797,24 @@ export default {
     ip() {
       return this.$store.getters.ip;
     },
-    
+
   },
 }
 </script>
 
 <style scoped>
-.ms{
+.ms {
   user-select: none;
 }
+
 #chartdiv {
   width: 100%;
   height: 92%;
   /* border: solid 1px gray; */
 }
-#box_loading{
-  background: rgba(35, 35, 35,0.8);
+
+#box_loading {
+  background: rgba(35, 35, 35, 0.8);
   position: absolute;
   /* border: solid 1px green; */
   width: var(--width);
@@ -734,13 +826,15 @@ export default {
   justify-content: center;
   flex-direction: column;
 }
-#box_loading_top{
+
+#box_loading_top {
   align-items: center;
   display: flex;
   justify-content: center;
   flex-direction: row;
 }
-#box_loading_center{
+
+#box_loading_center {
   border: solid 1px white;
   width: 30%;
   height: 30%;
@@ -750,7 +844,8 @@ export default {
   justify-content: center;
   flex-direction: column;
 }
-#box{
+
+#box {
   position: absolute;
   /*text-align: left;*/
   /* border: solid 1p x green; */
@@ -759,55 +854,60 @@ export default {
   left: var(--x);
   top: var(--y);
 }
-  #box_title{
-    /* border: solid 1px blue; */
-    width: 100%;
-    height: 10%;
-    display: flex;
-    flex-direction: row;
-    justify-content:center;
-    align-items:center;
-  }
-    .box_title_datepicker{
-      /* border: solid 1px peru; */
-      width: 100%;
-      height: 100%;
-    }
 
-    .button_hover:hover{
-      background-color: #267dff;
-    }
-    .button_hover:active{
-      background-color: #68a5ff;
-    }
-
-  #box_chart{
-    width: 100%;
-    height: 90%;
-    /* border: solid 1px yellow; */
-  }
-  .dp__theme_dark {
-   --dp-background-color: #212121;
-   --dp-text-color: #ffffff;
-   --dp-hover-color: #484848;
-   --dp-hover-text-color: #ffffff;
-   --dp-hover-icon-color: #959595;
-   --dp-primary-color: #005cb2;
-   --dp-primary-text-color: #ffffff;
-   --dp-secondary-color: #a9a9a9;
-   --dp-border-color: #2d2d2d;
-   --dp-menu-border-color: #2d2d2d;
-   --dp-border-color-hover: #aaaeb7;
-   --dp-disabled-color: #737373;
-   --dp-scroll-bar-background: #212121;
-   --dp-scroll-bar-color: #484848;
-   --dp-success-color: #00701a;
-   --dp-success-color-disabled: #428f59;
-   --dp-icon-color: #959595;
-   --dp-danger-color: #e53935;
-   --dp-highlight-color: rgba(0, 92, 178, 0.2);
+#box_title {
+  /* border: solid 1px blue; */
+  width: 100%;
+  height: 10%;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
 }
-#buttons{
+
+.box_title_datepicker {
+  /* border: solid 1px peru; */
+  width: 100%;
+  height: 100%;
+}
+
+.button_hover:hover {
+  background-color: #267dff;
+}
+
+.button_hover:active {
+  background-color: #68a5ff;
+}
+
+#box_chart {
+  width: 100%;
+  height: 90%;
+  /* border: solid 1px yellow; */
+}
+
+.dp__theme_dark {
+  --dp-background-color: #212121;
+  --dp-text-color: #ffffff;
+  --dp-hover-color: #484848;
+  --dp-hover-text-color: #ffffff;
+  --dp-hover-icon-color: #959595;
+  --dp-primary-color: #005cb2;
+  --dp-primary-text-color: #ffffff;
+  --dp-secondary-color: #a9a9a9;
+  --dp-border-color: #2d2d2d;
+  --dp-menu-border-color: #2d2d2d;
+  --dp-border-color-hover: #aaaeb7;
+  --dp-disabled-color: #737373;
+  --dp-scroll-bar-background: #212121;
+  --dp-scroll-bar-color: #484848;
+  --dp-success-color: #00701a;
+  --dp-success-color-disabled: #428f59;
+  --dp-icon-color: #959595;
+  --dp-danger-color: #e53935;
+  --dp-highlight-color: rgba(0, 92, 178, 0.2);
+}
+
+#buttons {
   height: 100%;
   display: flex;
   flex-direction: row;

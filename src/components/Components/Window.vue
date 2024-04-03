@@ -21,6 +21,7 @@
         <chart v-for="elem in charts" :key="elem.name" :params="elem"/>
         <helper v-for="elem in helper" :key="elem.name" :params="elem.properties"/>
         <duval v-for="elem in duval" :key="elem.name" :params="elem.properties" :name="elem.name"/>
+        <vector v-for="elem in vector" :key="elem.name" :params="elem.properties" :name="elem.name"/>
       </div>
     </div>
   </div>
@@ -38,6 +39,7 @@ import Imagelogo from '../Primitives/Logo.vue';
 import Chart from '../Charts/Charts.vue';
 import Helper from '../Primitives/Helper.vue'
 import Duval from '../Specials/DuvalTriangle.vue'
+import Vector from '../Specials/VectorDiagram.vue'
 import Commands from "../Commands/Commands.vue";
 
 
@@ -72,6 +74,7 @@ export default {
       charts:[],
       helper:[],
       duval:[],
+      vector: [],
       commandss:[],
       width: 0,
       height: 0,
@@ -93,7 +96,8 @@ export default {
     Imagelogo,
     Chart,
     Helper,
-    Duval
+    Duval,
+    Vector
     
   },
 
@@ -237,6 +241,9 @@ export default {
       } else
       if (res.type.startsWith("specials/DuvalTriangle")) {
         this.duval.push(res);
+      }
+      if (res.type.startsWith("specials/VectorDiagram")) {
+        this.vector.push(res);
       } else
       if (res.type.startsWith("commands")) {
         this.commandss.push(res)

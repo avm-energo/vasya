@@ -81,7 +81,7 @@
           </div>
         </div>
       </div>
-      <div id="history_window_body">
+      <div id="history_window_body" @scroll="historyWindowScroll">
         <table id="history_window_body_table" cellpadding="5">
           <tr>
             <td
@@ -103,7 +103,7 @@
               Time
             </td>
           </tr>
-          <tr v-for="obj in filteredHistoryList" :key="obj.id">
+          <tr v-for="obj in filteredHistoryList.slice(0, historymasVisible)" :key="obj.id">
             <td>{{ obj.message }}</td>
             <td>{{ obj.type }}</td>
             <td>{{ DateTime(obj.time) }}</td>
@@ -138,6 +138,7 @@ export default {
       currentSort: "message",
       currentSortDir: "asc",
       tick:null,
+      historymasVisible: 50,
     };
   },
   props: {
@@ -155,7 +156,7 @@ export default {
     this.footercolor = this.myJson.data['footer-state'];
     this.footerflashing = this.myJson.data['footer-flashing']
     this.tick = this.myJson.tick;
-    this.events = (this.data.events ? this.data.events.$id ? this.data.events : this.data.events.$values : [])
+    if (this.data.events) this.events = (this.data.events.$id  == undefined ? this.data.events : this.data.events.$values)
 
 
     const today = new Date();
@@ -263,6 +264,14 @@ export default {
     }
   },
   methods: {
+    historyWindowScroll(e) {
+      if (e.target.scrollTop + e.target.clientHeight + 100 >= e.target.scrollHeight) {
+        if (this.historymasVisible <= this.filteredHistoryList.length) {
+          this.historymasVisible += 100;
+        }
+      }
+
+    },
     some(id){
       let obj = this.events[this.events.findIndex((s)=> s.id === id)]
       // if (!obj.acknowtime) obj.acknowtime = moment(new Date()).format("YYYY-MM-DD HH:mm:ss")
@@ -301,7 +310,8 @@ export default {
       data.push(this.endtime);
       data.push(this.starttime);
       this.$store.dispatch("gethistorytime", data);
-      console.log(this.endtime)
+      console.log(this.starttime, " - Начало")
+      console.log(this.endtime, " - Конец")
     },
     clickfooter() {
       this.tablestate = !this.tablestate;
@@ -316,7 +326,7 @@ export default {
       this.historystate = !this.historystate;
       if (this.historystate) {
         this.endtime = moment(new Date());
-        this.starttime = moment(Date.now() - 86400000 * 366);
+        this.starttime = moment(Date.now() - 86400000 * 1);
         const data = [];
         data.push(this.endtime);
         data.push(this.starttime);
