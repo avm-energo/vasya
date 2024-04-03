@@ -64,7 +64,7 @@
         </svg>
       </div>
     </div>
-    <p class="p" :style="cssProps" v-if="(this.params.properties.width!=this.params.properties.height & this.params.properties.text != 'Navigator') || this.params.properties.leftIcon == 'None'">{{button.value}}</p>    <!-- <p class="p" :style="cssProps" v-else-if="(this.params.properties.width > 60 && this.params.properties.width!=this.params.properties.height) || this.params.properties.angle != 0">{{button.value}}</p> -->
+    <p class="p" :style="cssProps" v-if="((this.params.properties.width!=this.params.properties.height & this.params.properties.text != 'Navigator') || this.params.properties.leftIcon == 'None') && (this.params.properties.text.toLowerCase() != 'tooltiper')">{{button.value}}</p>    <!-- <p class="p" :style="cssProps" v-else-if="(this.params.properties.width > 60 && this.params.properties.width!=this.params.properties.height) || this.params.properties.angle != 0">{{button.value}}</p> -->
   </div>
 </template>
 
@@ -138,7 +138,7 @@ export default {
         "--backgroundColor": [this.button.neightbourState == "Red" ? "Red" : [ this.button.neightbourState == "Yellow" ? "Yellow" : "#" + this.button.BackgroundColor, ],],
         "--color": [this.button.neightbourState == "Yellow" ? "Black": this.button.ForegroundColor,],
         "--borderThickness": [this.params.properties.windowBorderBrush ? this.$parent.multiplier + 'px' : '0px'],
-        "--borderBrush": this.params.properties.borderBrush,
+        "--borderBrush": this.params.properties.borderBrush ? this.params.properties.borderBrush : 'transparent',
         "--scale": this.params.properties.scale,
         "--flexdir":  [this.params.properties.angle != 0 ? 'column' : 'row'],
         "--borderRadius": this.params.properties.borderRadius,
