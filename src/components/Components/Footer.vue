@@ -16,18 +16,18 @@
           </thead>
           <tbody>
             <tr v-for="obj in filteredEventsList" :key="obj.id" :class="[
-              obj.statusEventSignaling == 5 ?  
-                obj.warnType == 4 ? 'flashred' : 
-                obj.warnType == 2 ? 'flashyellow' :
-                obj.warnType == 1 ? 'flashgray' : '' : 
-                obj.statusEventSignaling == 1 || obj.statusEventSignaling == 7 ? 
-                  obj.warnType == 4 ? 'backgroundred' : 
-                  obj.warnType == 2 ? 'backgroundyellow' :
-                  obj.warnType == 1 ? 'backgroundgray' : '' : 
-                  obj.statusEventSignaling == 4 || obj.statusEventSignaling == 8 ? 
-                    obj.warnType == 4 ? 'textred' : 
-                    obj.warnType == 2 ? 'textyellow' :
-                    obj.warnType == 1 ? 'textgray' : '' : ''
+              obj.statusEventSignaling === 5 ?
+                obj.warnType === 4 ? 'flashred' :
+                obj.warnType === 2 ? 'flashyellow' :
+                obj.warnType === 1 ? 'flashgray' : '' :
+                obj.statusEventSignaling === 1 || obj.statusEventSignaling === 7 ?
+                  obj.warnType === 4 ? 'backgroundred' :
+                  obj.warnType === 2 ? 'backgroundyellow' :
+                  obj.warnType === 1 ? 'backgroundgray' : '' :
+                  obj.statusEventSignaling === 4 || obj.statusEventSignaling === 8 ?
+                    obj.warnType === 4 ? 'textred' :
+                    obj.warnType === 2 ? 'textyellow' :
+                    obj.warnType === 1 ? 'textgray' : '' : ''
                 ]" 
                 @dblclick="obj.needAck ? some(obj.id) : ''">
               <td style="text-align: center;">{{ DateTime(obj.comeTime) }}</td>
@@ -81,35 +81,21 @@
           </div>
         </div>
       </div>
-      <div id="history_window_body" @scroll="historyWindowScroll">
-        <table id="history_window_body_table" cellpadding="5">
-          <tr>
-            <td
-              style="color: white; text-align: center; user-select: none"
-              @click="sort('message')"
-            >
-              Message
-            </td>
-            <td
-              style="color: white; text-align: center; user-select: none"
-              @click="sort('type')"
-            >
-              Type
-            </td>
-            <td
-              style="color: white; text-align: center; user-select: none"
-              @click="sort('time')"
-            >
-              Time
-            </td>
-          </tr>
-          <tr v-for="obj in filteredHistoryList.slice(0, historymasVisible)" :key="obj.id">
-            <td>{{ obj.message }}</td>
-            <td>{{ obj.type }}</td>
-            <td>{{ DateTime(obj.time) }}</td>
-          </tr>
-        </table>
+      <div id="history_window_body" @scroll="historyWindowScroll" :style="{ overflowY: isLoading ? 'hidden' : 'auto' }">
+<!--        -->
+
+          <EventsHistoryTable :history="filteredHistoryList" :historymasVisible="historymasVisible" @sort="sort" />
+<!--        -->
+        <div id="box_loading" v-show="isLoading" >
+          <div id="box_loading_center">
+            <div id="box_loading_top">
+              <svg xmlns:svg="http://www.w3.org/2000/svg" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.0" width="64px" height="64px" viewBox="0 0 128 128" xml:space="preserve"><rect x="0" y="0" width="100%" height="100%" fill="#232323" /><g><path d="M71 39.2V.4a63.6 63.6 0 0 1 33.96 14.57L77.68 42.24a25.53 25.53 0 0 0-6.7-3.03z" fill="#000000"/><path d="M71 39.2V.4a63.6 63.6 0 0 1 33.96 14.57L77.68 42.24a25.53 25.53 0 0 0-6.7-3.03z" fill="#e1e1e1" transform="rotate(45 64 64)"/><path d="M71 39.2V.4a63.6 63.6 0 0 1 33.96 14.57L77.68 42.24a25.53 25.53 0 0 0-6.7-3.03z" fill="#e1e1e1" transform="rotate(90 64 64)"/><path d="M71 39.2V.4a63.6 63.6 0 0 1 33.96 14.57L77.68 42.24a25.53 25.53 0 0 0-6.7-3.03z" fill="#e1e1e1" transform="rotate(135 64 64)"/><path d="M71 39.2V.4a63.6 63.6 0 0 1 33.96 14.57L77.68 42.24a25.53 25.53 0 0 0-6.7-3.03z" fill="#bebebe" transform="rotate(180 64 64)"/><path d="M71 39.2V.4a63.6 63.6 0 0 1 33.96 14.57L77.68 42.24a25.53 25.53 0 0 0-6.7-3.03z" fill="#979797" transform="rotate(225 64 64)"/><path d="M71 39.2V.4a63.6 63.6 0 0 1 33.96 14.57L77.68 42.24a25.53 25.53 0 0 0-6.7-3.03z" fill="#6e6e6e" transform="rotate(270 64 64)"/><path d="M71 39.2V.4a63.6 63.6 0 0 1 33.96 14.57L77.68 42.24a25.53 25.53 0 0 0-6.7-3.03z" fill="#3c3c3c" transform="rotate(315 64 64)"/><animateTransform attributeName="transform" type="rotate" values="0 64 64;45 64 64;90 64 64;135 64 64;180 64 64;225 64 64;270 64 64;315 64 64" calcMode="discrete" dur="720ms" repeatCount="indefinite"></animateTransform></g><g><circle fill="#000000" cx="63.66" cy="63.16" r="12"/><animate attributeName="opacity" dur="720ms" begin="0s" repeatCount="indefinite" keyTimes="0;0.5;1" values="1;0;1"/></g></svg>
+              <div style="margin-left: 10px;">Загрузка...</div>
+            </div>
+          </div>
+        </div>
       </div>
+
     </div>
   </div>
 </template>
@@ -118,6 +104,7 @@
 import Datepicker from "@vuepic/vue-datepicker";
 import "@vuepic/vue-datepicker/dist/main.css";
 import moment from "moment";
+import EventsHistoryTable from "./EventsHistoryTable.vue";
 
 export default {
   name: "foooter",
@@ -135,10 +122,12 @@ export default {
       tablestate: false,
       historystate: false,
       upHere: false,
-      currentSort: "message",
-      currentSortDir: "asc",
+      currentSort: "",
+      currentSortDir: "",
       tick:null,
       historymasVisible: 50,
+      isLoading: false,
+      sortedArray: null,
     };
   },
   props: {
@@ -147,6 +136,7 @@ export default {
   components: {
     moment,
     Datepicker,
+    EventsHistoryTable
   },
   created() {
     
@@ -216,12 +206,27 @@ export default {
     }, 1000 - Math.abs(500 - currentDateMilliseconds));
 
   },
+  updated() {
+    // Этот метод вызывается после перерендера компонента
+    // this.isLoading = false;
+    console.log('Компонент был перерендерен');
+  },
   computed: {
     multiplier(){
       return this.$parent.multiplier
     },
+
+    // visibleFilteredHistoryMas() {
+    //   return this.filteredHistoryList.slice(0, this.historymasVisible);
+    //   // return this.historymas.slice(0, this.historymasVisible);
+    // },
+
     filteredHistoryList() {
-      return this.historymas
+
+      if (this.currentSort === "" && this.currentSortDir === "") {
+        return this.historymas;
+      }
+      const sortArr = this.historymas
         .sort((a, b) => {
           let modifier = 1;
           if (this.currentSortDir === "desc") modifier = -1;
@@ -234,6 +239,8 @@ export default {
             .toLowerCase()
             .includes(this.eventsfilter.toLowerCase());
         });
+      console.log("Данные отсортированы")
+      return sortArr;
     },
     filteredEventsList() {
       if (this.events) {
@@ -250,6 +257,8 @@ export default {
       }
     },
     historymas() {
+      console.log('Данные получены');
+      console.log(this.$store.getters.historymas.length, " - Текущее число событий");
       return this.$store.getters.historymas;
     },
     cssProps() {
@@ -263,10 +272,28 @@ export default {
       }
     }
   },
+  watch: {
+    historymas(newValue) {
+      this.isLoading = false;
+      console.log("historymas изменилось");
+    }
+  },
   methods: {
+    // sortArrayAsync(array, currentSortDir, currentSort) {
+    //   console.log(array, " - Array in Worker")
+    //   // Создаем Promise и возвращаем результат отсортированного массива
+    //   return new Promise((resolve, reject) => {
+    //     const worker = new SortWorker();
+    //     worker.onmessage = event => {
+    //       this.sortedArray = event.data; // Сохраняем отсортированный массив
+    //       resolve(); // Разрешаем промис после получения отсортированных данных
+    //     };
+    //     worker.postMessage(array, currentSortDir, currentSort);
+    //   });
+    // },
     historyWindowScroll(e) {
       if (e.target.scrollTop + e.target.clientHeight + 100 >= e.target.scrollHeight) {
-        if (this.historymasVisible <= this.filteredHistoryList.length) {
+        if (this.historymasVisible <= this.historymas.length) {
           this.historymasVisible += 100;
         }
       }
@@ -300,18 +327,27 @@ export default {
     },
 
     sort(s) {
+      // await this.sortArrayAsync(this.historymas, this.currentSortDir, this.currentSort);
+      console.log("Начало сортировки")
+      // this.isLoading = true;
       if (s === this.currentSort) {
         this.currentSortDir = this.currentSortDir === "asc" ? "desc" : "asc";
       }
       this.currentSort = s;
+      this.historymasVisible = 50;
     },
-    updatedata() {
+    async updatedata() {
+      console.log('Данные запрошены');
+      this.currentSortDir = "";
+      this.currentSort = "";
+      this.historymasVisible = 50;
+      this.isLoading = true;
       const data = [];
       data.push(this.endtime);
       data.push(this.starttime);
-      this.$store.dispatch("gethistorytime", data);
-      console.log(this.starttime, " - Начало")
-      console.log(this.endtime, " - Конец")
+      await this.$store.dispatch("gethistorytime", data);
+      console.log(this.starttime, " - Начало");
+      console.log(this.endtime, " - Конец");
     },
     clickfooter() {
       this.tablestate = !this.tablestate;
@@ -323,6 +359,7 @@ export default {
       
     },
     clickhistory() {
+      this.historymasVisible = 50;
       this.historystate = !this.historystate;
       if (this.historystate) {
         this.endtime = moment(new Date());
@@ -366,7 +403,11 @@ tbody{
   .table_footer_columns{
     color: white;
     text-align: center;
-    
+    cursor: pointer;
+  }
+
+  .table_footer_columns:hover {
+    background: #373737;
   }
 #footer_title {
   font-size: 16px;
@@ -508,6 +549,7 @@ tbody{
   background-color: #101010ff;
   width: 60%;
   height: 80%;
+
 }
 #history_window_head_datefilter {
   display: flex;
@@ -532,12 +574,18 @@ tbody{
 }
 #history_window_body {
   padding-top: 10px;
-  width: 96%;
+  width: 100%;
   height: 80%;
   overflow-y: auto;
   scrollbar-color: #d4aa70 #e4e4e4;
   scrollbar-width: thin;
+  position: relative;
 }
+
+.nonScrollable {
+  overflow-y: hidden;
+}
+
 .icons__item {
   margin-left: 10px;
   width: 38px;
@@ -556,6 +604,34 @@ tbody{
   color: white;
   font-size: var(--fontsize);
 }
+
+.history_window_body_table_columns {
+  color: white;
+  text-align: center;
+  user-select: none;
+  cursor: pointer;
+}
+
+.history_window_body_table_columns:hover {
+  background: #373737;
+}
+
+#box_loading {
+  background: rgba(35, 35, 35, 0.8);
+  position: absolute;
+  /* border: solid 1px green; */
+  width: 100%;
+  height: 100%;
+  top: 0;
+  //left: var(--x);
+  //top: var(--y);
+  align-items: center;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+}
+
+
 .dp__theme_dark {
    --dp-background-color: #212121;
    --dp-text-color: #ffffff;

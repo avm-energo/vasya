@@ -90,12 +90,12 @@
             </g>
             </svg>
           </exportexcel>
+<!--          <button @click="createWorkers(4)">4 Воркера</button>-->
         </div>
         <!-- <button @click="some()">dsa</button> -->
       </div>
       <div style="flex-grow: 6" ></div>
     </div>
-
     <div id="box_chart">
       <div id="box_timeframe" @click="changeTimeframe">
         <span id="timeframe_1" class="timeframe">Мин</span>
@@ -106,15 +106,16 @@
       <div id="chartdiv" ref="chartdiv"></div>
     </div>
   </div>
-  <div id="box_loading" v-if="!this.getdata" :style="cssProps">
-    <div id="box_loading_center">
-      <div id="box_loading_top">
-        <svg xmlns:svg="http://www.w3.org/2000/svg" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.0" width="64px" height="64px" viewBox="0 0 128 128" xml:space="preserve"><rect x="0" y="0" width="100%" height="100%" fill="#232323" /><g><path d="M71 39.2V.4a63.6 63.6 0 0 1 33.96 14.57L77.68 42.24a25.53 25.53 0 0 0-6.7-3.03z" fill="#000000"/><path d="M71 39.2V.4a63.6 63.6 0 0 1 33.96 14.57L77.68 42.24a25.53 25.53 0 0 0-6.7-3.03z" fill="#e1e1e1" transform="rotate(45 64 64)"/><path d="M71 39.2V.4a63.6 63.6 0 0 1 33.96 14.57L77.68 42.24a25.53 25.53 0 0 0-6.7-3.03z" fill="#e1e1e1" transform="rotate(90 64 64)"/><path d="M71 39.2V.4a63.6 63.6 0 0 1 33.96 14.57L77.68 42.24a25.53 25.53 0 0 0-6.7-3.03z" fill="#e1e1e1" transform="rotate(135 64 64)"/><path d="M71 39.2V.4a63.6 63.6 0 0 1 33.96 14.57L77.68 42.24a25.53 25.53 0 0 0-6.7-3.03z" fill="#bebebe" transform="rotate(180 64 64)"/><path d="M71 39.2V.4a63.6 63.6 0 0 1 33.96 14.57L77.68 42.24a25.53 25.53 0 0 0-6.7-3.03z" fill="#979797" transform="rotate(225 64 64)"/><path d="M71 39.2V.4a63.6 63.6 0 0 1 33.96 14.57L77.68 42.24a25.53 25.53 0 0 0-6.7-3.03z" fill="#6e6e6e" transform="rotate(270 64 64)"/><path d="M71 39.2V.4a63.6 63.6 0 0 1 33.96 14.57L77.68 42.24a25.53 25.53 0 0 0-6.7-3.03z" fill="#3c3c3c" transform="rotate(315 64 64)"/><animateTransform attributeName="transform" type="rotate" values="0 64 64;45 64 64;90 64 64;135 64 64;180 64 64;225 64 64;270 64 64;315 64 64" calcMode="discrete" dur="720ms" repeatCount="indefinite"></animateTransform></g><g><circle fill="#000000" cx="63.66" cy="63.16" r="12"/><animate attributeName="opacity" dur="720ms" begin="0s" repeatCount="indefinite" keyTimes="0;0.5;1" values="1;0;1"/></g></svg>
-        <div style="margin-left: 10px;">Загрузка...</div>
+<!--  <div id="box_loading" >-->
+<!--    <div id="box_loading_center">-->
+      <div id="box_loading_top" v-if="!this.getdata" :style="cssPropsLoading" >
+        <svg xmlns:svg="http://www.w3.org/2000/svg" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.0" width="24px" height="24px" viewBox="0 0 128 128" xml:space="preserve"><rect x="0" y="0" width="100%" height="100%" fill="#232323" /><g><path d="M71 39.2V.4a63.6 63.6 0 0 1 33.96 14.57L77.68 42.24a25.53 25.53 0 0 0-6.7-3.03z" fill="#000000"/><path d="M71 39.2V.4a63.6 63.6 0 0 1 33.96 14.57L77.68 42.24a25.53 25.53 0 0 0-6.7-3.03z" fill="#e1e1e1" transform="rotate(45 64 64)"/><path d="M71 39.2V.4a63.6 63.6 0 0 1 33.96 14.57L77.68 42.24a25.53 25.53 0 0 0-6.7-3.03z" fill="#e1e1e1" transform="rotate(90 64 64)"/><path d="M71 39.2V.4a63.6 63.6 0 0 1 33.96 14.57L77.68 42.24a25.53 25.53 0 0 0-6.7-3.03z" fill="#e1e1e1" transform="rotate(135 64 64)"/><path d="M71 39.2V.4a63.6 63.6 0 0 1 33.96 14.57L77.68 42.24a25.53 25.53 0 0 0-6.7-3.03z" fill="#bebebe" transform="rotate(180 64 64)"/><path d="M71 39.2V.4a63.6 63.6 0 0 1 33.96 14.57L77.68 42.24a25.53 25.53 0 0 0-6.7-3.03z" fill="#979797" transform="rotate(225 64 64)"/><path d="M71 39.2V.4a63.6 63.6 0 0 1 33.96 14.57L77.68 42.24a25.53 25.53 0 0 0-6.7-3.03z" fill="#6e6e6e" transform="rotate(270 64 64)"/><path d="M71 39.2V.4a63.6 63.6 0 0 1 33.96 14.57L77.68 42.24a25.53 25.53 0 0 0-6.7-3.03z" fill="#3c3c3c" transform="rotate(315 64 64)"/><animateTransform attributeName="transform" type="rotate" values="0 64 64;45 64 64;90 64 64;135 64 64;180 64 64;225 64 64;270 64 64;315 64 64" calcMode="discrete" dur="720ms" repeatCount="indefinite"></animateTransform></g><g><circle fill="#000000" cx="63.66" cy="63.16" r="12"/><animate attributeName="opacity" dur="720ms" begin="0s" repeatCount="indefinite" keyTimes="0;0.5;1" values="1;0;1"/></g></svg>
+        <div style="margin-left: 10px;">Загрузка: {{this.loading_per}}% </div>
+        <button @click="stopfetch(), stoplive()" v-show="this.seriesArr != null">Прервать загрузку</button>
       </div>
-      <button @click="stopfetch(), stoplive()" v-show="this.seriesArr != null">Отмена</button>
-    </div>
-  </div>
+
+<!--    </div>-->
+<!--  </div>-->
 </template>
 
 <script>
@@ -124,6 +125,7 @@ import am5themes_Animated from '@amcharts/amcharts5/themes/Animated';
 import * as am5plugins_exporting from "@amcharts/amcharts5/plugins/exporting";
 import am5lang_ru_RU from './locales/am5lang_ru_RU'
 import {ru} from 'date-fns/locale'
+import FetchChunkWorker from 'worker-loader!./fetchChunk.worker';
 
 
 import Datepicker from "@vuepic/vue-datepicker";
@@ -131,7 +133,6 @@ import moment from "moment";
 import exportexcel from "vue-json-excel3"
 
 import axios from 'axios'
-import { Settings } from '@amcharts/amcharts5/.internal/core/util/Entity';
 
 export default {
   name: "Histogram",
@@ -157,6 +158,8 @@ export default {
       saxes: [],
       //
       timeFrame: 60,
+      intervals_count: 1,
+      loading_per: 0,
     }
   },
   components: {
@@ -218,7 +221,7 @@ export default {
     },
     stopfetch() {
       this.viewlive = false
-      this.getdata = !this.getdata
+      // this.getdata = !this.getdata
       this.controller.abort()
       this.controller = new AbortController();
     },
@@ -243,13 +246,15 @@ export default {
       return ans.join("")
     },
 
-    async getChartData() {
-      const article = this.updatedBody()
+    async getChartData(startDate, endDate, iteration) {
+      // Задаем парамтеры даты начала и даты окончания для запроса
+      const article = this.updatedBody(startDate, endDate)
+      // console.log(this.divideTimeInterval(this.starttime, this.endtime), " - Разделение на 10 интервалов");
       console.log('запросил')
       const headers = {
         'Content-Type': 'application/json',
       };
-      this.chartDataArr = await axios.post(`http://${this.ip}/api/nodes/${this.encript((new TextEncoder()).encode(this.$parent.$parent.windowpath))}/widget/${this.encript((new TextEncoder()).encode(this.name))}/query/trend-history`, article,
+      return await axios.post(`http://${this.ip}/api/nodes/${this.encript((new TextEncoder()).encode(this.$parent.$parent.windowpath))}/widget/${this.encript((new TextEncoder()).encode(this.name))}/query/trend-history`, article,
           {
             headers,
             signal: this.controller.signal
@@ -257,21 +262,79 @@ export default {
           .then(response => {
             // console.log(this.controller)
             console.log(response.data)
-            this.gettingdata()
+            // this.gettingdata()
             console.log('получил')
             return response.data
           })
           .catch(function (error) {
+            console.log(error)
           });
+    },
+
+    createWorkers (count) {
+
+      const results = [];
+      // Создаем массив веб-воркеров
+      const workers = [];
+
+      const diff = this.endtime.getTime() - this.starttime.getTime(); // Разница между датами в миллисекундах
+      const intervalLength = diff / count; // Длина каждого промежутка
+      const intervals = []; // Массив для хранения промежутков
+
+      // Создаем веб-воркеры и отправляем им данные для обработки
+      for (let i = 0; i < count; i++) {
+        const worker = new FetchChunkWorker();
+
+        // Слушаем сообщения от веб-воркера
+        worker.onmessage = (event) => {
+          results.push(event.data);
+
+          // Если получили результаты от всех веб-воркеров, обрабатываем результаты
+          if (results.length === count) {
+            console.log(results, ' - Результаты выполнения воркера');
+          }
+        };
+
+        const startOfInterval = new Date(this.starttime.getTime() + i * intervalLength); // Начало промежутка
+        const endOfInterval = new Date(this.starttime.getTime() + (i + 1) * intervalLength); // Конец промежутка
+
+        // Отправляем данные для обработки в веб-воркер
+        worker.postMessage(
+            { index: i,
+              startOfInterval: startOfInterval,
+              endOfInterval: endOfInterval,
+              query: `http://${this.ip}/api/nodes/${this.encript((new TextEncoder()).encode(this.$parent.$parent.windowpath))}/widget/${this.encript((new TextEncoder()).encode(this.name))}/query/trend-history`,
+            });
+
+        workers.push(worker);
+      }
+    //   Конец цикла с воркером
+
+    },
+
+     divideTimeInterval (startDate, endDate) {
+      const diff = endDate.getTime() - startDate.getTime(); // Разница между датами в миллисекундах
+      const intervalLength = diff / this.intervals_count; // Длина каждого промежутка
+
+      const intervals = []; // Массив для хранения промежутков
+
+      // Создание this.intervals_count равных промежутков
+      for (let i = 0; i < this.intervals_count; i++) {
+        const startOfInterval = new Date(startDate.getTime() + i * intervalLength); // Начало промежутка
+        const endOfInterval = new Date(startDate.getTime() + (i + 1) * intervalLength); // Конец промежутка
+        intervals.push({ start: startOfInterval, end: endOfInterval }); // Добавление промежутка в массив
+      }
+
+      return intervals;
     },
 
     getChartsInfo() {
       this.chartInfo = this.params.strends
     },
-    updatedBody() {
+    updatedBody(start, end) {
       var body = `{
-          "lowerTime": "${moment(new Date(this.starttime).getTime()).format("YYYY-MM-DDTHH:mm:ss")}",
-          "upperTime": "${moment(new Date(this.endtime).getTime()).format("YYYY-MM-DDTHH:mm:ss")}"
+          "lowerTime": "${moment(new Date(start).getTime()).format("YYYY-MM-DDTHH:mm:ss")}",
+          "upperTime": "${moment(new Date(end).getTime()).format("YYYY-MM-DDTHH:mm:ss")}"
       }`;
       // console.log((moment(new Date(this.endtime)) - moment(new Date(this.starttime)))/60000*60)
       console.log('new body created');
@@ -285,6 +348,15 @@ export default {
           var data = this.generateDatas(i);
           console.log('asd')
           this.seriesArr[i].data.setAll(data)
+        }
+      }
+    },
+
+    clearChart() {
+      if (this.chartDataArr !== undefined) {
+        for (let i = 0; i < this.chart.series.values.length; i++) {
+          console.log('clear')
+          this.seriesArr[i].data.setAll([])
         }
       }
     },
@@ -310,23 +382,58 @@ export default {
       // на данном этапе нужно проверить сроки
       console.log(this.starttime)
       console.log(this.endtime)
-      // Если нам нужно больше данных, чемк у нас есть в chartDataArr, то получаем их в getChartData
-      await this.getChartData()
-      // Сколько точек пришло
-      console.log("Число точек", this.chartDataArr.resultData[0].points.length)
-      if (this.chartDataArr.resultData[0].points.length < 1450) {
-        this.setTimeFrame(1);
-      } else if (this.chartDataArr.resultData[0].points.length < 2900) {
+
+      this.loading_per = 0;
+
+      const diff = this.endtime.getTime() - this.starttime.getTime()
+      if (diff <= 86400000) this.intervals_count = 1;
+      else if (diff <= 345600000) this.intervals_count = 2;
+      else if (diff <= 1209600000) this.intervals_count = 4;
+      else if (diff <= 2678403559) this.intervals_count = 10;
+      else this.intervals_count = 20;
+
+      console.log(this.endtime.getTime() - this.starttime.getTime(), " - Мс");
+      const intervals = this.divideTimeInterval(this.starttime, this.endtime);
+      console.log(intervals, " Интервалы")
+
+      // this.root.dispose()
+      this.clearChart();
+
+      for (let j = 0; j < this.intervals_count; j++) {
+        this.loading_per = j / this.intervals_count * 100;
+        const result = await this.getChartData(intervals[j].start, intervals[j].end, j);
+        if (result !== undefined) {
+          if (j === 0) this.chartDataArr = result;
+          else {
+            for (let i = 0; i < result.resultData.length; i++) {
+              this.chartDataArr.resultData[i].points = [...this.chartDataArr.resultData[i].points, ...result.resultData[i].points]
+            }
+          }
+        } else break;
+
+
+        // if (this.chartDataArr.resultData[0].points.length < 1450) {
+        //   this.setTimeFrame(1);
+        // } else if (this.chartDataArr.resultData[0].points.length < 2900) {
+        //   this.setTimeFrame(10);
+        // } else if (this.chartDataArr.resultData[0].points.length < 20200) {
+        //   this.setTimeFrame(30);
+        // } else if (this.chartDataArr.resultData[0].points.length >= 20200) {
+        //   this.setTimeFrame(60);
+        // }
         this.setTimeFrame(10);
-      } else if (this.chartDataArr.resultData[0].points.length < 20200) {
-        this.setTimeFrame(30);
-      } else if (this.chartDataArr.resultData[0].points.length >= 20200) {
-        this.setTimeFrame(60);
+        this.updateChart()
       }
+      this.loading_per = 100;
+
+      // Сколько точек пришло
+      // console.log("Число точек", this.chartDataArr.resultData[0].points.length)
+
       // Если нам их хватает, то просто computed свойство само ограничит таймлайн
       console.log("Готово")
+      this.gettingdata()
       // Перерисовка граифика с computed свойства
-      this.updateChart()
+      // this.updateChart()
     },
     //
     gettingdata() {
@@ -337,7 +444,9 @@ export default {
   async mounted() {
     let root = am5.Root.new(this.$refs.chartdiv);
     this.root = root;
-    this.starttime = new Date(Date.now() - 86400000 * 3 * 1);
+
+    // Задаем интервал для загрузки данных
+    this.starttime = new Date(Date.now() - 86400000 * 2 * 1);
     this.endtime = new Date(Date.now() + 86400000 * 1)
 
     root.setThemes([
@@ -400,9 +509,24 @@ export default {
     // }));
     // this.yAxis = yAxis
 
-    await this.getChartData()
+
+    const diff = this.endtime.getTime() - this.starttime.getTime()
+    if (diff <= 86400000) this.intervals_count = 1;
+    else if (diff <= 345600000) this.intervals_count = 2;
+    else if (diff <= 1209600000) this.intervals_count = 4;
+    else this.intervals_count = 10;
+
+    console.log(this.endtime.getTime() - this.starttime.getTime(), " - Мс");
+    const intervals = this.divideTimeInterval(this.starttime, this.endtime);
+    console.log(intervals, " Интервалы")
+
     this.getChartsInfo()
     this.setTimeFrame(1);
+
+    this.chartDataArr = await this.getChartData(intervals[0].start, intervals[0].end, 0);
+
+
+
     this.seriesArr = []
 
 
@@ -424,12 +548,6 @@ export default {
       //   })
       // );
 
-
-      // yAxis.min = 0;
-      // yAxis.max = 100;
-      //
-      // this.yAxis = yAxis
-
       var linecolor = am5.color("#" + this.chartInfo[i].sColor.slice(0, 6))
 
       const parentID = this.params.strends[i]["parentID"];
@@ -444,14 +562,17 @@ export default {
         var yRenderer = am5xy.AxisRendererY.new(root, {
           opposite: true,
           // maxGridDistance: 10,
-          minGridDistance: 30,
+          // minGridDistance: 30,
         });
         yAxis = chart.yAxes.push(
             am5xy.ValueAxis.new(root, {
               // numberFormat: "#.0a",
               // numberFormat: "#.##e",
               // maxDeviation: 1,
-              renderer: yRenderer
+              // strictMinMax: true,
+              min: saxes[0].yLowerLimit,
+              max: saxes[0].yUpperLimit,
+              renderer: yRenderer,
             })
         );
         //   Теперь надписи
@@ -470,18 +591,6 @@ export default {
         //
       }
 
-      // console.log(this.saxes);
-
-      // yAxis.children.push(
-      //     am5.Label.new(root, {
-      //       text: saxes[0].uom ?? "",
-      //       textAlign: 'center',
-      //       fill: linecolor,
-      //       y: -40,
-      //       x: 0,
-      //       fontWeight: 'bold',
-      //     })
-      // );
 
       // if (chart.yAxes.indexOf(yAxis) > 0)   {
       //   yAxis.set("syncWithAxis", chart.yAxes.getIndex(0));
@@ -531,24 +640,9 @@ export default {
 
       this.seriesArr.push(series)
 
-
-      var data = this.generateDatas(i);
-      // console.log(data, "data")
-      series.data.setAll(data);
-      // series.appear();
-      // console.log("Series");
-      // console.log(this.seriesArr[this.seriesArr.length - 1].data, " this.seriesArr")
-
-
     }
-
-
-    // }
     // КОНЕЦ ЦИКЛА SERIES ------------------------------------------------------
-
-    // yAxis.combineFields = "category";
-
-    // this.xAxis = xAxis;
+    this.updateChart()
 
     // КУРСОР
     let cursor = chart.set("cursor", am5xy.XYCursor.new(root, {
@@ -573,10 +667,23 @@ export default {
       });
     }
 
+    for (let j = 1; j < this.intervals_count; j++) {
+      this.loading_per = j / this.intervals_count * 100;
+      const result = await this.getChartData(intervals[j].start, intervals[j].end, j);
+      if (result !== undefined) {
+        for (let i = 0; i < result.resultData.length; i++) {
+          this.chartDataArr.resultData[i].points = [...this.chartDataArr.resultData[i].points, ...result.resultData[i].points]
+        }
+      } else break;
+      this.updateChart()
+    }
+    this.loading_per = 100;
+    this.gettingdata()
+
     var refreshId
     var timeoutId
     this.startlive = async function startlive(winn, namee, seriesArr, controllerr, interval) {
-      this.gettingdata()
+      // this.gettingdata()
       var series = seriesArr
       var ip = this.ip
       var win = winn
@@ -606,7 +713,7 @@ export default {
                 })
               }
             }
-            this.gettingdata()
+            // this.gettingdata()
           })
           .catch(function (error) {
           })
@@ -730,8 +837,11 @@ export default {
     //
     seriesArr: {
       handler() {
-        this.starttimeexcel = moment(new Date(this.seriesArr[0].data.values[0].argument)).format("HH:mm:ss DD.MM.YY")
-        this.endtimeexcel = moment(new Date(this.seriesArr[0].data.values[this.seriesArr[0].data.values.length - 1].argument)).format("HH:mm:ss DD.MM.YY")
+        console.log(this.seriesArr[0].data.values[0]?.argument, " argument")
+        if (this.seriesArr[0].data.values[0]?.argument !== undefined) {
+          this.starttimeexcel = moment(new Date(this.seriesArr[0].data.values[0].argument)).format("HH:mm:ss DD.MM.YY")
+          this.endtimeexcel = moment(new Date(this.seriesArr[0].data.values[this.seriesArr[0].data.values.length - 1].argument)).format("HH:mm:ss DD.MM.YY")
+        }
         if (this.viewlive) {
           this.endtime = new Date(this.seriesArr[0].data.values[this.seriesArr[0].data.values.length - 1].argument)
           this.starttime = new Date(this.seriesArr[0].data.values[0].argument)
@@ -766,7 +876,19 @@ export default {
         "--height": this.params.height * this.$parent.$parent.multiplier * this.params.scale + "px",
         "--borderRadius": this.params.borderRadius * this.$parent.$parent.multiplier + "px",
         "--borderThick": this.params.borderThick * this.$parent.$parent.multiplier + "px",
-        "--back": "#" + this.params.back,
+        // "--back": "#" + this.params.back,
+        "--fontSize": this.params.fontSize * this.$parent.$parent.multiplier + "px",
+      };
+    },
+    cssPropsLoading() {
+      return {
+        "--x": this.params.x * this.$parent.$parent.multiplier + "px",
+        "--y": this.params.y * this.$parent.$parent.multiplier + "px",
+        "--width": this.params.width * this.$parent.$parent.multiplier * this.params.scale + "px",
+        "--height": this.params.height * this.$parent.$parent.multiplier * this.params.scale + "px",
+        "--borderRadius": this.params.borderRadius * this.$parent.$parent.multiplier + "px",
+        "--borderThick": this.params.borderThick * this.$parent.$parent.multiplier + "px",
+        // "--back": "#" + this.params.back,
         "--fontSize": this.params.fontSize * this.$parent.$parent.multiplier + "px",
       };
     },
@@ -814,7 +936,7 @@ export default {
 }
 
 #box_loading {
-  background: rgba(35, 35, 35, 0.8);
+  //background: rgba(35, 35, 35, 0.8);
   position: absolute;
   /* border: solid 1px green; */
   width: var(--width);
@@ -828,17 +950,24 @@ export default {
 }
 
 #box_loading_top {
+  position: absolute;
   align-items: center;
+  top: calc(var(--y) + 60px);
+  left: calc(var(--x) + 8px);
+  //bottom: 0;
+  //right: 0;
+  padding: 10px;
   display: flex;
   justify-content: center;
-  flex-direction: row;
+  //flex-direction: row;
 }
 
 #box_loading_center {
-  border: solid 1px white;
-  width: 30%;
-  height: 30%;
-  background-color: #232323;
+  //border: solid 1px white;
+  //width: 30%;
+  //height: 30%;
+  padding: 10px;
+  //background-color: #232323;
   align-items: center;
   display: flex;
   justify-content: center;
