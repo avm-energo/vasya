@@ -80,6 +80,10 @@ export default {
     this.txtarg.value = this.params.value
     this.txtarg.prevvalue = this.txtarg.value
     this.txtarg.Name = this.name
+    if (this.params.trigger == `ButtonApply`) {
+      const res = {'namewidget': this.txtarg.Name, 'namewindow': this.$parent.$parent.windowname , 'value': this.txtarg.value}
+      this.$store.dispatch('addcommandwidgetmass', res)
+    }
     // const res = {'namewidget': this.txtarg.Name, 'namewindow': this.$parent.$parent.windowname , 'value': this.txtarg.value}
     // this.$store.dispatch('addcommandwidgetmass', res)
     // if( this.type.startsWith("tiles") || (this.$parent.typewindow == 'head' ) || this.name.startsWith("Number") || this.name.startsWith("Flag")) {
