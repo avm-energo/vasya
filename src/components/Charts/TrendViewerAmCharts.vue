@@ -160,6 +160,7 @@ export default {
       timeFrame: 60,
       intervals_count: 1,
       loading_per: 0,
+      yAxisVisibleSeriesCount: new Map(),
     }
   },
   components: {
@@ -438,7 +439,7 @@ export default {
     //
     gettingdata() {
       this.getdata = !this.getdata
-    }
+    },
   },
 
   async mounted() {
@@ -446,7 +447,7 @@ export default {
     this.root = root;
 
     // Задаем интервал для загрузки данных
-    this.starttime = new Date(Date.now() - 86400000 * 2 * 1);
+    this.starttime = new Date(Date.now() - 86400000 * 1);
     this.endtime = new Date(Date.now() + 86400000 * 1)
 
     root.setThemes([
@@ -499,7 +500,7 @@ export default {
 
     this.xAxis = xAxis
 
-    let yAxis = null;
+    // let yAxis = null;
     // chart.yAxes.push(am5xy.ValueAxis.new(root, {
     //   // numberFormat: "#.0a",
     //   // numberFormat: "#.##e",
@@ -511,7 +512,7 @@ export default {
 
 
     const diff = this.endtime.getTime() - this.starttime.getTime()
-    if (diff <= 86400000) this.intervals_count = 1;
+    if (diff <= 86400000 * 2) this.intervals_count = 1;
     else if (diff <= 345600000) this.intervals_count = 2;
     else if (diff <= 1209600000) this.intervals_count = 4;
     else this.intervals_count = 10;
@@ -550,13 +551,15 @@ export default {
 
       var linecolor = am5.color("#" + this.chartInfo[i].sColor.slice(0, 6))
 
+      console.log(this.params, "this.params");
       const parentID = this.params.strends[i]["parentID"];
       const saxes = this.params.saxes.filter(item => item.id === parentID);
-      console.log(saxes[0], " params");
+      // console.log(saxes, " saxes");
 
 
       if (this.saxes.filter(item => item.id === saxes[0].id).length === 0) {
         this.saxes.push(saxes[0]);
+        console.log(saxes[0], "saxes[0]")
         //
 
         var yRenderer = am5xy.AxisRendererY.new(root, {
@@ -564,7 +567,7 @@ export default {
           // maxGridDistance: 10,
           // minGridDistance: 30,
         });
-        yAxis = chart.yAxes.push(
+        var yAxis = chart.yAxes.push(
             am5xy.ValueAxis.new(root, {
               // numberFormat: "#.0a",
               // numberFormat: "#.##e",
@@ -577,7 +580,7 @@ export default {
         );
         //   Теперь надписи
 
-        yAxis.children.push(
+        var label = yAxis.children.push(
             am5.Label.new(root, {
               text: saxes[0].uom ?? "",
               textAlign: 'center',
@@ -587,6 +590,8 @@ export default {
               fontWeight: 'bold',
             })
         );
+
+        yAxis.set("customLabel", label);
 
         //
       }
@@ -637,7 +642,9 @@ export default {
         strokeOpacity: 1,
         opacity: 1
       });
-
+      // console.log(this.yAxisVisibleSeriesCount.get(yAxis.uid), "is NAn")
+      if (!this.yAxisVisibleSeriesCount.get(yAxis.uid)) this.yAxisVisibleSeriesCount.set(yAxis.uid, 1);
+      else this.yAxisVisibleSeriesCount.set(yAxis.uid, this.yAxisVisibleSeriesCount.get(yAxis.uid) + 1);
       this.seriesArr.push(series)
 
     }
@@ -659,6 +666,7 @@ export default {
     var legend = chart.topAxesContainer.children.push(am5.Legend.new(root, {
       centerX: am5.percent(50),
       x: am5.percent(50),
+      // clickTarget: "none",
     }));
     legend.data.setAll(chart.series.values);
     this.showlegend = function showl(state) {
@@ -679,6 +687,51 @@ export default {
     }
     this.loading_per = 100;
     this.gettingdata()
+
+
+    // Функции для скрытия и отображение оси Y
+    const hideYAxis = (yAxis) => {
+      yAxis.get("customLabel").set("visible", false);
+      var renderer = yAxis.get("renderer");
+      renderer.grid.template.set("forceHidden", true);
+      renderer.labels.template.set("forceHidden", true);
+      renderer.ticks.template.set("forceHidden", true);
+      renderer.axisFills.template.set("forceHidden", true);
+      renderer.set("visible", false);
+    }
+    const showYAxis = (yAxis) => {
+      yAxis.get("customLabel").set("visible", true);
+      var renderer = yAxis.get("renderer");
+      renderer.grid.template.set("forceHidden", false);
+      renderer.labels.template.set("forceHidden", false);
+      renderer.ticks.template.set("forceHidden", false);
+      renderer.axisFills.template.set("forceHidden", false);
+      renderer.set("visible", true);
+    }
+
+    console.log(this.yAxisVisibleSeriesCount, " map");
+    this.seriesArr.forEach(series => {
+      series.on("visible", (visible, target) => {
+        var yAxises = series.get("yAxis");
+        if (visible) {
+          this.yAxisVisibleSeriesCount.set(yAxises.uid, this.yAxisVisibleSeriesCount.get(yAxises.uid) + 1);
+          console.log("Series shown", target)
+        }
+        else {
+          this.yAxisVisibleSeriesCount.set(yAxises.uid, this.yAxisVisibleSeriesCount.get(yAxises.uid) - 1);
+          console.log("Series hidden", target)
+        }
+        if (this.yAxisVisibleSeriesCount.get(yAxises.uid) > 0) {
+          console.log("Открываем");
+          showYAxis(yAxises);
+        } else {
+          console.log("Скрываем");
+          hideYAxis(yAxises);
+        }
+
+      });
+    });
+
 
     var refreshId
     var timeoutId
