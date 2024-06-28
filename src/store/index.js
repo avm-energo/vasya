@@ -189,7 +189,10 @@ export default createStore({
                 state.tickmas[ticknumber].tick
               }`
             );
-            // console.log(state.tickmas[ticknumber])
+            // console.log(state.tickmas[ticknumber].mas)
+            // console.log(`http://${state.ip}/api/nodes/${encript((new TextEncoder()).encode(name))}/delta/0/${
+            //   state.tickmas[ticknumber].tick
+            // }`)
             const data = JSON.parse(await response.text());
             state.tickmas[ticknumber].tick = data.tick
             ;(data.widgets.$id  == undefined ? data.widgets : data.widgets.$values).forEach(element => {

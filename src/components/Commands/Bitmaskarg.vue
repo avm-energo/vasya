@@ -54,8 +54,6 @@ export default {
       }
     },
     async some(){
-      const res = {'namewidget': this.bitmaskarg.Name, 'namewindow': this.$parent.$parent.windowname , 'value': this.bitmaskarg.value}
-      this.$store.dispatch('addcommandwidgetmass', res)
       if (this.params.personalSend) {
         const article =`
           ${this.bitmaskarg.value}
@@ -181,6 +179,8 @@ export default {
           j++
         }  
       })
+      const res = {'namewidget': this.bitmaskarg.Name, 'namewindow': this.$parent.$parent.windowname , 'value': this.bitmaskarg.value}
+      this.$store.dispatch('addcommandwidgetmass', res)
     }
   }
 };

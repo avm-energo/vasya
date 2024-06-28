@@ -96,6 +96,7 @@ export default {
       setTimeout(() => {
         setInterval(() => {
           let changedelem = this.$store.getters.elemByName(ress)?.properties
+          // console.log(changedelem)
           if (changedelem) {
             if (changedelem.value){
               this.txtarg.value = changedelem.value

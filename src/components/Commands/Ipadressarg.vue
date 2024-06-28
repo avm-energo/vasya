@@ -30,8 +30,7 @@ export default {
   },
   methods: {
     async some(){
-      const res = {'namewidget': this. ipadressarg.Name, 'namewindow': this.$parent.$parent.windowname , 'value': this. ipadressarg.value}
-      this.$store.dispatch('addcommandwidgetmass', res)
+
       if (this.params.setOnEnter) {
         const article =`
           ${this.ipadressarg.value}
@@ -108,6 +107,10 @@ export default {
       this.ipadressarg.isValid = this.ipadressarg.regex.test(
         this.ipadressarg.value
       );
+      if (this.ipadressarg.isValid) {
+        const res = {'namewidget': this. ipadressarg.Name, 'namewindow': this.$parent.$parent.windowname , 'value': this. ipadressarg.value}
+        this.$store.dispatch('addcommandwidgetmass', res)
+      }
     }
   }
 };

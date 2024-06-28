@@ -27,8 +27,6 @@ export default {
   },
   methods:{
     async some(){
-      const res = {'namewidget': this.comboarg.Name, 'namewindow': this.$parent.$parent.windowname , 'value': this.comboarg.value}
-      this.$store.dispatch('addcommandwidgetmass', res)
       if (this.params.trigger == "ChangeOnEnd") {
         const article =`
           ${this.comboarg.value}
@@ -93,7 +91,13 @@ export default {
         "--fontsize": this.params.fontSize * this.$parent.$parent.multiplier + "px",
       };
     }
-  }
+  },
+  watch: {
+    'comboarg.value'(){
+      const res = {'namewidget': this.comboarg.Name, 'namewindow': this.$parent.$parent.windowname , 'value': this.comboarg.value}
+      this.$store.dispatch('addcommandwidgetmass', res)
+    }
+  },
 };
 </script>
 

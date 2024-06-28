@@ -26,8 +26,6 @@ export default {
   },
   methods: {
     async some(){
-      const res = {'namewidget': this.radioarg.Name, 'namewindow': this.$parent.$parent.windowname , 'value': this.radioarg.value}
-      this.$store.dispatch('addcommandwidgetmass', res)
       console.log(this.radioarg.masvalue)
       if (this.params.setOnCheck) {
         const article =`
@@ -95,6 +93,12 @@ export default {
         "--foreground": "#" + this.params.foreground,
         "--fontsize": this.params.fontSize * this.$parent.$parent.multiplier + "px",
       };
+    }
+  },
+  watch: {
+    'radioarg.value'(){
+      const res = {'namewidget': this.radioarg.Name, 'namewindow': this.$parent.$parent.windowname , 'value': this.radioarg.value}
+      this.$store.dispatch('addcommandwidgetmass', res)
     }
   },
 };

@@ -23,8 +23,6 @@ export default {
   },
   methods: {
     async some(){
-      const res = {'namewidget': this.boolarg.Name, 'namewindow': this.$parent.$parent.windowname , 'value': this.boolarg.value}
-      this.$store.dispatch('addcommandwidgetmass', res)
       if (this.params.trigger == "ChangeOnEnd") {
         const article =`
           ${this.boolarg.value}
@@ -87,6 +85,12 @@ export default {
         "--foreground": "#" + this.params.foreground,
         "--fontsize": this.params.fontSize * this.$parent.$parent.multiplier + "px",
       };
+    }
+  },
+  watch: {
+    'boolarg.value'(){
+      const res = {'namewidget': this.boolarg.Name, 'namewindow': this.$parent.$parent.windowname , 'value': this.boolarg.value}
+      this.$store.dispatch('addcommandwidgetmass', res)
     }
   },
 };
