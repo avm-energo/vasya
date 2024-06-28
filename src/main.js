@@ -7,8 +7,8 @@ import store from './store'
 import { onUnmounted } from '@vue/runtime-core'
 
 onUnmounted(() => {
-  app.unmount()
-  app.config.globalProperties.$cache = null; 
+  App.unmount()
+  App.config.globalProperties.$cache = null;
 })
 
 createApp(App).use(store)

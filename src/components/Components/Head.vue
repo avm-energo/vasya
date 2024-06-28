@@ -7,6 +7,7 @@
         <tiles v-for="elem  in tiless" :key="elem.name" :params="elem.properties" :name="elem.name" :screenPercentage="this.myJson.screenPercentage" :windowWidth="this.myJson.canvas.width" :windowHeight="this.myJson.canvas.height" :type="elem.type"/>
         <tooltiper v-for="elem in tooltipers" :key="elem.name" :params="elem"/>
         <helper v-for="elem in helper" :key="elem.name" :params="elem.properties"/>
+        <!-- <button @click="bbb()">version</button> -->
       </div>
   </div>
 </template>
@@ -72,7 +73,11 @@ export default {
       this.$store.dispatch("updatemainheight", this.myJson.canvas.height * this.multiplier )
       const multiplierwindow = ((window.innerWidth -2 )/ this.width)
       this.multiplier = this.multiplierwindow * multiplierwindow
-    }
+    },
+    // bbb(){
+    //   console.log('ds')
+    //   this.$router.push({name: 'Version'})
+    // }
   },
 
   created() {

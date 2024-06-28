@@ -623,8 +623,8 @@ tbody{
   width: 100%;
   height: 100%;
   top: 0;
-  //left: var(--x);
-  //top: var(--y);
+  /* left: var(--x); */
+  /* top: var(--y); */
   align-items: center;
   display: flex;
   justify-content: center;

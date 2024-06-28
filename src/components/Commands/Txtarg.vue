@@ -38,8 +38,6 @@ export default {
   methods:{
     async some(){
       // console.log(`http://${this.ip}/api/nodes/${this.encript((new TextEncoder()).encode(this.$parent.$parent.namewindow))}/widget/${this.encript((new TextEncoder()).encode(this.txtarg.Name))}/query/write-arg`)
-      const res = {'namewidget': this.txtarg.Name, 'namewindow': this.$parent.$parent.windowname , 'value': this.txtarg.value}
-      this.$store.dispatch('addcommandwidgetmass', res)
       if (this.params.trigger != `ButtonApply` && this.validate) {
         const article =`${this.txtarg.value}`;
         const headers = { 
@@ -121,6 +119,8 @@ export default {
       else {
         this.validate = true
       }
+      const res = {'namewidget': this.txtarg.Name, 'namewindow': this.$parent.$parent.windowname , 'value': this.txtarg.value}
+      this.$store.dispatch('addcommandwidgetmass', res)
     }
   },
   computed: {
