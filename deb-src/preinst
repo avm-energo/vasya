@@ -1,3 +1,0 @@
-DEBVERSION=$(cat /etc/debian_version | cut -d '.' -f1)
-dpkg -i /usr/local/share/vasya/nginx/${DEBVERSION}/*.deb
-rm -rf /usr/local/share/vasya/nginx
