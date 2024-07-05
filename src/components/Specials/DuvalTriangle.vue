@@ -57,7 +57,11 @@ export default {
         c2h4: null,
         ch4: null,
       },
-      duvalMode: false,
+      // duvalArr: null,
+      historyC2H2: null,
+      historyC2H4: null,
+      historyCH4: null,
+      duvalMode: true,
     }
   },
   props: ["params", "name"],
@@ -73,20 +77,34 @@ export default {
       const { ctx } = this;
       var imageData = ctx.getImageData(0,0,410,400);
       ctx.putImageData(imageData, 0, 0);
-      this.drawFirstDot(this.params.CH4[0].value, this.params.C2H2[0].value, this.params.C2H4[0].value, "yellow");
+      // this.drawFirstDot(this.params.CH4[0].value, this.params.C2H2[0].value, this.params.C2H4[0].value, "yellow");
       setInterval(()=>{
-        let changedelem= this.$store.getters.elemByName(res)?.properties
-        console.log(changedelem?.CH4)
-        // if (changedelem?.valuePointVisibility) console.log("valuePointVisibility Существует!");
+        let changedelem = this.$store.getters.elemByName(res)?.properties;
+
+
         if (changedelem) {
+
+          console.log(changedelem);
+
+          if (this.historyCH4 === null) {
+            console.log('Сработал createHistory event');
+            [this.historyC2H2, this.historyC2H4, this.historyCH4] = this.createHistory(changedelem.C2H2, changedelem.C2H4, changedelem.CH4);
+          } else {
+            this.replaceDot(changedelem.C2H2[changedelem.C2H2.length - 1], 'C2H2');
+            this.replaceDot(changedelem.CH4[changedelem.CH4.length - 1], 'CH4');
+            this.replaceDot(changedelem.C2H4[changedelem.C2H4.length - 1], 'C2H4');
+          }
+
           if (this.duvalMode === false) {
             ctx.putImageData(imageData, 0, 0);
-            const l = changedelem.CH4.length - 1
-            this.drawFirstDot(changedelem.CH4[l].value, changedelem.C2H2[l].value, changedelem.C2H4[l].value, "yellow")
+            // const l = Math.min(changedelem.CH4.length - 1, changedelem.C2H2.length - 1, changedelem.C2H4.length - 1) - 1
+            // this.drawFirstDot(changedelem.CH4[l].value, changedelem.C2H2[l].value, changedelem.C2H4[l].value, "yellow")
+            this.drawFirstDot(this.historyCH4[0].value, this.historyC2H2[0].value, this.historyC2H4[0].value, "yellow");
           }
           else if (this.duvalMode === true) {
+            
             ctx.putImageData(imageData, 0, 0);
-            this.drawArray(changedelem);
+            this.drawArray(this.historyC2H2, this.historyC2H4, this.historyCH4);
           }
         }
       }, 1000)
@@ -269,7 +287,7 @@ export default {
         ctx.stroke();
       }
     },
-    drawDot(CH4, C2H2, C2H4, color){
+    drawDot(CH4, C2H2, C2H4, color, i){
       var MinLeft = 5;
       var MaxLeft = 400;
       var MinTop = 11;
@@ -278,9 +296,9 @@ export default {
       var ch4per = CH4 / summa * 100;
       var c2h2per = C2H2 / summa * 100;
       var c2h4per = C2H4 / summa * 100;
-      this.duval.ch4 = parseInt(ch4per);
-      this.duval.c2h4 = parseInt(c2h4per);
-      this.duval.c2h2 = parseInt(c2h2per);
+      // this.duval.ch4 = parseInt(ch4per);
+      // this.duval.c2h4 = parseInt(c2h4per);
+      // this.duval.c2h2 = parseInt(c2h2per);
       var left = ch4per * Math.cos(Math.PI / 6);
       var down = c2h2per;
       var x = down + left / Math.tan(Math.PI / 3);
@@ -291,8 +309,9 @@ export default {
       var PointTop = (100 * Math.cos(Math.PI / 6) - y) * topstep + 11;
       const {ctx} = this
       ctx.beginPath();
-      ctx.arc(PointLeft, PointTop, 4, 0, 2 * Math.PI, false);
       ctx.fillStyle = color;
+      // ctx.fillText(i, PointLeft, PointTop);
+      ctx.arc(PointLeft, PointTop, 4, 0, 2 * Math.PI, false);
       ctx.fill();
       ctx.lineWidth = 1;
       ctx.strokeStyle = color;
@@ -351,18 +370,78 @@ export default {
       ctx.strokeStyle = color;
       ctx.stroke();
     },
-    drawArray(elem) {
-      for (let i = 0; i < elem.CH4.length; i++) {
-        if (i === elem.CH4.length - 1) this.drawFirstDot(elem.CH4[i].value, elem.C2H2[i].value, elem.C2H4[i].value, "red")
+    drawArray(historyC2H2, historyC2H4, historyCH4) {
+      for (let i = 0; i < Math.min(historyCH4.length, historyC2H2.length, historyC2H4.length); i++) {
+
+        if (i === 0) this.drawFirstDot(historyCH4[i].value, historyC2H2[i].value, historyC2H4[i].value, "red")
         else {
           let color = null;
-          if (i > elem.CH4.length - 1 - 5) color = '#fc6700';
-          else if (i > elem.CH4.length - 1 - 10) color = '#ffcb33';
-          else if (i > elem.CH4.length - 1 - 15) color = '#feff67';
+          if (i > 0 && i <= 5) color = '#fc6700';
+          else if (i > 5 && i <= 10) color = '#ffcb33';
+          else if (i > 10 && i <= 15) color = '#feff67';
           else color = 'white';
-          this.drawDot(elem.CH4[i].value, elem.C2H2[i].value, elem.C2H4[i].value, color)
+          this.drawDot(historyCH4[i].value, historyC2H2[i].value, historyC2H4[i].value, color, i);
+          // this.drawDot(elem.CH4[i].value, elem.C2H2[i].value, elem.C2H4[i].value, color)
         }
       }
+    },
+    replaceDot(dot, arr) {
+
+      if (arr === 'CH4') {
+        this.historyCH4.unshift(dot);
+        if (this.historyCH4.length > 20) this.historyCH4.pop();
+      } else if (arr === 'C2H4') {
+        this.historyC2H4.unshift(dot);
+        if (this.historyC2H4.length > 20) this.historyC2H4.pop();
+      } else if (arr === 'C2H2') {
+        this.historyC2H2.unshift(dot);
+        if (this.historyC2H2.length > 20) this.historyC2H2.pop();
+      }
+    },
+    createHistory(c2h2, c2h4, ch4) {
+      let historyC2H2 = [c2h2[c2h2.length - 1]];
+      let historyC2H4 = [c2h4[c2h4.length - 1]];
+      let historyCH4 = [ch4[ch4.length - 1]];
+
+      let indexC2H2 = c2h2.length - 1;
+      let indexC2H4 = c2h4.length - 1;
+      let indexCH4 = ch4.length - 1;
+
+      for (let i = 0; i < Math.min(c2h2.length - 1, c2h4.length - 1, ch4.length - 1); i++) {
+        let currentPoints = [
+          historyC2H2[historyC2H2.length - 1],
+          historyC2H4[historyC2H4.length - 1],
+          historyCH4[historyCH4.length - 1],
+        ];
+
+        let maxTime = Math.max(
+            currentPoints[0].time,
+            currentPoints[1].time,
+            currentPoints[2].time
+        );
+        // console.log(currentPoints);
+        // console.log(maxTime);
+
+        if (currentPoints[0].time === maxTime) {
+          if (indexC2H2 >= 0) {
+            historyC2H2.push(c2h2[--indexC2H2]);
+          }
+        } else historyC2H2.push(c2h2[indexC2H2]);
+
+        if (currentPoints[1].time === maxTime) {
+          if (indexC2H4 >= 0) {
+            historyC2H4.push(c2h4[--indexC2H4]);
+          }
+        } else historyC2H4.push(c2h4[indexC2H4]);
+
+        if (currentPoints[2].time === maxTime) {
+          if (indexCH4 >= 0) {
+            historyCH4.push(ch4[--indexCH4]);
+          }
+        } else historyCH4.push(ch4[indexCH4]);
+
+      }
+      return [historyC2H2, historyC2H4, historyCH4];
     },
   },
   mounted(){
