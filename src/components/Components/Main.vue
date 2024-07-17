@@ -54,7 +54,7 @@ export default {
       multiplierwindow: 1,
       multiplier: 1,
       info: null,
-      data: 0,
+      data: null,
       lines: [],
       tiless: [],
       tooltipers: [],
@@ -110,7 +110,6 @@ export default {
   //     }
   //   }
   // },
-
   computed: {
     cssProps() {
       return {
@@ -148,6 +147,7 @@ export default {
       } else {
         this.$store.dispatch('mainmultiplier', [false, this.multiplier])
       }
+      // console.log(this.multiplier)
       this.multiplier =  multiplierwindow
       this.$parent.multiplier = this.multiplier
     },
@@ -157,6 +157,10 @@ export default {
   },
 
   created() {
+    // console.log(this.myJson)
+    // setTimeout(function(){
+    //   location.reload();
+    // }, 3000);
     window.addEventListener('resize', this.reportWindowSize)
     this.width = window.innerWidth - 2
     this.height = window.innerHeight ;
@@ -168,7 +172,6 @@ export default {
       this.windowpath = this.namewindow
     }
     this.multiplierwindow = (this.mainheight - 4)/this.myJson.canvas.height
-    
     if (this.multiplierwindow * this.myJson.canvas.width > window.innerWidth){
       this.multiplierwindow = this.multiplierwindow * window.innerWidth / (this.multiplierwindow * this.myJson.canvas.width) - 0.005
     }
@@ -178,7 +181,6 @@ export default {
     this.multiplier = this.multiplierwindow
     this.$parent.multiplier = this.multiplier
     this.$store.dispatch('mainmultiplier', [true, this.multiplier])
-    // console.log(this.myJson.widgets)
     ;(this.myJson.widgets.$id == undefined ? this.myJson.widgets : this.myJson.widgets.$values).forEach(element => {
       let res = element;
       
@@ -265,7 +267,7 @@ export default {
   margin: 0;
   background: rgba(var(--backgroundArea1),var(--backgroundArea2),var(--backgroundArea3), var(--backgroundArea4));
   height: var(--backgroundheight);
-  z-index: 0;
+  z-index: 0
 }
 #head {
   border: solid 1px var(--background);

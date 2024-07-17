@@ -1,12 +1,40 @@
 <template>
   <div class="backgroundmain" :style="cssProps">
       <div id="mainbody" :style="cssProps">
+        <div class="wrapper" v-if="changeUser">
+          <div class="modal_container">
+            <a class="close" @click="[changeUser = false, authPass = '']"></a>
+            <div class="changeuser">
+              <div class="changeuser_header">
+                <p>Профиль</p>
+              </div>
+              <div class="changeuser_input">
+                <p>Логин:</p>
+                <input @input="changeLogin" :value=authLogin type="text" autocomplete="one-time-code" />
+                <p>Пароль:</p>
+                <input @input="changePass" type="password" autocomplete="one-time-code" @keyup.enter="Authorization()"/>
+              </div>
+              <div class="changeuser_button">
+                <div class="changeuser_buttons_button">
+                  <button @click="Authorization()">Войти</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
         <svg v-show="this.lines.length" :height="this.myJson.canvas.height * this.multiplier" :width="this.myJson.canvas.width * this.multiplier" xmlns="http://www.w3.org/2000/svg" style="position: absolute; left: 0px; top: 0px;">
           <sline v-for="line in lines" :key="line.name" :params="line.properties" />
         </svg>
         <tiles v-for="elem  in tiless" :key="elem.name" :params="elem.properties" :name="elem.name" :screenPercentage="this.myJson.screenPercentage" :windowWidth="this.myJson.canvas.width" :windowHeight="this.myJson.canvas.height" :type="elem.type"/>
         <tooltiper v-for="elem in tooltipers" :key="elem.name" :params="elem"/>
         <helper v-for="elem in helper" :key="elem.name" :params="elem.properties"/>
+        <div class="Login"  :style="cssProps"><p @click="[outSide($event), openButtons()]" ref="headerrightuser">{{ userName }}</p></div>
+        <div v-if="showButtons" class="userButtons" ref="userButtons" :style="{height:35 * this.multiplier + 'px', width: 110 * this.multiplier + 'px', top: 25 * this.multiplier + 'px', right: 25 * this.multiplier + 'px'}">
+          <ButtonComponent class="button_logout" :reverseOrder="true" @click.stop="[logoutFromUser(), closeButtons()]" :navigationButton="true"
+          icon="logout" :iconStyle="{ color: 'white', width: 25 * this.multiplier + 'px', height: 25 * this.multiplier + 'px', }" /> 
+          <ButtonComponent class="button_logout" :reverseOrder="true" @click.stop="[changeUser = true, closeButtons()]" :navigationButton="true"
+          icon="user" :iconStyle="{ color: '#267dff', width: 25 * this.multiplier + 'px', height: 25 * this.multiplier + 'px', }" /> 
+        </div>
         <!-- <button @click="bbb()">version</button> -->
       </div>
   </div>
@@ -18,6 +46,12 @@ import Tiles from "../Tiles/Tiles.vue";
 import Sline from "../Primitives/Sline.vue";
 import Tooltiper from "../Neightbours/Tooltiper.vue";
 import Helper from '../Primitives/Helper.vue'
+import { mapGetters } from "vuex";
+import { logout, login } from "@/actions/AuthorizationActions";
+import ButtonComponent from '../Button.vue'
+import { 
+  PutLogout
+} from "@/actions/SonicaActions";
 
 export default {
   name: "window",
@@ -26,6 +60,9 @@ export default {
   },
   data() {
     return {
+      authLogin: null,
+      authPass: null,
+      changeUser: false,
       multiplier: 1,
       multiplierwindow: 1,
       info: null,
@@ -37,6 +74,7 @@ export default {
       width: 0,
       height: 0,
       windowname: null,
+      showButtons:false,
     };
   },
 
@@ -45,6 +83,7 @@ export default {
     Sline,
     Tooltiper,
     Helper,
+    ButtonComponent,
   },
 
   computed: {
@@ -60,19 +99,83 @@ export default {
         '--backgroundArea2': parseInt(this.myJson.canvas.backgroundArea.slice(2,4), 16),
         '--backgroundArea3': parseInt(this.myJson.canvas.backgroundArea.slice(4,6), 16),
         '--backgroundArea4': parseInt(this.myJson.canvas.backgroundArea.slice(6,8), 16)/(255-0.06) ,
-        '--fontsize' :  15 + 'px',
-        "--zindex": 1
+        '--fontsize' :  15 * this.multiplier + 'px',
       };
+    },
+    ...mapGetters(['GetUserName']),
+    userName(){
+      return this.GetUserName
     },
     mainheight(){
       return this.$store.getters.mainheight
     },
   },  
   methods: {
+    logoutFromUser(){
+      this.$store.dispatch("setIsLoading_action", true);
+      logout(()=>{
+        this.$store.state.tickmas.forEach((el) => {
+          clearInterval(el.interval)
+        })
+        this.$store.state.tickmas = []
+        this.$store.dispatch("setIsLoading_action", false);
+      });
+    },
     reportWindowSize(){
       this.$store.dispatch("updatemainheight", this.myJson.canvas.height * this.multiplier )
       const multiplierwindow = ((window.innerWidth -2 )/ this.width)
       this.multiplier = this.multiplierwindow * multiplierwindow
+    },
+    openButtons(){
+      this.showButtons = !this.showButtons
+    },
+    outSide(){
+      document.addEventListener('mousedown', this.onClickOutside, {once: true})
+    },
+    onClickOutside(event) {
+      const element = this.$refs.userButtons;
+      if (element && !element.contains(event.target)) {
+        const element1 = this.$refs.headerrightuser;
+        if ((element1 && !element1.contains(event.target))) {
+          // console.log('НА кнопке закрыл')
+          this.closeButtons()
+        }
+      }
+    },
+    closeButtons(){
+      this.showButtons = false
+    },
+    Authorization() {
+      const self = this;
+      PutLogout(()=>{
+        function setGuest(){
+          login('Guest', 'Guest', (e) =>{})
+          self.changeUser = false
+          self.authPass = ''
+        }
+        console.log(self.authLogin, self.authPass)
+        if (!(!!self.authLogin && !!self.authPass)) {
+          setGuest()
+          return;
+        }
+        this.$store.dispatch("setIsLoading_action", true);
+        login(self.authLogin, self.authPass, (e) => {
+          if (e.successful) {
+            this.changeUser = false
+            self.authPass = ''
+          } else {
+            this.$store.dispatch('AddNotification_action', { text: e.message, type: 'Warning', time: 3000 })
+            setGuest()
+          }
+          this.$store.dispatch("setIsLoading_action", false);
+        });
+      })
+    },
+    changeLogin(event){
+      this.authLogin = event.target.value
+    },
+    changePass(event){
+      this.authPass = event.target.value
     },
     // bbb(){
     //   console.log('ds')
@@ -81,6 +184,13 @@ export default {
   },
 
   created() {
+    this.$store.watch(
+      (state)=> state.userName,
+      (newValue, oldValue)=>{
+        // console.log('Значение переменной изменилось:', newValue);
+        if (newValue != 'Guest') this.authLogin = newValue
+        // this.userName = newValue
+      })
     this.width = window.innerWidth-2;
     this.height = window.innerHeight ;
     this.windowname = '>:Header'
@@ -139,6 +249,148 @@ export default {
   margin: 0;
   background: rgba(var(--backgroundArea1),var(--backgroundArea2),var(--backgroundArea3), var(--backgroundArea4));
   height: var(--backgroundheight);
-  z-index: 0;
+  /* z-index: 1; */
+}
+.Login{
+  cursor: pointer;
+  /* z-index: 1; */
+  position: absolute;
+  top: 5px;
+  right: 10px;
+  font-size: var(--fontsize);
+  user-select: none;
+}
+.Login:hover{
+  color: rgb(0, 60, 255);
+}
+.userButtons{
+  z-index: 2;
+  border-radius: 10px;
+  position: absolute;
+  background-color: #574747;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  /* height: 35px; */
+}
+.button_logout {
+  height: 100%;
+  width: 100%;
+  /* bottom: 20px; */
+  /* padding: 4px 15px 4px 20px; */
+  text-decoration: none;
+  font-size: 30px;
+  border: none;
+  outline: none;
+  cursor: pointer;
+}
+.wrapper {
+  z-index: 3;
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  height: 100vh;
+  width: 100vw;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: rgba(0, 0, 0, 0.7);
+  color: white;
+  text-align: center;
+}
+.modal_container {
+  border: solid 1px #0452c8;
+  position: relative;
+  /* min-width: 1100px; */
+  /* width: 90%; */
+  padding: 3px 10px 2px 10px;
+  background: #212121;
+  /* min-width: fit-content; */
+}
+.close {
+  z-index: 1;
+  position: absolute;
+  right: 0px;
+  top: 5px;
+  width: 25px;
+  height: 25px;
+  opacity: 0.3;
+}
+.close:hover {
+  opacity: 1;
+}
+.close:before, .close:after {
+  position: absolute;
+  left: 7px;
+  content: ' ';
+  height: 26px;
+  width: 2px;
+  background-color: rgb(252, 3, 3);
+}
+.close:before {
+  transform: rotate(45deg);
+}
+.close:after {
+  transform: rotate(-45deg);
+}
+.changeuser{
+  width: 270px;
+  height: 250px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-around;
+  font-size: 14px;
+}
+.changeuser_header p {
+  font-size: 20px;
+}
+.changeuser_input{
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 60%;
+}
+.changeuser_button{
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around ;
+
+}
+.changeuser_buttons_button button{
+  padding-left: 15px;
+  padding-right: 15px;
+  height: 40px;
+  border: solid 1px #373737;
+  background-color: transparent;
+  color: #0364f5;
+}
+.changeuser_buttons_button button:hover{
+  background-color: #0452c8;
+  color: white;
+}
+.changeuser_buttons_button button:active{
+  background-color: #0445a6;
+  color: black;
+}
+input[type="text"] , input[type="password"], input[type="number"]{
+  border: solid 1px white;
+  background-color: #181818;
+  color: white;
+  /* border: none; */
+  font-size: 14px;
+  width: 100%;
+  height: 25px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin-top: 5px;
+  margin-bottom: 5px;
+  outline: none;
+}
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
 }
 </style>

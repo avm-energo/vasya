@@ -6,6 +6,16 @@ import moment from "moment";
 
 export default createStore({
   state: {
+    isLoading: false,
+    isAuth: false,
+    role: null,
+    userName: null,
+    userId: null,
+    projectId: null,
+    userPermissions: null,
+    notification:[],
+    error: [],
+
     head: null,
     main: null,
     // mainstate: null,
@@ -17,16 +27,21 @@ export default createStore({
     tickmas: [],
     commandwidgetmass: [],
     tick: null,
-    isLoading: true,
     ip: null,
     mainheight: null,
     updatedmainheight: null,
     historymas: [],
     mainmultiplier: true,
+    afkTimer: null,
   },
   getters: {
     ip: (state) => state.ip,
-    isLoading: (state) => state.isLoading,
+    IsLoading: (state) => state.isLoading,
+    GetAfkTimer(state) {return state.afkTimer},
+    GetUserName (state) {return state.userName},
+    GetNotification(state) { return state.notification },
+    GetError(state) { return state.error },
+    GetWarning(state) {return state.warning},
     main: (state) => state.main,
     mainstate: (state) => state.mainstate,
     mainheight: (state) => state.mainheight,
@@ -43,7 +58,46 @@ export default createStore({
     commandwidgets: (state) => (res) =>
       state.commandwidgetmass.find((s)=> s.namewindow === res)?.widgets,
   },
-  mutations: {
+  mutations:{
+    AddNotification(state, payload) {
+      state.notification.push({
+        id: state.notification.length ? state.notification.reverse()[0].id + 1 : 0,
+        text: payload.text,
+        type: payload.type,
+        time: payload.time
+      });
+    },
+    DeleteNotification(state, payload) { //payload = id
+      state.notification = state.notification.filter(element => element.id !== payload)
+    },
+    AddError(state, payload) {
+      if (state.error.findIndex(el => el.text == payload) < 0) {
+        state.error.push({
+          text: payload, id: state.error.length ? state.error.reverse()[0].id + 1 : 0
+        });
+      }
+    },
+    SetIsLoading(state, payload) {
+      state.isLoading = payload;
+    },
+    SetIsAuth(state, payload) {
+      state.isAuth = payload;
+    },
+    SetRole(state, payload) {
+      state.role = payload;
+    },
+    SetUserName(state, payload) {
+      state.userName = payload;
+    },
+    SetUserId(state, payload) {
+      state.userId = payload;
+    },
+    SetProjectId(state, payload) {
+      state.projectId = payload;
+    },
+    SetUserPermissions(state, payload){
+      state.userPermissions = payload
+    },
     async fetchAtoms(state) {
       let config = await fetch('defaults.json')
       const a = JSON.parse(await config.text())
@@ -90,6 +144,7 @@ export default createStore({
         `http://${state.ip}/api/nodes/main/current`,{
           method: "GET",
           mode: "cors",
+          headers: { Authorization: `${localStorage.getItem('token')}` },
         }
       );
       const data = JSON.parse(await response.text());
@@ -98,7 +153,9 @@ export default createStore({
       this.dispatch("updateElems", data.path);
 
       let response2 = await fetch(
-        `http://${state.ip}/api/nodes/header/current`
+        `http://${state.ip}/api/nodes/header/current`,{
+          headers: { Authorization: `${localStorage.getItem('token')}` },
+        }
       );
       setTimeout(() => { state.isLoading = false }, 200);
       const data2 = JSON.parse(await response2.text());
@@ -123,7 +180,9 @@ export default createStore({
       // })
 
       let response3 = await fetch(
-        `http://${state.ip}/api/nodes/footer/current`
+        `http://${state.ip}/api/nodes/footer/current`,{
+          headers: { Authorization: `${localStorage.getItem('token')}` },
+        }
       );
       setTimeout(() => { state.isLoading = false }, 200);
       const data3 = JSON.parse(await response3.text());
@@ -172,12 +231,14 @@ export default createStore({
       var currentDateMilliseconds = today.getMilliseconds();
       let ticknumber = state.tickmas.length
       let con = {'tick': state.tick, 'name': name.split('\\').join(''), 'mas': [1]}
-      console.log(name)
+      // console.log(name)
       state.tickmas.push(con)
       let response = await fetch(
         `http://${state.ip}/api/nodes/${encript((new TextEncoder()).encode(name))}/delta/0/${
           state.tickmas[ticknumber].tick
-        }`
+        }`,{
+          headers: { Authorization: `${localStorage.getItem('token')}` },
+        }
       );
       if (response.status == 200) {
         var zyx = setTimeout(() => {
@@ -187,13 +248,17 @@ export default createStore({
             let response = await fetch(
               `http://${state.ip}/api/nodes/${encript((new TextEncoder()).encode(name))}/delta/0/${
                 state.tickmas[ticknumber].tick
-              }`
+              }`,{
+                headers: { Authorization: `${localStorage.getItem('token')}` },
+              }
             );
             // console.log(state.tickmas[ticknumber].mas)
             // console.log(`http://${state.ip}/api/nodes/${encript((new TextEncoder()).encode(name))}/delta/0/${
             //   state.tickmas[ticknumber].tick
             // }`)
-            const data = JSON.parse(await response.text());
+            const s = await response.text()
+            // console.log(s)
+            const data = JSON.parse(s);
             state.tickmas[ticknumber].tick = data.tick
             ;(data.widgets.$id  == undefined ? data.widgets : data.widgets.$values).forEach(element => {
               if (element.name.startsWith("Sub") || element.name.startsWith("Ren")) {
@@ -247,7 +312,9 @@ export default createStore({
         }
 
         let response = await fetch(
-          `http://${state.ip}/api/nodes/${encript((new TextEncoder()).encode(data.name))}/current`
+          `http://${state.ip}/api/nodes/${encript((new TextEncoder()).encode(data.name))}/current`,{
+            headers: { Authorization: `${localStorage.getItem('token')}` },
+          }
         );
         if (response.ok){
           // console.log(`http://${state.ip}/api/nodes/${encript((new TextEncoder()).encode(data.name))}/current`)
@@ -268,7 +335,12 @@ export default createStore({
           }
           
         } else {
-          alert("Ошибка HTTP: " + response.status)
+          state.notification.push({
+            id: state.notification.length ? state.notification.reverse()[0].id + 1 : 0,
+            text:'Ваш уровень доступа недостаточен для выполнения данной операции',
+            type: 'Warning',
+            time: 5000
+          });
         }
       }
     },
@@ -294,7 +366,9 @@ export default createStore({
         return ans.join("")
       }
       let response = await fetch(
-        `http://${state.ip}/api/nodes/${encript((new TextEncoder()).encode(data.name))}/current`
+        `http://${state.ip}/api/nodes/${encript((new TextEncoder()).encode(data.name))}/current`, {
+          headers: { Authorization: `${localStorage.getItem('token')}` },
+        }
       );
       const res = JSON.parse(await response.text());
         res.title = data.title
@@ -412,7 +486,17 @@ export default createStore({
     clearcommandwidgets({ commit }, elems) {
       commit("clearcommandwidgets", elems);
     },
-    
+    setIsLoading_action({ commit }, payload) { commit('SetIsLoading', payload) },
+    setIsAuth_action({ commit }, payload) { commit('SetIsAuth', payload) },
+    setRole_action({ commit }, payload) { commit('SetRole', payload) },
+    setUserName_action({ commit }, payload) { commit('SetUserName', payload) },
+    setUserId_action({ commit }, payload) { commit('SetUserId', payload) },
+    setProjectId_action({ commit }, payload) { commit('SetProjectId', payload) },
+    setUserPermissions_action({ commit }, payload) { commit('SetUserPermissions', payload) },
+    AddNotification_action({ commit }, payload) { commit('AddNotification', payload) },
+    AddError_action({ commit }, payload) { commit('AddError', payload) },
+    DeleteNotification_action({ commit }, payload) { commit('DeleteNotification', payload) },
+
     // changemain({ commit }, elems) {
     //   commit("changemain", elems);
     // },

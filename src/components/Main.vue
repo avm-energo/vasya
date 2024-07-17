@@ -2,7 +2,7 @@
   <div id="main" v-if="!isLoading">
     <sonica-head v-if="head!=null" :myJson="head" typewindow="head" />
     <sonica-footer v-if="footer!=null" :myJson="footer" />
-    <sonica-main :myJson="main" typewindow="main" />
+    <sonica-main v-if="main!=null" :myJson="main" typewindow="main" />
     <sonica-window
       v-for="elem in elems"
       :key="elem.name"
@@ -24,6 +24,8 @@ import SonicaFooter from "./Components/Footer.vue";
 import SonicaHead from './Components/Head.vue'
 import SonicaMain from './Components/Main.vue'
 import SonicaLinker from './Linker/Linker.vue'
+import { login} from "../actions/AuthorizationActions";
+import { PutLogout, PutAdminActive} from "../actions/SonicaActions";
 
 export default {
   name: "Main",
@@ -32,40 +34,36 @@ export default {
       info: null,
       mas: [],
       tick: null,
-      innactivetime: 0,
-      innactive: false,
       height: null,
       multiplier: null,
-      linkerShow: false
+      linkerShow: false,
+      worker: new Worker('sw.js'),
     };
   },
 
   components: { SonicaWindow, SonicaFooter, SonicaHead, SonicaMain, SonicaLinker },
 
   methods: {
-    resetTimer() {
-      this.innactivetime = 0;
-      this.innactive = false;
-    },
-
     linkerClose() {
       this.linkerShow = false;
     }
   },
   created() {
     this.height = window.innerHeight
-    setInterval(() => {
-      if (!this.innactive) {
-        this.innactivetime++;
-        console.log(this.innactivetime);
-        if (this.innactivetime >= 30) {
-          this.innactive = true;
-          this.$store.dispatch("innactivereset");
-        }
+    this.worker.addEventListener('message', (e) => {
+      if (this.$store.getters.GetUserName != 'Guest') {
+        PutAdminActive((state, data) =>{
+          // console.log(data )
+          if (state && data === 'Logout') {
+            PutLogout(()=>{
+              this.$store.dispatch('AddNotification_action', { text: `Выход с пользователя!`, type: 'Error', time: 5000 })
+              login('Guest', 'Guest', (e) =>{})
+            })
+          }
+        })
       }
-    }, 60000);
-    addEventListener ('mousemove', this.resetTimer)
-
+    });
+    this.worker.postMessage({ interval: 10000 });
   },
   mounted(){
     this.linkerRedirect = function (e) {
@@ -114,6 +112,9 @@ export default {
     // this.$store.dispatch("fetchTree");
     // setInterval(() => this.$store.dispatch("fetchAtoms"), 1000);
   },
+  unmounted(){
+    this.worker.postMessage({ stop: true });
+  }
 };
 </script>
 

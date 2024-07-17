@@ -35,8 +35,9 @@ export default {
       let json_obj
       if (res){
         var items = {};
+        console.log(res)
         res.forEach(element => {
-          items[element.namewidget] = element.value.toString();
+          items[element.namewidget] = element.value ? element.value.toString() : '';
         });
         const jsonString = JSON.stringify(Object.assign({}, items)) 
         json_obj = JSON.parse(jsonString);
@@ -45,13 +46,19 @@ export default {
       }
       if (this.params.writeParams) {
         if (json_obj != null) {
-          const headers = {'Content-Type': 'application/json'};
+          const headers = {
+            'Content-Type': 'application/json',
+            'Authorization': `${localStorage.getItem('token')}`
+          };
           // console.log(this.$parent.$parent.namewindow.split('\\').join('\\') )
           await axios.post(`http://${this.ip}/api/nodes/${this.encript((new TextEncoder()).encode(this.$parent.$parent.windowpath))}/widget/${this.encript((new TextEncoder()).encode(this.name))}/query/apply-form`, json_obj, { headers })
           this.$store.dispatch('clearcommandwidgets', this.$parent.$parent.windowname)
         }
       } 
-      const headers = {'Content-Type': 'application/json'};
+      const headers = {
+            'Content-Type': 'application/json',
+            'Authorization': `${localStorage.getItem('token')}`
+          };
       json_obj = {}
       await axios.post(`http://${this.ip}/api/nodes/${this.encript((new TextEncoder()).encode(this.$parent.$parent.windowpath))}/widget/${this.encript((new TextEncoder()).encode(this.name))}/query/apply-command`, json_obj, { headers }).
       then(response =>{

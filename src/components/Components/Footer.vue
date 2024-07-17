@@ -152,11 +152,11 @@ export default {
     const today = new Date();
     var currentDateMilliseconds = today.getMilliseconds();
     setTimeout(() => {
-      setInterval(async () => {
+      var interval = setInterval(async () => {
         let response = await fetch(
           `http://${this.myJson.ip}/api/nodes/footer/delta/0/${
             this.tick
-          }`
+          }`, { headers: { Authorization: `${localStorage.getItem('token')}` }, }
         );
         let obj = JSON.parse(await response.text())
         this.tick = obj.tick
@@ -203,6 +203,7 @@ export default {
         }
         this.data 
       }, 1000);
+      this.$store.state.tickmas.push({name: 'footer', interval: interval})
     }, 1000 - Math.abs(500 - currentDateMilliseconds));
 
   },
