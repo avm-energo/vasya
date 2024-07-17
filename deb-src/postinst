@@ -4,3 +4,5 @@ chown -R www-data:www-data /var/www/vasya
 systemctl restart nginx
 mkdir -p /avtuk/sonica/vasya/settings
 cp /usr/local/share/vasya/settings.ini /avtuk/sonica/vasya/settings/ 2>/dev/null
+cp /usr/local/share/vasya/A* /avtuk/sonica/vasya/settings/ 2>/dev/null
+cp /usr/local/share/vasya/version /var/www/vasya/
