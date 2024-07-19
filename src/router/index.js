@@ -5,6 +5,11 @@ import Authorization from '@/pages/Authorization.vue'
 
 const routes = [
   {
+    path: '/',
+    name: 'Home',
+    redirect: '/sonica'
+  },
+  {
     path: '/authorization',
     name: 'Authorization',
     component: Authorization,
@@ -16,17 +21,11 @@ const routes = [
     path: '/sonica',
     name: 'Sonica',
     component: Main,
-    meta: {
-      access: ['Administrator', 'System_Operator', 'Operator']
-    },
   },
   {
     path: '/version',
     name: 'Version',
     component: Version,
-    meta: {
-      access: ['Administrator', 'System_Operator', 'Operator']
-    },
   },
 ]
 
@@ -38,7 +37,6 @@ const router = createRouter({
 
 router.beforeEach(function (to, from, next) {
   let isAuth = !!localStorage.getItem('token');
-  // console.log(isAuth.split(' ')[1])
   let role = localStorage.getItem('role')
   let name = 'АСУ-ВЭИ'
   if (to.meta.title) {
@@ -53,10 +51,6 @@ router.beforeEach(function (to, from, next) {
   if (to.name !== 'Authorization') {
     if (!isAuth) {
       router.push('/authorization');
-      return;
-    }
-    if (!to.meta.access.includes(role)) {
-      router.go(-1);
       return;
     }
   }
