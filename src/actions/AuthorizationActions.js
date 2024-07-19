@@ -25,12 +25,11 @@ export const login = async (login, password, callback) => {
             body: data,
         });
         const text = await response.json();
-        // console.log(text)
-        if (!text.StatusCode){
+        console.log(text)
+        if (!text.status){
             store.dispatch('setIsAuth_action', true)
             // localStorage.setItem('role', text.role)
             localStorage.setItem('token', 'Bearer ' + text.access_token)
-            console.log(text)
             localStorage.setItem('userName', login)
             localStorage.setItem('creatorId', text.client.creatorId)
             localStorage.setItem('userId', text.client.id)

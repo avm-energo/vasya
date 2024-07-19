@@ -168,7 +168,7 @@ export default {
 }
 
 .warnings_list {
-  margin-top: 40px;
+  margin-top: 10px;
   position: absolute;
   top: 50%;
   left: 50%;

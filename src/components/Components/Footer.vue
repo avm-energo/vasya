@@ -155,7 +155,7 @@ export default {
       var interval = setInterval(async () => {
         let response = await fetch(
           `http://${this.myJson.ip}/api/nodes/footer/delta/0/${
-            this.tick
+            this.tick ? this.tick : -1
           }`, { headers: { Authorization: `${localStorage.getItem('token')}` }, }
         );
         let obj = JSON.parse(await response.text())

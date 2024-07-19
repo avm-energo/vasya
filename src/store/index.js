@@ -15,6 +15,7 @@ export default createStore({
     userPermissions: null,
     notification:[],
     error: [],
+    warning:[{name: 'adminja', state: false}],
 
     head: null,
     main: null,
@@ -97,6 +98,10 @@ export default createStore({
     },
     SetUserPermissions(state, payload){
       state.userPermissions = payload
+    },
+    SetWarning(state, payload){
+      state.warning[state.warning.findIndex(elem => elem.name == payload.name)].state = payload.state
+      // console.log(state.warning[state.warning.findIndex(elem => elem.name == payload.name)])
     },
     async fetchAtoms(state) {
       let config = await fetch('defaults.json')
@@ -245,35 +250,42 @@ export default createStore({
           // console.log("я запустил:" + name)
           var xyz = setInterval(async () => {
             state.tickmas[ticknumber].mas = []
-            let response = await fetch(
-              `http://${state.ip}/api/nodes/${encript((new TextEncoder()).encode(name))}/delta/0/${
-                state.tickmas[ticknumber].tick
-              }`,{
-                headers: { Authorization: `${localStorage.getItem('token')}` },
-              }
-            );
-            // console.log(state.tickmas[ticknumber].mas)
-            // console.log(`http://${state.ip}/api/nodes/${encript((new TextEncoder()).encode(name))}/delta/0/${
-            //   state.tickmas[ticknumber].tick
-            // }`)
-            const s = await response.text()
-            // console.log(s)
-            const data = JSON.parse(s);
-            state.tickmas[ticknumber].tick = data.tick
-            ;(data.widgets.$id  == undefined ? data.widgets : data.widgets.$values).forEach(element => {
-              if (element.name.startsWith("Sub") || element.name.startsWith("Ren")) {
-                // element.properties.screen.widgets.forEach((elements) => {
-                  (element.properties.screen.widgets.$id  == undefined ? element.properties.screen.widgets : element.properties.screen.widgets.$values).forEach(elements => {
-                    elements.name += '/' + element.name
-                    state.tickmas[ticknumber].mas.push(elements)
-                });
-              } else {
-                state.tickmas[ticknumber].mas.push(element)
-              }
-            });
-            // console.log(" time:" + new Date().getHours() + ":"+ new Date().getMinutes() + ":"+ new Date().getSeconds() + ":" + asdasda.getMilliseconds() + ' name = ' + name + " tick:" + state.tickmas[ticknumber].tick) 
-            // console.log(data)
-            // console.log(state.tickmas[ticknumber])
+            try {
+              console.log(state.tickmas[ticknumber].tick)
+              let response = await fetch(
+                `http://${state.ip}/api/nodes/${encript((new TextEncoder()).encode(name))}/delta/0/${
+                  state.tickmas[ticknumber].tick ? state.tickmas[ticknumber].tick : -1
+                }`,{
+                  headers: { Authorization: `${localStorage.getItem('token')}` },
+                }
+              );
+              // console.log(state.tickmas[ticknumber].mas)
+              // console.log(`http://${state.ip}/api/nodes/${encript((new TextEncoder()).encode(name))}/delta/0/${
+              //   state.tickmas[ticknumber].tick
+              // }`)
+              const s = await response.text()
+              // console.log(s)
+              const data = JSON.parse(s);
+              state.tickmas[ticknumber].tick = data.tick
+              ;(data.widgets.$id  == undefined ? data.widgets : data.widgets.$values).forEach(element => {
+                if (element.name.startsWith("Sub") || element.name.startsWith("Ren")) {
+                  // element.properties.screen.widgets.forEach((elements) => {
+                    (element.properties.screen.widgets.$id  == undefined ? element.properties.screen.widgets : element.properties.screen.widgets.$values).forEach(elements => {
+                      elements.name += '/' + element.name
+                      state.tickmas[ticknumber].mas.push(elements)
+                  });
+                } else {
+                  state.tickmas[ticknumber].mas.push(element)
+                }
+              });
+              // console.log(" time:" + new Date().getHours() + ":"+ new Date().getMinutes() + ":"+ new Date().getSeconds() + ":" + asdasda.getMilliseconds() + ' name = ' + name + " tick:" + state.tickmas[ticknumber].tick) 
+              // console.log(data)
+              // console.log(state.tickmas[ticknumber])
+              state.warning[state.warning.findIndex(elem => elem.name == 'adminja')].state = false
+            }
+            catch {
+              state.warning[state.warning.findIndex(elem => elem.name == 'adminja')].state = true
+            }
           }, 1000);
           state.tickmas[ticknumber].interval = xyz
           
@@ -496,6 +508,7 @@ export default createStore({
     AddNotification_action({ commit }, payload) { commit('AddNotification', payload) },
     AddError_action({ commit }, payload) { commit('AddError', payload) },
     DeleteNotification_action({ commit }, payload) { commit('DeleteNotification', payload) },
+    SetWarning_action({ commit }, payload) { commit('SetWarning', payload) },
 
     // changemain({ commit }, elems) {
     //   commit("changemain", elems);

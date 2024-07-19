@@ -1,7 +1,7 @@
 <template>
   <div class="container" v-show="this.state"> 
     <!-- <v-icon icon="circle-exclamation" :style="{ color: 'white', width: '20px' }" /> -->
-    <span> Отсутствует подключение к {{ text }}</span>
+    <span> Отсутствует подключение</span>
     <span> Некоторые функции недоступны</span>
   </div>
 </template>
