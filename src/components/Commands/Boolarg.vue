@@ -6,7 +6,6 @@
 
 <script>
 
-import { nullLiteral } from '@babel/types';
 import axios from 'axios';
 
 export default {
@@ -23,6 +22,7 @@ export default {
   },
   methods: {
     async some(){
+      // console.log(this.boolarg.value)
       if (this.params.trigger == "ChangeOnEnd") {
         const article =`
           ${this.boolarg.value}
@@ -89,7 +89,7 @@ export default {
   },
   watch: {
     'boolarg.value'(){
-      const res = {'namewidget': this.boolarg.Name, 'namewindow': this.$parent.$parent.windowname , 'value': this.boolarg.value}
+      const res = {'namewidget': this.boolarg.Name, 'namewindow': this.$parent.$parent.windowname , 'value': this.boolarg.value.toString()}
       this.$store.dispatch('addcommandwidgetmass', res)
     }
   },
