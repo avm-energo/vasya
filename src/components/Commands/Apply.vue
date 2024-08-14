@@ -44,7 +44,7 @@ export default {
       } else{
         json_obj = null
       }
-      if (json_obj) {
+      if (json_obj  && this.params.writeParams) {
         if (json_obj != null) {
           const headers = {
             'Content-Type': 'application/json',
