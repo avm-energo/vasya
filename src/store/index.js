@@ -111,6 +111,7 @@ export default createStore({
           `http://${state.ip}/api/linker/atoms/info`,{
             method: "GET",
             mode: "cors",
+            headers: { Authorization: `${localStorage.getItem('token')}` },
           }
       );
       const atoms = JSON.parse(await response.text());
@@ -125,6 +126,7 @@ export default createStore({
           `http://${state.ip}/api/linker/tree`,{
             method: "GET",
             mode: "cors",
+            headers: { Authorization: `${localStorage.getItem('token')}` },
           }
       );
       const tree = JSON.parse(await response.text());
