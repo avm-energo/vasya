@@ -9,14 +9,14 @@
       <div id="mainbody" :style="cssProps">
         <imagetrans v-for="elem in imagestrans" :key="elem.name" :params="elem.properties"/>
         <imagelogo v-for="elem in imageslogo" :key="elem.name" :params="elem.properties"/>
-        
+
         <tiles v-for="elem  in tiless" :key="elem.name" :params="elem.properties" :name="elem.name" :screenPercentage="this.myJson.screenPercentage" :windowWidth="this.myJson.canvas.width" :windowHeight="this.myJson.canvas.height" :type="elem.type"/>
         <svg v-show="this.lines.length" :height="this.myJson.canvas.height * this.multiplier" :width="this.myJson.canvas.width * this.multiplier" xmlns="http://www.w3.org/2000/svg" style="position: absolute; left: 0px; top: 0px;">
           <sline v-for="line in lines" :key="line.name" :params="line.properties" />
         </svg>
         <commands v-for="elem in commandss" :key="elem.name" :params="elem"/>
         <!-- было windowname -->
-        <subscreen v-for="elem in subscreens" :key="elem.name" :params="elem" :name="elem.type" :namewindow="this.namewindow"/> 
+        <subscreen v-for="elem in subscreens" :key="elem.name" :params="elem" :name="elem.type" :namewindow="this.namewindow"/>
         <tooltiper v-for="elem in tooltipers" :key="elem.name" :params="elem"/>
         <chart v-for="elem in charts" :key="elem.name" :params="elem"/>
         <helper v-for="elem in helper" :key="elem.name" :params="elem.properties"/>
@@ -98,7 +98,7 @@ export default {
     Helper,
     Duval,
     Vector
-    
+
   },
 
   // directives: {
@@ -152,10 +152,21 @@ export default {
     mainmultiplier(){
       return this.$store.getters.mainmultiplier
     }
-  },  
+  },
+
+  watch: {
+    mainmultiplier(newVal, oldVal) {
+      console.log(`mainmultiplier changed from ${oldVal[1]} to ${newVal[1]}`);
+    },
+  },
 
   methods: {
     reportWindowSize(){
+
+      // console.log(this.multiplierwindow, " this.multiplierwindow")
+      // console.log(this.mainmultiplier[1], " this.mainmultiplier[1]")
+      // console.log(this.multiplierwindowww, " this.multiplierwindowww")
+      // this.multiplier = window.innerWidth * window.innerHeight * this.multiplier / (this.width * this.height);
       this.width = window.innerWidth
       this.height = window.innerHeight
       this.multiplier = this.multiplierwindow * (this.mainmultiplier[1]/this.multiplierwindowww)
@@ -164,6 +175,7 @@ export default {
           this.multiplier = this.multiplier / ((this.myJson.canvas.width * this.multiplier)/window.innerWidth)
         }
       }
+      // console.log(this.multiplier, " this.multiplier при срабатывании reportWindowSize");
     },
     closejson(){
       this.$store.dispatch('closewindow', this.windowname)
@@ -179,7 +191,7 @@ export default {
       } else {
         this.titletext = ''
         this.titlebool = false
-      } 
+      }
     }
     window.addEventListener('resize', this.reportWindowSize)
     this.multiplierwindow= this.multiplierwindow * this.subscreensize
@@ -191,18 +203,19 @@ export default {
     }
     //скалирование модального окна из переданного параметра scrennPercentage
     if (this.myJson.screenPercentage){
-        let ss = ((window.innerHeight - 100) * (this.myJson.screenPercentage/100))/this.myJson.canvas.height
-        this.multiplierwindow = this.multiplierwindow * ss
+      let ss = ((window.innerHeight - 100) * (this.myJson.screenPercentage/100))/this.myJson.canvas.height
+      //console.log('Скалирование без переданного параметра')
+      this.multiplierwindow = this.multiplierwindow * ss
     }
 
     this.width = window.innerWidth;
     this.height = window.innerHeight;
-    //если модальнгое окно превышает размер рабочего окна, то оно уменьшается 
+    //если модальнгое окно превышает размер рабочего окна, то оно уменьшается
     if (this.myJson.canvas.width * this.multiplierwindow > window.innerWidth) {
       this.multiplierwindow = window.innerWidth / (this.myJson.canvas.width + 100)
     }
     this.multiplier = this.multiplierwindow
-    this.multiplierwindoww = this.multiplier 
+    this.multiplierwindoww = this.multiplier
     this.multiplierwindowww = this.mainmultiplier[1]
     ;(this.myJson.widgets.$id == undefined ? this.myJson.widgets : this.myJson.widgets.$values).forEach(element => {
       let res = element;
@@ -210,18 +223,18 @@ export default {
         this.lines.push(res);
       } else
       if (
-        res.type.startsWith("tile") ||
-        res.type.startsWith("primitives/Text") ||
-        res.type.startsWith("Tiles")
+          res.type.startsWith("tile") ||
+          res.type.startsWith("primitives/Text") ||
+          res.type.startsWith("Tiles")
       ) {
         this.tiless.push(res);
       } else
       if (
-        res.type.startsWith("tooltip") ||
-        res.type.startsWith("neightbours/Tooltiper") ||
-        res.type.startsWith("neightbours/Navigator")) 
+          res.type.startsWith("tooltip") ||
+          res.type.startsWith("neightbours/Tooltiper") ||
+          res.type.startsWith("neightbours/Navigator"))
       {
-        this.tooltipers.push(res);  
+        this.tooltipers.push(res);
       } else
       if (res.type.startsWith("neightbours/Subscreen") || (res.type.startsWith("neightbours/Renter"))) {
         this.subscreens.push(res);
@@ -233,7 +246,7 @@ export default {
         this.imageslogo.push(res);
       } else
       if (res.type.startsWith("charts") || (res.type.startsWith("view/ClassicHystogramm")) || (res.type.startsWith("trends/TrendViewer"))){
-        
+
         this.charts.push(res);
       } else
       if (res.type.startsWith("primitives/Helper")) {
@@ -248,6 +261,7 @@ export default {
       if (res.type.startsWith("commands")) {
         this.commandss.push(res)
       }
+      // console.log('this.multiplier in start = ', this.multiplier);
     });
   },
 };
@@ -268,7 +282,7 @@ export default {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  align-items: center; 
+  align-items: center;
   position: absolute;
   left: 0px;
   top: 0px;
@@ -297,10 +311,10 @@ export default {
 }
 #closewindow{
   user-select: none;
-  color:rgb(65, 65, 255); 
-  font-size:20px; 
-  width: 25px; 
-  text-align:center; 
+  color:rgb(65, 65, 255);
+  font-size:20px;
+  width: 25px;
+  text-align:center;
   height: 100%;
   margin: 0;
 }

@@ -132,20 +132,21 @@ export default {
     },
     mainheight(){
       return this.$store.getters.mainheight
-    }, 
+    },
     updatedmainheight(){
       return this.$store.getters.updatedmainheight
     }
-  },  
+  },
 
   methods: {
     reportWindowSize(){
+      console.log('Set main maultiplier', this.multiplier);
       let multiplierwindow = (window.innerHeight - (this.updatedmainheight) - 28)/this.myJson.canvas.height
       if (multiplierwindow * this.myJson.canvas.width > window.innerWidth){
         multiplierwindow = multiplierwindow * window.innerWidth / (multiplierwindow * this.myJson.canvas.width) - 0.005
-        this.$store.dispatch('mainmultiplier', [true, this.multiplier])
+        this.$store.dispatch('mainmultiplier', [true, multiplierwindow])
       } else {
-        this.$store.dispatch('mainmultiplier', [false, this.multiplier])
+        this.$store.dispatch('mainmultiplier', [false, multiplierwindow])
       }
       // console.log(this.multiplier)
       this.multiplier =  multiplierwindow
@@ -183,23 +184,23 @@ export default {
     this.$store.dispatch('mainmultiplier', [true, this.multiplier])
     ;(this.myJson.widgets.$id == undefined ? this.myJson.widgets : this.myJson.widgets.$values).forEach(element => {
       let res = element;
-      
+
       if (res.type.startsWith("primitives/Line")) {
         this.lines.push(res);
       } else
       if (
-        res.type.startsWith("tile") ||
-        res.type.startsWith("primitives/Text") ||
-        res.type.startsWith("Tiles")
+          res.type.startsWith("tile") ||
+          res.type.startsWith("primitives/Text") ||
+          res.type.startsWith("Tiles")
       ) {
         this.tiless.push(res);
       } else
       if (
-        res.type.startsWith("tooltip") ||
-        res.type.startsWith("neightbours/Tooltiper") ||
-        res.type.startsWith("neightbours/Navigator")) 
+          res.type.startsWith("tooltip") ||
+          res.type.startsWith("neightbours/Tooltiper") ||
+          res.type.startsWith("neightbours/Navigator"))
       {
-        this.tooltipers.push(res);  
+        this.tooltipers.push(res);
       } else
       if (res.type.startsWith("neightbours/Subscreen") || (res.type.startsWith("neightbours/Renter"))) {
         this.subscreens.push(res);
@@ -211,7 +212,7 @@ export default {
         this.imageslogo.push(res);
       } else
       if (res.type.startsWith("charts") || (res.type.startsWith("view/ClassicHystogramm")) || (res.type.startsWith("trends/TrendViewer"))){
-        
+
         this.charts.push(res);
       } else
       if (res.type.startsWith("primitives/Helper")) {
@@ -226,7 +227,7 @@ export default {
       if (res.type.startsWith("scales/Meter")) {
         this.meter.push(res)
       } else
-      // if (res.type.startsWith("scales/HorizontalSimple") || res.type.startsWith("scales/Horizontal")) {
+          // if (res.type.startsWith("scales/HorizontalSimple") || res.type.startsWith("scales/Horizontal")) {
       if (res.type.startsWith("scales/Horizontal")) {
         this.horizontal.push(res)
       }
@@ -245,13 +246,13 @@ export default {
   background-color: var(--background);
   border: solid var(--borderThickness) white;
   border-radius: var(--borderRadius);
-  
+
 }
 .background {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  align-items: center; 
+  align-items: center;
   position: absolute;
   left: 0px;
   top: 0px;
@@ -289,10 +290,10 @@ export default {
 }
 #closewindow{
   user-select: none;
-  color:rgb(65, 65, 255); 
-  font-size:20px; 
-  width: 25px; 
-  text-align:center; 
+  color:rgb(65, 65, 255);
+  font-size:20px;
+  width: 25px;
+  text-align:center;
   height: 100%;
   margin: 0;
 }
