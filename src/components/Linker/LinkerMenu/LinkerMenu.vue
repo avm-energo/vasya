@@ -81,7 +81,7 @@ export default {
 
 .list-item {
   position: relative;
-  height: 25px;
+  height: 35px;
   padding-top: 8px;
   padding-bottom: 4px;
   cursor: pointer;
@@ -101,10 +101,6 @@ export default {
 
 .list-item-btn:hover {
   color: #257cf9;
-}
-
-.list-item-btn:active {
-  color: #2667c5;
 }
 
 .selected {

@@ -58,28 +58,29 @@
     </div>
     <div class="content">
       <div class="sidebar" @click="selectItems">
-<!--        <template v-if="defer(2)">-->
-          <linker-menu
-              :padding=5
-              :selectedItems="selectedItems"
-              :tree="tree"
-          />
-<!--        </template>-->
+        <!--        <template v-if="defer(2)">-->
+        <linker-menu
+            :padding=5
+            :selected-items="selectedItems"
+            :tree="tree"
+        />
+        <!--        </template>-->
       </div>
       <div class="resizer" @mousedown="sidebarResize"></div>
-<!--      <template v-if="defer(3)">-->
-        <linker-list
-            :atoms="atoms"
-            :name-path="namePath"
-            :is-description="isDescription"
-            :relative-path="relativePath"
-            :hide-special="hideSpecial"
-            :search-query="searchQuery"
-            :selected-items="selectedItems"
-            :length="length"
-            @update="UpdateNumberOfAtoms"
-        />
-<!--      </template>-->
+      <!--      <template v-if="defer(3)">-->
+      <linker-list
+          :atoms="atoms"
+          :name-path="namePath"
+          :is-description="isDescription"
+          :relative-path="relativePath"
+          :hide-special="hideSpecial"
+          :search-query="searchQuery"
+          :selected-items="selectedItems"
+          :length="length"
+          :windowOffset="windowOffset"
+          @update="UpdateNumberOfAtoms"
+      />
+      <!--      </template>-->
     </div>
   </div>
 </template>
@@ -89,7 +90,8 @@
 import LinkerMenu from "@/components/Linker/LinkerMenu/LinkerMenu";
 import LinkerList from "@/components/Linker/LinkerList/LinkerList";
 import Tooltip from "@/components/Linker/Tooltip/Tooltip";
-import axios from 'axios';
+import {fetchAtoms, fetchTree} from "../../actions/LinkerActions";
+// import axios from 'axios';
 
 
 export default {
@@ -99,6 +101,16 @@ export default {
     LinkerList,
     Tooltip,
   },
+  // props: {
+  //   atoms: {
+  //     type: Array,
+  //     required: true,
+  //   },
+  //   tree: {
+  //     type: Object,
+  //     required: true,
+  //   }
+  // },
   emits: ['close'],
   data() {
     return {
@@ -112,9 +124,9 @@ export default {
       // Query from Search textbox
       searchQuery: "",
       // Path from LinkerTree
-      selectedItems: null,
-      selectedNode: null,
+      selectedItems: ">",
       atomsInterval: null,
+      windowOffset: 60,
     }
   },
   methods: {
@@ -125,14 +137,10 @@ export default {
       this.length = len;
     },
     selectItems(e) {
+      console.log(e.target)
       if (e.target.className === "list-item" || e.target.className === "list-item-text") {
-        let node = null;
-        if (e.target.className === "list-item") node = e.target;
-        else if (e.target.className === "list-item-text") node = e.target.parentNode;
-        node.style.background = "#2667c5";
-        if (this.selectedNode === null) this.selectedNode = node;
-        if (this.selectedNode !== node) this.selectedNode.style.background = null;
-        this.selectedNode = node;
+
+        let node = e.target.parentNode;
         let arr = [];
         while (node.id.localeCompare(">") !== 0) {
           arr.push(node.id);
@@ -146,8 +154,10 @@ export default {
     sidebarResize(e) {
       const sidebar = document.getElementsByClassName("sidebar")[0];
       e.target.style.backgroundColor = "#2667c5";
+      let windowOffset = this.windowOffset;
+
       function onMouseMove(e) {
-        sidebar.style.width = e.pageX + "px";
+        sidebar.style.width = e.pageX - windowOffset + "px";
       }
 
       document.addEventListener('mousemove', onMouseMove);
@@ -159,12 +169,21 @@ export default {
       }
     },
   },
-  beforeCreate() {
-    this.$store.dispatch("fetchTree");
+  created() {
+    // this.$store.dispatch("fetchTree_action");
+    fetchTree();
     // this.$store.dispatch("fetchAtoms")
-    this.atomsInterval = setInterval(() => this.$store.dispatch("fetchAtoms"), 1000);
+    this.atomsInterval = setInterval(() => {
+      // this.$store.dispatch("fetchAtoms_action")
+      fetchAtoms();
+    }, 1000);
+
+  },
+  updated() {
+    this.windowOffset = localStorage.getItem("navigation") === "true" ? 240 : 60;
   },
   beforeUnmount() {
+    // console.log("DeforeUnmount")
     clearInterval(this.atomsInterval);
   },
   computed: {
@@ -213,16 +232,16 @@ export default {
 
 .selected {
   padding: 0 10px;
-  /*margin-bottom: 10px;*/
-  line-height: 0.9;
 }
 .content {
+  position: relative;
   display: flex;
-  height: calc(100vh - 50px);
+  height: calc(95vh - 50px);
+  /*width: 100%;*/
 }
 .sidebar {
+  position: relative;
   min-width: 200px;
-  max-width: 400px;
   background: #181818;
   overflow-y: auto;
   user-select: none;
@@ -233,6 +252,7 @@ export default {
   position: relative;
   width: 3px;
   cursor: ew-resize;
+  user-select: none;
 }
 
 /*INPUT*/

@@ -103,34 +103,11 @@ export default createStore({
       state.warning[state.warning.findIndex(elem => elem.name == payload.name)].state = payload.state
       // console.log(state.warning[state.warning.findIndex(elem => elem.name == payload.name)])
     },
-    async fetchAtoms(state) {
-      let config = await fetch('defaults.json')
-      const a = JSON.parse(await config.text())
-      state.ip = a.ip
-      let response = await fetch(
-          `http://${state.ip}/api/linker/atoms/info`,{
-            method: "GET",
-            mode: "cors",
-            headers: { Authorization: `${localStorage.getItem('token')}` },
-          }
-      );
-      const atoms = JSON.parse(await response.text());
-      state.atoms = atoms;
+    SetLinkerAtoms(state, payload) {
+      state.atoms = payload;
     },
-
-    async fetchTree(state) {
-      let config = await fetch('defaults.json')
-      const a = JSON.parse(await config.text())
-      state.ip = a.ip
-      let response = await fetch(
-          `http://${state.ip}/api/linker/tree`,{
-            method: "GET",
-            mode: "cors",
-            headers: { Authorization: `${localStorage.getItem('token')}` },
-          }
-      );
-      const tree = JSON.parse(await response.text());
-      state.tree.blocks = tree;
+    SetLinkerTree(state, payload) {
+      state.tree.blocks = payload;
     },
 
     async fetchElems(state) {
@@ -458,12 +435,6 @@ export default createStore({
 
   },
   actions: {
-    fetchAtoms({ commit }, elems) {
-      commit("fetchAtoms", elems);
-    },
-    fetchTree({ commit }, elems) {
-      commit("fetchTree", elems);
-    },
     fetchElems({ commit }, elems) {
       commit("fetchElems", elems);
     },
@@ -500,6 +471,8 @@ export default createStore({
     clearcommandwidgets({ commit }, elems) {
       commit("clearcommandwidgets", elems);
     },
+    fetchAtoms_action({ commit }, payload) { commit("SetLinkerAtoms", payload) },
+    fetchTree_action({ commit }, payload) { commit("SetLinkerTree", payload) },
     setIsLoading_action({ commit }, payload) { commit('SetIsLoading', payload) },
     setIsAuth_action({ commit }, payload) { commit('SetIsAuth', payload) },
     setRole_action({ commit }, payload) { commit('SetRole', payload) },

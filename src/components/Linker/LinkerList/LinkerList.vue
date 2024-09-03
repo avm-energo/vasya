@@ -1,9 +1,10 @@
 <template>
-  <div class="tableview" @scroll="tableScroll">
-    <table v-if="conditionsTable.length" class="table">
+  <!--  <div class="linkerlist">-->
+  <div class="tableview" @scroll="tableScroll" :style="{maxWidth: `calc((100% - ${windowOffset}px) / 5 * 4)`}">
+    <table v-if="conditionsTable.length" class="table" :style="{width: `${tableWidth}px`}">
       <thead>
       <tr @mousedown="sorting">
-        <th :id=elem :ref=elem :style="{width: `${columnsWidth[elem]}px`}" v-for="elem in Object.keys(conditionsTable[0])">
+        <th :id=elem :ref=elem :key=elem :style="{width: `${columnsWidth[elem]}px`}" v-for="elem in Object.keys(conditionsTable[0])">
           {{ elem[0].toUpperCase() + elem.slice(1) }}
           <span class="sorting-arrows arrow-up">↑</span>
           <span class="sorting-arrows arrow-down">↓</span>
@@ -21,7 +22,9 @@
       />
       </tbody>
     </table>
+    <div v-else>Элементы подгружаются</div>
   </div>
+  <!--  </div>-->
 </template>
 
 <script>
@@ -36,6 +39,7 @@ export default {
       selectedSort: "",
       flag: 0,
       visibleAtoms: 100,
+      tableWidth: 1366,
       columnsWidth: {
         id: 56,
         path: 270,
@@ -46,6 +50,17 @@ export default {
         time: 170,
         type: 90,
         mode: 100,
+      },
+      columnsMinMax: {
+        id: [55, 280],
+        path: [75, 650],
+        name: [75, 650],
+        description: [75, 650],
+        value: [70, 400],
+        quality: [90, 300],
+        time: [150,180],
+        type: [70, 90],
+        mode: [100, 100],
       },
       columnsResize: {
         id: false,
@@ -85,12 +100,17 @@ export default {
       required: true,
     },
     selectedItems: {
+      type: String,
       required: true,
     },
     length: {
       type: Number,
       required: true,
-    }
+    },
+    windowOffset: {
+      type: Number,
+      required: true,
+    },
   },
   methods: {
     sorting(e) {
@@ -120,19 +140,40 @@ export default {
     },
     resizeColumn(e) {
       let target = e.target.parentNode;
-      let oldWidth = target.offsetWidth;
+      // let oldWidth = target.offsetWidth;
+      let oldWidth = this.columnsWidth[target.id];
       let oldClientX = e.clientX;
 
       const onMouseMove = (e) => {
         let offset = e.clientX - oldClientX - 1;
-        target.style.width = oldWidth + offset + "px";
-        this.columnsWidth[target.id] = oldWidth + offset;
+        // target.style.width = oldWidth + offset + "px";
+        if (oldWidth + offset > this.columnsMinMax[target.id][0] &&
+            oldWidth + offset < this.columnsMinMax[target.id][1]) {
+          this.columnsWidth[target.id] = oldWidth + offset;
+          console.log(oldWidth + offset);
+          let sum = -270;
+          for (const columnsWidthElement in this.columnsWidth) {
+            sum += this.columnsWidth[columnsWidthElement];
+          }
+          // const table = document.getElementsByClassName('table')[0];
+          this.tableWidth = sum;
+        }
+
       }
 
 
       onMouseMove(e);
 
       this.columnsResize[target.id] = true;
+      console.log(this.columnsResize[target.id])
+
+      // const cells = document.getElementsByClassName(target.id);
+      // console.log(cells)
+      //
+      // Array.from(cells).forEach(item => {
+      //   item.style.maxWidth = "0"
+      // })
+
 
       if (target.id !== "mode")
         document.addEventListener('mousemove', onMouseMove);
@@ -146,22 +187,31 @@ export default {
       if (e.target.scrollTop + e.target.clientHeight + 100 >= e.target.scrollHeight) {
         if (this.visibleAtoms <= this.conditionsTable.length) {
           this.visibleAtoms += 100;
+          console.log("Докрутил")
         }
       }
     },
   },
+  created() {
+    // let sum = -270;
+    // for (const columnsWidthElement in this.columnsWidth) {
+    //   sum += this.columnsWidth[columnsWidthElement];
+    // }
+    // const table = document.getElementsByClassName('table')[0];
+    // table.style.width = sum + "px";
+  },
   updated() {
-    if(this.conditionsTable.length > 0) {
-      if (this.$refs.path)
-        this.columnsWidth.path = this.$refs.path[0].offsetWidth - 1;
-      if (this.$refs.name)
-        this.columnsWidth.name = this.$refs.name[0].offsetWidth - 1;
-      if (this.$refs.description)
-        this.columnsWidth.description = this.$refs.description[0].offsetWidth - 1;
-    }
+    // if(this.conditionsTable.length > 0) {
+    //   if (this.$refs.path)
+    //     this.columnsWidth.path = this.$refs.path[0].offsetWidth - 1;
+    //   if (this.$refs.name)
+    //     this.columnsWidth.name = this.$refs.name[0].offsetWidth - 1;
+    //   if (this.$refs.description)
+    //     this.columnsWidth.description = this.$refs.description[0].offsetWidth - 1;
+    // }
   },
   watch: {
-    length(newValue) {
+    length(newValue) { // eslint-disable-line
       this.visibleAtoms = 100;
     },
   },
@@ -192,7 +242,7 @@ export default {
         }
         return true;
       })
-      arr = arr.map(({qualityBlock, ...keepAttrs}) => keepAttrs);
+      arr = arr.map(({qualityBlock, ...keepAttrs}) => keepAttrs); // eslint-disable-line
 
       arr = arr.map(item => {
         const time = new Date(item.time)
@@ -204,7 +254,7 @@ export default {
 
       // Name, Path и description
       if (!this.isDescription) {
-        arr = arr.map(({description, ...keepAttrs}) => keepAttrs)
+        arr = arr.map(({description, ...keepAttrs}) => keepAttrs) // eslint-disable-line
       }
       if (this.namePath) {
         arr = arr.map(item => {
@@ -214,9 +264,9 @@ export default {
             ...item,
           }
         });
-        arr = arr.map(({path, ...keepAttrs}) => keepAttrs);
+        arr = arr.map(({path, ...keepAttrs}) => keepAttrs) // eslint-disable-line
       } else {
-        arr = arr.map(({name, ...keepAttrs}) => keepAttrs)
+        arr = arr.map(({name, ...keepAttrs}) => keepAttrs) // eslint-disable-line
         if (this.relativePath) {
           let regExp = new RegExp(this.selectedItems.replaceAll(/\\/ig, '\\\\') + ':\\\\');
           arr = arr.map(item => {
@@ -235,23 +285,24 @@ export default {
 </script>
 <style scoped>
 
+
 .tableview {
+  position: relative;
   overflow-y: auto;
-  overflow-x: hidden;
-  width: 100%;
+  overflow-x: auto;
+  /*width: 100%;*/
   padding-left: 10px;
 }
 
 table {
-  /*width: 100%;*/
   border-right: 1px solid #555558;
   border-bottom: 1px solid #555558;
   border-collapse: separate;
   border-spacing: 0;
   user-select: none;
   font-size: 14px;
-
 }
+
 
 thead {
   position: sticky;
@@ -283,7 +334,7 @@ th#id {
   max-width: 280px;
 }
 th#path {
-  /*min-width: 75px;*/
+  min-width: 75px;
   max-width: 650px;
 }
 th#name {
