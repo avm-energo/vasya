@@ -308,7 +308,7 @@ thead {
   position: sticky;
   top: 0;
   background: #212121;
-  z-index: 90;
+  z-index: 2;
 }
 
 th {

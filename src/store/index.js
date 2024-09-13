@@ -103,11 +103,29 @@ export default createStore({
       state.warning[state.warning.findIndex(elem => elem.name == payload.name)].state = payload.state
       // console.log(state.warning[state.warning.findIndex(elem => elem.name == payload.name)])
     },
-    SetLinkerAtoms(state, payload) {
+    SetLinkerTable(state, payload) {
       state.atoms = payload;
     },
     SetLinkerTree(state, payload) {
       state.tree.blocks = payload;
+    },
+
+    updateLinkerAtoms(state, payload) {
+
+      if (payload === undefined)
+        state.atoms = undefined;
+      else {
+        const payloadMap = new Map(payload.map(atom => [atom.id, atom]));
+
+        state.atoms.forEach(atom => {
+          const updatedAtom = payloadMap.get(atom.id);
+          if (updatedAtom) {
+            atom.value = updatedAtom.value;
+            atom.quality = updatedAtom.quality;
+            atom.time = updatedAtom.time;
+          }
+        });
+      }
     },
 
     async fetchElems(state) {
@@ -392,7 +410,8 @@ export default createStore({
     },
     async gethistorytime(state, data){
       let response = await fetch(
-        `http://${state.ip}/api/nodes/history/${moment(data[1]).format("YYYY-MM-DDTHH:mm:ss")}/${moment(data[0]).format("YYYY-MM-DDTHH:mm:ss")}`
+        `http://${state.ip}/api/nodes/history/${moment(data[1]).format("YYYY-MM-DDTHH:mm:ss")}/${moment(data[0]).format("YYYY-MM-DDTHH:mm:ss")}`,
+          {headers: { Authorization: `${localStorage.getItem('token')}` },}
       );
       console.log(`http://${state.ip}/api/nodes/history/${moment(data[1]).format("YYYY-MM-DDTHH:mm:ss")}/${moment(data[0]).format("YYYY-MM-DDTHH:mm:ss")}`)
       const res = JSON.parse(await response.text());
@@ -471,8 +490,6 @@ export default createStore({
     clearcommandwidgets({ commit }, elems) {
       commit("clearcommandwidgets", elems);
     },
-    fetchAtoms_action({ commit }, payload) { commit("SetLinkerAtoms", payload) },
-    fetchTree_action({ commit }, payload) { commit("SetLinkerTree", payload) },
     setIsLoading_action({ commit }, payload) { commit('SetIsLoading', payload) },
     setIsAuth_action({ commit }, payload) { commit('SetIsAuth', payload) },
     setRole_action({ commit }, payload) { commit('SetRole', payload) },
@@ -484,7 +501,9 @@ export default createStore({
     AddError_action({ commit }, payload) { commit('AddError', payload) },
     DeleteNotification_action({ commit }, payload) { commit('DeleteNotification', payload) },
     SetWarning_action({ commit }, payload) { commit('SetWarning', payload) },
-
+    fetchLinkerTable_action({ commit }, payload) { commit("SetLinkerTable", payload); },
+    fetchLinkerTree_action({ commit }, payload) { commit("SetLinkerTree", payload); },
+    fetchLinkerAtoms_action({ commit }, payload) { commit('updateLinkerAtoms', payload); },
     // changemain({ commit }, elems) {
     //   commit("changemain", elems);
     // },

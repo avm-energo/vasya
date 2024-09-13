@@ -43,32 +43,30 @@
       </div>
       <div class="navbar-item">
         <span class="selected">(Selected {{ this.length }})</span>
-      </div>
-      <div class="navbar-right">
         <input
             v-model.lazy="searchQuery"
             type="text"
             class="search"
             placeholder="Search..."
         />
-        <div @click="linkerClose" class="navbar-close">×</div>
       </div>
-
+      <div @click="linkerClose" class="navbar-close">×</div>
 
     </div>
     <div class="content">
-      <div class="sidebar" @click="selectItems">
+      <div class="sidebar" @click="selectItems" :style="{maxWidth: `calc((100% - ${windowOffset}px) / 5)`}">
         <!--        <template v-if="defer(2)">-->
         <linker-menu
             :padding=5
-            :selected-items="selectedItems"
             :tree="tree"
+            :selected-items="selectedItems"
         />
         <!--        </template>-->
       </div>
       <div class="resizer" @mousedown="sidebarResize"></div>
       <!--      <template v-if="defer(3)">-->
       <linker-list
+          v-if="atoms !== undefined"
           :atoms="atoms"
           :name-path="namePath"
           :is-description="isDescription"
@@ -80,6 +78,10 @@
           :windowOffset="windowOffset"
           @update="UpdateNumberOfAtoms"
       />
+      <div v-else>
+        <p>Ошибка со стороны сервера</p>
+        <button @click="reloadPage">Обновить</button>
+      </div>
       <!--      </template>-->
     </div>
   </div>
@@ -90,7 +92,7 @@
 import LinkerMenu from "@/components/Linker/LinkerMenu/LinkerMenu";
 import LinkerList from "@/components/Linker/LinkerList/LinkerList";
 import Tooltip from "@/components/Linker/Tooltip/Tooltip";
-import {fetchAtoms, fetchTree} from "../../actions/LinkerActions";
+import {fetchLinkerAtoms, fetchLinkerTable, fetchLinkerTree} from "../../actions/LinkerActions";
 // import axios from 'axios';
 
 
@@ -101,16 +103,6 @@ export default {
     LinkerList,
     Tooltip,
   },
-  // props: {
-  //   atoms: {
-  //     type: Array,
-  //     required: true,
-  //   },
-  //   tree: {
-  //     type: Object,
-  //     required: true,
-  //   }
-  // },
   emits: ['close'],
   data() {
     return {
@@ -130,6 +122,9 @@ export default {
     }
   },
   methods: {
+    reloadPage() {
+      location.reload(); // Обновление страницы
+    },
     linkerClose() {
       this.$emit('close');
     },
@@ -170,20 +165,23 @@ export default {
     },
   },
   created() {
-    // this.$store.dispatch("fetchTree_action");
-    fetchTree();
-    // this.$store.dispatch("fetchAtoms")
+    fetchLinkerTree();
+    fetchLinkerTable();
     this.atomsInterval = setInterval(() => {
-      // this.$store.dispatch("fetchAtoms_action")
-      fetchAtoms();
+      fetchLinkerAtoms();
     }, 1000);
 
   },
   updated() {
     this.windowOffset = localStorage.getItem("navigation") === "true" ? 240 : 60;
+    console.log(this.atoms, "Updated")
+    if (this.atoms === undefined) {
+      console.log('Received undefined from the server, stopping interval.');
+      clearInterval(this.atomsInterval);
+      this.atomsInterval = null;
+    }
   },
   beforeUnmount() {
-    // console.log("DeforeUnmount")
     clearInterval(this.atomsInterval);
   },
   computed: {
@@ -207,6 +205,7 @@ export default {
 
 .navbar {
   height: 50px;
+  width: calc(100vw - 60px);
 }
 .navbar-item {
   display: inline-block;
@@ -214,15 +213,11 @@ export default {
   font-size: 14px;
 }
 
-.navbar-right {
-  float: right;
-}
-
 .navbar-close {
   display: inline-block;
+  float: right;
   font-size: 20px;
   padding: 5px 20px;
-  margin-left: 10px;
   cursor: pointer;
 }
 
