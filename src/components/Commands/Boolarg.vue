@@ -29,6 +29,7 @@ export default {
         `;
         const headers = { 
             'Content-Type': 'application/json',
+            'Authorization': `${localStorage.getItem('token')}`,
         };
         await axios.post(`http://${this.ip}/api/nodes/${this.encript((new TextEncoder()).encode(this.$parent.$parent.windowpath))}/widget/${this.encript((new TextEncoder()).encode(this.boolarg.Name))}/query/write-arg`, article, { headers })
       }

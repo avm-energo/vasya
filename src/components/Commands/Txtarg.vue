@@ -42,6 +42,7 @@ export default {
         const article =`${this.txtarg.value}`;
         const headers = { 
             'Content-Type': 'application/json',
+            'Authorization': `${localStorage.getItem('token')}`,
         };
         await Axios.post(`http://${this.ip}/api/nodes/${this.encript((new TextEncoder()).encode(this.$parent.$parent.windowpath))}/widget/${this.encript((new TextEncoder()).encode(this.txtarg.Name))}/query/write-arg`, article, { headers }).
         then(response =>{
