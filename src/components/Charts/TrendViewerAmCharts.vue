@@ -254,6 +254,7 @@ export default {
       console.log('запросил')
       const headers = {
         'Content-Type': 'application/json',
+        'Authorization': `${localStorage.getItem('token')}`,
       };
       return await axios.post(`http://${this.ip}/api/nodes/${this.encript((new TextEncoder()).encode(this.$parent.$parent.windowpath))}/widget/${this.encript((new TextEncoder()).encode(this.name))}/query/trend-history`, article,
           {
@@ -744,6 +745,7 @@ export default {
       var controller = controllerr
       const headers = {
         'Content-Type': 'application/json',
+        'Authorization': `${localStorage.getItem('token')}`,
       };
       var article = `"${moment(series[0].data.values[series[0].data.values.length - 1].argument + 1000).format("YYYY-MM-DDTHH:mm:ss")}"`;
       await axios.post(`http://${ip}/api/nodes/${this.encript((new TextEncoder()).encode(win))}/widget/${this.encript((new TextEncoder()).encode(name))}/query/trend-increment`, article, {
@@ -816,6 +818,7 @@ export default {
 
       const headers = {
         'Content-Type': 'application/json',
+        'Authorization': `${localStorage.getItem('token')}`,
       };
       var article = `"${moment(seriesArr[0].data.values[seriesArr[0].data.values.length - 1].argument + 1000).format("YYYY-MM-DDTHH:mm:ss")}"`;
       await axios.post(`http://${ip}/api/nodes/${encript((new TextEncoder()).encode(win))}/widget/${encript((new TextEncoder()).encode(name))}/query/trend-increment`, article, {headers})
