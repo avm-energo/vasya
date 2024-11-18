@@ -25,7 +25,7 @@ export const login = async (login, password, callback) => {
             body: data,
         });
         const text = await response.json();
-        console.log(text)
+        // console.log(text)
         if (!text.status){
             store.dispatch('setIsAuth_action', true)
             // localStorage.setItem('role', text.role)

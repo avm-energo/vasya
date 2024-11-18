@@ -145,11 +145,11 @@ export default createStore({
       let response = await fetch(
         `http://${state.ip}/api/nodes/main/current`,{
           method: "GET",
-          mode: "cors",
           headers: { Authorization: `${localStorage.getItem('token')}` },
         }
       );
       const data = JSON.parse(await response.text());
+      // console.log(data)
       state.tick = data.tick;
       state.main = (data);
       this.dispatch("updateElems", data.path);
@@ -248,7 +248,7 @@ export default createStore({
           var xyz = setInterval(async () => {
             state.tickmas[ticknumber].mas = []
             try {
-              console.log(state.tickmas[ticknumber].tick)
+              // console.log(state.tickmas[ticknumber].tick)
               let response = await fetch(
                 `http://${state.ip}/api/nodes/${encript((new TextEncoder()).encode(name))}/delta/0/${
                   state.tickmas[ticknumber].tick ? state.tickmas[ticknumber].tick : -1

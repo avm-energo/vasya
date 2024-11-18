@@ -38,27 +38,27 @@ const router = createRouter({
 
 router.beforeEach(async function (to, from, next) {
   let isAuth = !!localStorage.getItem('token');
-  console.log("isAuth = ", isAuth)
-  console.log("to = ", to)
-  let role = localStorage.getItem('role')
+  // console.log("isAuth = ", isAuth)
+  // console.log("to = ", to)
   let name = 'АСУ-ВЭИ'
   if (to.meta.title) {
     document.title = name + ' | ' + to.meta.title;
   } else {
     document.title = name;
   }
-  if (to.name === 'Authorization' && !isAuth) {
-    await login('Guest', 'Guest', (e) =>{})
+  if (to.name === 'Authorization' && !isAuth && from.path == '/') {
+    await login('Guest', 'Guest', (e) =>{
+      isAuth = true
+      next()
+    })
   }
   if (to.name === 'Authorization' && isAuth) {
     router.push('/sonica');
-    console.log("Сразу входим")
     return;
   }
   if (to.name !== 'Authorization') {
     if (!isAuth) {
-      console.log("Переходим на страницу вавторизации")
-      // await login('Guest', 'Guest', (e) =>{})
+      console.log("Переходим на страницу авторизации")
       router.push('/authorization');
       return;
     }

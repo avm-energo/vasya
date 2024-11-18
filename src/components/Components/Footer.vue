@@ -258,8 +258,8 @@ export default {
       }
     },
     historymas() {
-      console.log('Данные получены');
-      console.log(this.$store.getters.historymas.length, " - Текущее число событий");
+      // console.log('Данные получены');
+      // console.log(this.$store.getters.historymas.length, " - Текущее число событий");
       return this.$store.getters.historymas;
     },
     cssProps() {
@@ -448,20 +448,20 @@ tbody{
 @keyframes glowing {
   from {
     background-color: var(--backgroundColor);
+    color: black;
   }
   50% {
     background-color: #252525ff;
+    color: white;
   }
   to {
     background-color: var(--backgroundColor);
+    color: black;
   }
 }
 .flash {
-  animation: glowing 1s step-start 0s infinite;
+  animation: glowing 2s step-start 0s infinite;
 }
-
-
-
     @keyframes glowingred {
       50% {
         background-color: red;
@@ -470,17 +470,17 @@ tbody{
     }
     .flashred {
       color: red;
-      animation: glowingred 1s step-start 0s infinite;
+      animation: glowingred 2s step-start 0s infinite;
     }
     @keyframes glowingyellow {
       50% {
-        background-color: orange;
-        color: white;
+        background-color: yellow;
+        color: black;
       }
     }
     .flashyellow {
       color: yellow;
-      animation: glowingyellow 1s step-start 0s infinite;
+      animation: glowingyellow 2s step-start 0s infinite;
     }
     @keyframes glowinggray {
       50% {
@@ -489,13 +489,13 @@ tbody{
       }
     }
     .flashgray {
-      animation: glowinggray 1s step-start 0s infinite;
+      animation: glowinggray 2s step-start 0s infinite;
     }
     .backgroundred{
       background-color: red;
     }
     .backgroundyellow{
-      background-color: orange;
+      background-color: rgb(255,229,96);
     }
     .backgroundgray{
       background-color: gray;
@@ -504,7 +504,7 @@ tbody{
       color: red;
     }
     .textyellow{
-      color: yellow;
+      color: rgb(255,229,96);
     }
     .textgray{
       color: white;
