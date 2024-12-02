@@ -1,8 +1,8 @@
 <template>
   <div id="duval" :style="cssProps">
-    <div id="C2H2" class="gas">{{duval.c2h2 ?  duval.c2h2 : ''}}% C&#8322;H&#8322; </div>
-    <div id="C2H4" class="gas">{{duval.c2h4 ? duval.c2h4 : '' }}% C&#8322;H&#8324; </div>
-    <div id="CH4" class="gas">{{duval.ch4 ? duval.ch4 : ''}}% CH&#8324; </div>
+    <div id="C2H2" class="gas">{{ duval.c2h2 ? duval.c2h2 : '' }}% C&#8322;H&#8322;</div>
+    <div id="C2H4" class="gas">{{ duval.c2h4 ? duval.c2h4 : '' }}% C&#8322;H&#8324;</div>
+    <div id="CH4" class="gas">{{ duval.ch4 ? duval.ch4 : '' }}% CH&#8324;</div>
     <div class="duval_description">
       <input v-model="duvalMode" type="checkbox" class="checkbox" id="duval_mode">
       <label for="duval_mode">История измерений</label>
@@ -43,13 +43,13 @@
 
 <script>
 export default {
-  data(){
-    return{
+  data() {
+    return {
       multiplierx: 1.028,
       multipliery: 1.02,
       minx: 109.13,
       miny: 19.22,
-      ctx:null,
+      ctx: null,
       imageData: null,
       duval: {
         Name: null,
@@ -61,115 +61,248 @@ export default {
       historyC2H2: null,
       historyC2H4: null,
       historyCH4: null,
-      duvalMode: true,
+      duvalMode: false,
     }
   },
   props: ["params", "name"],
-  created(){
+  created() {
     this.duval.Name = this.name
-    if (this.$parent.subscreenname){
+    if (this.$parent.subscreenname) {
       this.duval.Name += '/' + this.$parent.subscreenname
     }
     const today = new Date();
     var currentDateMilliseconds = today.getMilliseconds();
-    setTimeout(()=>{
+    setTimeout(() => {
       const res = {'namewidget': this.duval.Name, 'namewindow': this.$parent.windowname}
-      const { ctx } = this;
-      var imageData = ctx.getImageData(0,0,410,400);
+      const {ctx} = this;
+      var imageData = ctx.getImageData(0, 0, 410, 400);
       ctx.putImageData(imageData, 0, 0);
       // this.drawFirstDot(this.params.CH4[0].value, this.params.C2H2[0].value, this.params.C2H4[0].value, "yellow");
-      setInterval(()=>{
+      setInterval(() => {
         let changedelem = this.$store.getters.elemByName(res)?.properties;
 
 
         if (changedelem) {
 
-          console.log(changedelem);
+          console.log(changedelem, " ChangeDelem");
+          ctx.putImageData(imageData, 0, 0);
 
-          if (this.historyCH4 === null) {
-            console.log('Сработал createHistory event');
-            [this.historyC2H2, this.historyC2H4, this.historyCH4] = this.createHistory(changedelem.C2H2, changedelem.C2H4, changedelem.CH4);
-          } else {
-            this.replaceDot(changedelem.C2H2[changedelem.C2H2.length - 1], 'C2H2');
-            this.replaceDot(changedelem.CH4[changedelem.CH4.length - 1], 'CH4');
-            this.replaceDot(changedelem.C2H4[changedelem.C2H4.length - 1], 'C2H4');
-          }
+          if (Number.isFinite(changedelem.CH4) && Number.isFinite(changedelem.C2H2) && Number.isFinite(changedelem.C2H4))
+            this.drawFirstDot(changedelem.CH4, changedelem.C2H2, changedelem.C2H4, "yellow");
+          else {
+            if (this.historyCH4 === null) {
+              console.log(changedelem);
+              console.log('Сработал createHistory event');
+              // [this.historyC2H2, this.historyC2H4, this.historyCH4] = this.createHistory(changedelem.C2H2, changedelem.C2H4, changedelem.CH4);
+            } else {
+              this.replaceDot(changedelem.C2H2[changedelem.C2H2.length - 1], 'C2H2');
+              this.replaceDot(changedelem.CH4[changedelem.CH4.length - 1], 'CH4');
+              this.replaceDot(changedelem.C2H4[changedelem.C2H4.length - 1], 'C2H4');
+            }
 
-          if (this.duvalMode === false) {
-            ctx.putImageData(imageData, 0, 0);
-            // const l = Math.min(changedelem.CH4.length - 1, changedelem.C2H2.length - 1, changedelem.C2H4.length - 1) - 1
-            // this.drawFirstDot(changedelem.CH4[l].value, changedelem.C2H2[l].value, changedelem.C2H4[l].value, "yellow")
-            this.drawFirstDot(this.historyCH4[0].value, this.historyC2H2[0].value, this.historyC2H4[0].value, "yellow");
-          }
-          else if (this.duvalMode === true) {
-            
-            ctx.putImageData(imageData, 0, 0);
-            this.drawArray(this.historyC2H2, this.historyC2H4, this.historyCH4);
+            if (this.duvalMode === false) {
+              console.log("Rezime 1");
+              ctx.putImageData(imageData, 0, 0);
+              // const l = Math.min(changedelem.CH4.length - 1, changedelem.C2H2.length - 1, changedelem.C2H4.length - 1) - 1
+              // this.drawFirstDot(changedelem.CH4[l].value, changedelem.C2H2[l].value, changedelem.C2H4[l].value, "yellow")
+              this.drawFirstDot(this.historyCH4[0].value, this.historyC2H2[0].value, this.historyC2H4[0].value, "yellow");
+            } else if (this.duvalMode === true) {
+              console.log("Rezime 2");
+              ctx.putImageData(imageData, 0, 0);
+              this.drawArray(this.historyC2H2, this.historyC2H4, this.historyCH4);
+            }
           }
         }
       }, 1000)
     }, 1000 - currentDateMilliseconds);
   },
-  methods:{
-    drawDuval(){
-      const { ctx } = this;
-      var { imageData } = this;
-      var v0={x:(114-this.minx)*this.multiplierx,y:(366-this.miny)*this.multipliery};
-      var v1={x:(306-this.minx)*this.multiplierx,y:(30-this.miny)*this.multipliery};
-      var v2={x:(498-this.minx)*this.multiplierx,y:(366-this.miny)*this.multipliery};
-      var triangle=[v0,v1,v2];
+  methods: {
+    drawDuval() {
+      const {ctx} = this;
+      var {imageData} = this;
+      var v0 = {x: (114 - this.minx) * this.multiplierx, y: (366 - this.miny) * this.multipliery};
+      var v1 = {x: (306 - this.minx) * this.multiplierx, y: (30 - this.miny) * this.multipliery};
+      var v2 = {x: (498 - this.minx) * this.multiplierx, y: (366 - this.miny) * this.multipliery};
+      var triangle = [v0, v1, v2];
       // Define all your segments here
-      var segments=[
+      var segments = [
         {
-          points:[{x:(114-this.minx)*this.multiplierx,y:(366-this.miny)*this.multipliery},{x:(281-this.minx)*this.multiplierx,y:(76-this.miny)*this.multipliery},{x:(324-this.minx)*this.multiplierx,y:(150-this.miny)*this.multipliery},{x:(201-this.minx)*this.multiplierx,y:(366-this.miny)*this.multipliery}],
-          fill:'#8FCFFF',
-          label:{text:'D1',cx:(200-this.minx)*this.multiplierx,cy:(290-this.miny)*this.multipliery,withLine:false,endX:null,endY:null},
+          points: [{
+            x: (114 - this.minx) * this.multiplierx,
+            y: (366 - this.miny) * this.multipliery
+          }, {
+            x: (281 - this.minx) * this.multiplierx,
+            y: (76 - this.miny) * this.multipliery
+          }, {
+            x: (324 - this.minx) * this.multiplierx,
+            y: (150 - this.miny) * this.multipliery
+          }, {x: (201 - this.minx) * this.multiplierx, y: (366 - this.miny) * this.multipliery}],
+          fill: '#8FCFFF',
+          label: {
+            text: 'D1',
+            cx: (200 - this.minx) * this.multiplierx,
+            cy: (290 - this.miny) * this.multipliery,
+            withLine: false,
+            endX: null,
+            endY: null
+          },
         },
         {
-          points:[{x:(385-this.minx)*this.multiplierx,y:(366-this.miny)*this.multipliery},{x:(201-this.minx)*this.multiplierx,y:(366-this.miny)*this.multipliery},{x:(324-this.minx)*this.multiplierx,y:(150-this.miny)*this.multipliery},{x:(356-this.minx)*this.multiplierx,y:(204-this.miny)*this.multipliery},{x:(321-this.minx)*this.multiplierx,y:(256-this.miny)*this.multipliery}],
-          fill:'#2F29FF',
-          label:{text:'D2',cx:(290-this.minx)*this.multiplierx,cy:(290-this.miny)*this.multipliery,withLine:false,endX:null,endY:null},
+          points: [{
+            x: (385 - this.minx) * this.multiplierx,
+            y: (366 - this.miny) * this.multipliery
+          }, {
+            x: (201 - this.minx) * this.multiplierx,
+            y: (366 - this.miny) * this.multipliery
+          }, {
+            x: (324 - this.minx) * this.multiplierx,
+            y: (150 - this.miny) * this.multipliery
+          }, {
+            x: (356 - this.minx) * this.multiplierx,
+            y: (204 - this.miny) * this.multipliery
+          }, {x: (321 - this.minx) * this.multiplierx, y: (256 - this.miny) * this.multipliery}],
+          fill: '#2F29FF',
+          label: {
+            text: 'D2',
+            cx: (290 - this.minx) * this.multiplierx,
+            cy: (290 - this.miny) * this.multipliery,
+            withLine: false,
+            endX: null,
+            endY: null
+          },
         },
         {
-          points:[{x:(297-this.minx)*this.multiplierx,y:(46-this.miny)*this.multipliery},{x:(392-this.minx)*this.multiplierx,y:(214-this.miny)*this.multipliery},{x:(372-this.minx)*this.multiplierx,y:(248-this.miny)*this.multipliery},{x:(441-this.minx)*this.multiplierx,y:(366-this.miny)*this.multipliery},{x:(385-this.minx)*this.multiplierx,y:(366-this.miny)*this.multipliery},{x:(321-this.minx)*this.multiplierx,y:(256-this.miny)*this.multipliery},{x:(356-this.minx)*this.multiplierx,y:(204-this.miny)*this.multipliery},{x:(281-this.minx)*this.multiplierx,y:(76-this.miny)*this.multipliery}],
-          fill:'#AF9AFF',
-          label:{text:'DT',cx:(370-this.minx)*this.multiplierx,cy:(290-this.miny)*this.multipliery,withLine:false,endX:(366-this.minx)*this.multiplierx,endY:(120-this.miny)*this.multipliery},
+          points: [{
+            x: (297 - this.minx) * this.multiplierx,
+            y: (46 - this.miny) * this.multipliery
+          }, {
+            x: (392 - this.minx) * this.multiplierx,
+            y: (214 - this.miny) * this.multipliery
+          }, {
+            x: (372 - this.minx) * this.multiplierx,
+            y: (248 - this.miny) * this.multipliery
+          }, {
+            x: (441 - this.minx) * this.multiplierx,
+            y: (366 - this.miny) * this.multipliery
+          }, {
+            x: (385 - this.minx) * this.multiplierx,
+            y: (366 - this.miny) * this.multipliery
+          }, {
+            x: (321 - this.minx) * this.multiplierx,
+            y: (256 - this.miny) * this.multipliery
+          }, {
+            x: (356 - this.minx) * this.multiplierx,
+            y: (204 - this.miny) * this.multipliery
+          }, {x: (281 - this.minx) * this.multiplierx, y: (76 - this.miny) * this.multipliery}],
+          fill: '#AF9AFF',
+          label: {
+            text: 'DT',
+            cx: (370 - this.minx) * this.multiplierx,
+            cy: (290 - this.miny) * this.multipliery,
+            withLine: false,
+            endX: (366 - this.minx) * this.multiplierx,
+            endY: (120 - this.miny) * this.multipliery
+          },
         },
         {
-          points:[{x:(306-this.minx)*this.multiplierx,y:(30-this.miny)*this.multipliery},{x:(312-this.minx)*this.multiplierx,y:(40-this.miny)*this.multipliery},{x:(300-this.minx)*this.multiplierx,y:(40-this.miny)*this.multipliery}],
-          fill:'#772200',
-          label:{text:'PD',cx:(356-this.minx)*this.multiplierx,cy:(40-this.miny)*this.multipliery,withLine:true,endX:(321-this.minx)*this.multiplierx,endY:(40-this.miny)*this.multipliery},
+          points: [{
+            x: (306 - this.minx) * this.multiplierx,
+            y: (30 - this.miny) * this.multipliery
+          }, {
+            x: (312 - this.minx) * this.multiplierx,
+            y: (40 - this.miny) * this.multipliery
+          }, {x: (300 - this.minx) * this.multiplierx, y: (40 - this.miny) * this.multipliery}],
+          fill: '#772200',
+          label: {
+            text: 'PD',
+            cx: (356 - this.minx) * this.multiplierx,
+            cy: (40 - this.miny) * this.multipliery,
+            withLine: true,
+            endX: (321 - this.minx) * this.multiplierx,
+            endY: (40 - this.miny) * this.multipliery
+          },
         },
         {
-          points:[{x:(312-this.minx)*this.multiplierx,y:(40-this.miny)*this.multipliery},{x:(348-this.minx)*this.multiplierx,y:(103-this.miny)*this.multipliery},{x:(337-this.minx)*this.multiplierx,y:(115-this.miny)*this.multipliery},{x:(297-this.minx)*this.multiplierx,y:(46-this.miny)*this.multipliery},{x:(300-this.minx)*this.multiplierx,y:(40-this.miny)*this.multipliery}],
-          fill:'#e0bccc',
-          label:{text:'T1',cx:(375-this.minx)*this.multiplierx,cy:(70-this.miny)*this.multipliery,withLine:true,endX:(340-this.minx)*this.multiplierx,endY:(75-this.miny)*this.multipliery},
+          points: [{
+            x: (312 - this.minx) * this.multiplierx,
+            y: (40 - this.miny) * this.multipliery
+          }, {
+            x: (348 - this.minx) * this.multiplierx,
+            y: (103 - this.miny) * this.multipliery
+          }, {
+            x: (337 - this.minx) * this.multiplierx,
+            y: (115 - this.miny) * this.multipliery
+          }, {
+            x: (297 - this.minx) * this.multiplierx,
+            y: (46 - this.miny) * this.multipliery
+          }, {x: (300 - this.minx) * this.multiplierx, y: (40 - this.miny) * this.multipliery}],
+          fill: '#e0bccc',
+          label: {
+            text: 'T1',
+            cx: (375 - this.minx) * this.multiplierx,
+            cy: (70 - this.miny) * this.multipliery,
+            withLine: true,
+            endX: (340 - this.minx) * this.multiplierx,
+            endY: (75 - this.miny) * this.multipliery
+          },
         },
         {
-          points:[{x:(348-this.minx)*this.multiplierx,y:(103-this.miny)*this.multipliery},{x:(402-this.minx)*this.multiplierx,y:(199-this.miny)*this.multipliery},{x:(392-this.minx)*this.multiplierx,y:(214-this.miny)*this.multipliery},{x:(337-this.minx)*this.multiplierx,y:(115-this.miny)*this.multipliery}],
-          fill:'#e08d9f',
-          label:{text:'T2',cx:(400-this.minx)*this.multiplierx,cy:(125-this.miny)*this.multipliery,withLine:true,endX:(366-this.minx)*this.multiplierx,endY:(120-this.miny)*this.multipliery},
+          points: [{
+            x: (348 - this.minx) * this.multiplierx,
+            y: (103 - this.miny) * this.multipliery
+          }, {
+            x: (402 - this.minx) * this.multiplierx,
+            y: (199 - this.miny) * this.multipliery
+          }, {
+            x: (392 - this.minx) * this.multiplierx,
+            y: (214 - this.miny) * this.multipliery
+          }, {x: (337 - this.minx) * this.multiplierx, y: (115 - this.miny) * this.multipliery}],
+          fill: '#e08d9f',
+          label: {
+            text: 'T2',
+            cx: (400 - this.minx) * this.multiplierx,
+            cy: (125 - this.miny) * this.multipliery,
+            withLine: true,
+            endX: (366 - this.minx) * this.multiplierx,
+            endY: (120 - this.miny) * this.multipliery
+          },
         },
         {
-          points:[{x:(402-this.minx)*this.multiplierx,y:(199-this.miny)*this.multipliery},{x:(498-this.minx)*this.multiplierx,y:(366-this.miny)*this.multipliery},{x:(441-this.minx)*this.multiplierx,y:(366-this.miny)*this.multipliery},{x:(372-this.minx)*this.multiplierx,y:(248-this.miny)*this.multipliery}],
-          fill:'#973300',
-          label:{text:'T3',cx:(425-this.minx)*this.multiplierx,cy:(290-this.miny)*this.multipliery,withLine:false,endX:null,endY:null},
+          points: [{
+            x: (402 - this.minx) * this.multiplierx,
+            y: (199 - this.miny) * this.multipliery
+          }, {
+            x: (498 - this.minx) * this.multiplierx,
+            y: (366 - this.miny) * this.multipliery
+          }, {
+            x: (441 - this.minx) * this.multiplierx,
+            y: (366 - this.miny) * this.multipliery
+          }, {x: (372 - this.minx) * this.multiplierx, y: (248 - this.miny) * this.multipliery}],
+          fill: '#973300',
+          label: {
+            text: 'T3',
+            cx: (425 - this.minx) * this.multiplierx,
+            cy: (290 - this.miny) * this.multipliery,
+            withLine: false,
+            endX: null,
+            endY: null
+          },
         },
       ];
 
       // label styles
-      var labelfontsize=12;
-      var labelfontface='verdana';
-      var labelpadding=3;
+      var labelfontsize = 12;
+      var labelfontface = 'verdana';
+      var labelpadding = 3;
 
       // draw colored segments inside triangle
-      for(var i=0;i<segments.length;i++){
+      for (var i = 0; i < segments.length; i++) {
         drawSegment(segments[i]);
       }
       // draw ticklines
-      ticklines(v0,v1,10,0,20);
-      ticklines(v1,v2,10,Math.PI*2/3,20);
-      ticklines(v2,v0,10,Math.PI*4/3,20);
+      ticklines(v0, v1, 10, 0, 20);
+      ticklines(v1, v2, 10, Math.PI * 2 / 3, 20);
+      ticklines(v2, v0, 10, Math.PI * 4 / 3, 20);
       // molecules
       // moleculeLabel(v0,v1,100,Math.PI,'% CH4');
       // moleculeLabel(v1,v2,100,0,'% C2H4');
@@ -185,109 +318,109 @@ export default {
       // setTimeout(() => {
       //   ctx.putImageData(imageData, 0, 0);
       // }, 990 - currentDateMilliseconds);
-      function drawSegment(s){
+      function drawSegment(s) {
         // draw and fill the segment path
         ctx.beginPath();
-        ctx.moveTo(s.points[0].x,s.points[0].y);
-        for(var i=1;i<s.points.length;i++){
-          ctx.lineTo(s.points[i].x,s.points[i].y);
+        ctx.moveTo(s.points[0].x, s.points[0].y);
+        for (var i = 1; i < s.points.length; i++) {
+          ctx.lineTo(s.points[i].x, s.points[i].y);
         }
         ctx.closePath();
-        ctx.fillStyle=s.fill;
+        ctx.fillStyle = s.fill;
         ctx.fill();
-        ctx.lineWidth=2;
-        ctx.strokeStyle='white';
+        ctx.lineWidth = 2;
+        ctx.strokeStyle = 'white';
         ctx.stroke();
         // draw segment's box label
-        if(s.label.withLine){
-          lineBoxedLabel(s,labelfontsize,labelfontface,labelpadding);
-        }else{
-          boxedLabel(s,labelfontsize,labelfontface,labelpadding);
+        if (s.label.withLine) {
+          lineBoxedLabel(s, labelfontsize, labelfontface, labelpadding);
+        } else {
+          boxedLabel(s, labelfontsize, labelfontface, labelpadding);
         }
       }
 
-      function boxedLabel(s,fontsize,fontface,padding){
-        var centerX=s.label.cx;
-        var centerY=s.label.cy;
-        var text=s.label.text;
-        ctx.textAlign='center';
-        ctx.textBaseline='middle'
-        ctx.font=fontsize+'px '+fontface
-        var textwidth=ctx.measureText(text).width;
-        var textheight=fontsize*1.386;
-        var leftX=centerX-textwidth/2-padding;
-        var topY=centerY-textheight/2-padding;
-        ctx.fillStyle='white';
+      function boxedLabel(s, fontsize, fontface, padding) {
+        var centerX = s.label.cx;
+        var centerY = s.label.cy;
+        var text = s.label.text;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle'
+        ctx.font = fontsize + 'px ' + fontface
+        var textwidth = ctx.measureText(text).width;
+        var textheight = fontsize * 1.386;
+        var leftX = centerX - textwidth / 2 - padding;
+        var topY = centerY - textheight / 2 - padding;
+        ctx.fillStyle = 'white';
         // ctx.fillRect(leftX,topY,textwidth+padding*2,textheight+padding*2);
-        ctx.lineWidth=1;
+        ctx.lineWidth = 1;
         // ctx.strokeRect(leftX,topY,textwidth+padding*2,textheight+padding*2);
-        ctx.fillStyle='white';
-        ctx.fillText(text,centerX,centerY);
+        ctx.fillStyle = 'white';
+        ctx.fillText(text, centerX, centerY);
       }
 
-      function lineBoxedLabel(s,fontsize,fontface,padding){
-        var centerX=s.label.cx - 30;
-        var centerY=s.label.cy - 10;
-        var text=s.label.text;
-        var lineToX=s.label.endX - 4;
-        var lineToY=s.label.endY;
-        ctx.textAlign='center';
-        ctx.textBaseline='middle'
-        ctx.font=fontsize+'px '+fontface
-        var textwidth=ctx.measureText(text).width;
-        var textheight=fontsize*1.286;
-        var leftX=centerX-textwidth/2-padding - 10 ;
-        var topY=centerY-textheight/2-padding;
+      function lineBoxedLabel(s, fontsize, fontface, padding) {
+        var centerX = s.label.cx - 30;
+        var centerY = s.label.cy - 10;
+        var text = s.label.text;
+        var lineToX = s.label.endX - 4;
+        var lineToY = s.label.endY;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle'
+        ctx.font = fontsize + 'px ' + fontface
+        var textwidth = ctx.measureText(text).width;
+        var textheight = fontsize * 1.286;
+        var leftX = centerX - textwidth / 2 - padding - 10;
+        var topY = centerY - textheight / 2 - padding;
         // the line
         ctx.beginPath();
-        ctx.moveTo(leftX,topY+textheight/2 + 6);
-        ctx.lineTo(lineToX,topY+textheight/2 );
-        ctx.strokeStyle='white';
-        ctx.lineWidth=1;
+        ctx.moveTo(leftX, topY + textheight / 2 + 6);
+        ctx.lineTo(lineToX, topY + textheight / 2);
+        ctx.strokeStyle = 'white';
+        ctx.lineWidth = 1;
         ctx.stroke();
         // the boxed text
-        ctx.fillStyle='white';
+        ctx.fillStyle = 'white';
         // ctx.fillRect(leftX,topY,textwidth+padding*2,textheight+padding*2);
         // ctx.strokeRect(leftX,topY,textwidth+padding*2,textheight+padding*2);
-        ctx.fillStyle='white';
-        ctx.fillText(text,centerX,centerY);
+        ctx.fillStyle = 'white';
+        ctx.fillText(text, centerX, centerY);
       }
 
-      function ticklines(start,end,count,angle,length){
-        var dx=end.x-start.x;
-        var dy=end.y-start.y;
-        ctx.lineWidth=1;
-        for(var i=1;i<count;i++){
-          var x0=parseInt(start.x+dx*i/count);
-          var y0=parseInt(start.y+dy*i/count);
-          var x1=parseInt(x0+length*Math.cos(angle));
-          var y1=parseInt(y0+length*Math.sin(angle));
+      function ticklines(start, end, count, angle, length) {
+        var dx = end.x - start.x;
+        var dy = end.y - start.y;
+        ctx.lineWidth = 1;
+        for (var i = 1; i < count; i++) {
+          var x0 = parseInt(start.x + dx * i / count);
+          var y0 = parseInt(start.y + dy * i / count);
+          var x1 = parseInt(x0 + length * Math.cos(angle));
+          var y1 = parseInt(y0 + length * Math.sin(angle));
           ctx.beginPath();
-          ctx.moveTo(x0,y0);
-          ctx.lineTo(x1,y1);
+          ctx.moveTo(x0, y0);
+          ctx.lineTo(x1, y1);
           ctx.stroke();
-          if(i==2 || i==4 || i==6 || i==8){
-            var labelOffset=length*3/4;
-            var x1=parseInt(x0-labelOffset*Math.cos(angle));
-            var y1=parseInt(y0-labelOffset*Math.sin(angle));
-            ctx.fillStyle='white';
-            ctx.fillText(parseInt(i*10),x1,y1);
+          if (i == 2 || i == 4 || i == 6 || i == 8) {
+            var labelOffset = length * 3 / 4;
+            var x1 = parseInt(x0 - labelOffset * Math.cos(angle));
+            var y1 = parseInt(y0 - labelOffset * Math.sin(angle));
+            ctx.fillStyle = 'white';
+            ctx.fillText(parseInt(i * 10), x1, y1);
           }
         }
       }
 
-      function drawTriangle(t){
+      function drawTriangle(t) {
         ctx.beginPath();
-        ctx.moveTo(t[0].x,t[0].y);
-        ctx.lineTo(t[1].x,t[1].y);
-        ctx.lineTo(t[2].x,t[2].y);
+        ctx.moveTo(t[0].x, t[0].y);
+        ctx.lineTo(t[1].x, t[1].y);
+        ctx.lineTo(t[2].x, t[2].y);
         ctx.closePath();
-        ctx.strokeStyle='white';
-        ctx.lineWidth=2;
+        ctx.strokeStyle = 'white';
+        ctx.lineWidth = 2;
         ctx.stroke();
       }
     },
-    drawDot(CH4, C2H2, C2H4, color, i){
+    drawDot(CH4, C2H2, C2H4, color, i) {
       var MinLeft = 5;
       var MaxLeft = 400;
       var MinTop = 11;
@@ -351,16 +484,16 @@ export default {
       const {ctx} = this
       ctx.setLineDash([8, 4]);
       ctx.beginPath();
-      ctx.moveTo(CH4X,CH4Y,4,4)
+      ctx.moveTo(CH4X, CH4Y, 4, 4)
       ctx.lineWidth = 1
-      ctx.strokeStyle="white"
-      ctx.lineTo(PointLeft,PointTop)
+      ctx.strokeStyle = "white"
+      ctx.lineTo(PointLeft, PointTop)
       ctx.stroke()
-      ctx.moveTo(C2H2X,C2H2Y,4,4)
-      ctx.lineTo(PointLeft,PointTop)
+      ctx.moveTo(C2H2X, C2H2Y, 4, 4)
+      ctx.lineTo(PointLeft, PointTop)
       ctx.stroke()
-      ctx.moveTo(C2H4X,C2H4Y,4,4)
-      ctx.lineTo(PointLeft,PointTop)
+      ctx.moveTo(C2H4X, C2H4Y, 4, 4)
+      ctx.lineTo(PointLeft, PointTop)
       ctx.stroke()
       ctx.beginPath();
       ctx.arc(PointLeft, PointTop, 4, 0, 2 * Math.PI, false);
@@ -444,16 +577,16 @@ export default {
       return [historyC2H2, historyC2H4, historyCH4];
     },
   },
-  mounted(){
+  mounted() {
     this.ctx = this.$refs.canvas.getContext('2d');
     this.drawDuval()
-    var { imageData } = this;
+    var {imageData} = this;
   },
   computed: {
     cssProps() {
       return {
-        "--x": (this.params.width/2 + this.params.x ) * this.$parent.multiplier - 205 + "px",
-        "--y": (this.params.height/2 + this.params.y ) * this.$parent.multiplier - 200   + "px",
+        "--x": (this.params.width / 2 + this.params.x) * this.$parent.multiplier - 205 + "px",
+        "--y": (this.params.height / 2 + this.params.y) * this.$parent.multiplier - 200 + "px",
         "scale": this.$parent.multiplier * 0.9,
         "--CH4X": 20 + 'px',
         "--CH4Y": 160 + 'px',
@@ -468,11 +601,17 @@ export default {
 </script>
 
 <style scoped>
-body{ background-color: ivory; padding:10px; }
-#canvas{
+body {
+  background-color: ivory;
+  padding: 10px;
+}
+
+#canvas {
   /* border:1px solid red; */
-  margin:0 auto; }
-#duval{
+  margin: 0 auto;
+}
+
+#duval {
   position: absolute;
   top: calc(var(--y) - 30px);
   left: var(--x);
@@ -489,6 +628,7 @@ body{ background-color: ivory; padding:10px; }
   text-align: left;
   max-width: 385px;
 }
+
 .duval_legend_name {
   margin-left: 30px;
 }
@@ -498,12 +638,14 @@ body{ background-color: ivory; padding:10px; }
   display: inline-block;
   margin: 5px 10px;
 }
+
 .duval_legend_symbol {
   display: inline-block;
   height: 15px;
   width: 15px;
 
 }
+
 .duval_legend_label {
   margin-left: 5px;
 }
@@ -511,37 +653,44 @@ body{ background-color: ivory; padding:10px; }
 #latest_data {
   background: #bc1b1b;
 }
+
 #more_recent_data {
   background: #fd6600;
 }
+
 #less_recent_data {
   background: #fdcb30;
 }
+
 #older_data {
   background: #feff67;
 }
+
 #oldest_data {
   background: white;
 }
 
-.gas{
+.gas {
   width: 100px;
 }
-#CH4{
+
+#CH4 {
   position: absolute;
   font-size: 18px;
-  transform:rotate(-60deg);
+  transform: rotate(-60deg);
   left: var(--CH4X);
   top: var(--CH4Y)
 }
-#C2H4{
+
+#C2H4 {
   font-size: 18px;
-  transform:rotate(60deg);
+  transform: rotate(60deg);
   position: absolute;
   left: var(--C2H4X);
   top: var(--C2H4Y);
 }
-#C2H2{
+
+#C2H2 {
   font-size: 18px;
   position: absolute;
   left: var(--C2H2X);
@@ -553,12 +702,14 @@ body{ background-color: ivory; padding:10px; }
   z-index: -1;
   opacity: 0;
 }
-.checkbox+label {
+
+.checkbox + label {
   display: inline-flex;
   align-items: center;
   user-select: none;
 }
-.checkbox+label::before {
+
+.checkbox + label::before {
   content: '';
   display: inline-block;
   width: 1em;
@@ -572,7 +723,8 @@ body{ background-color: ivory; padding:10px; }
   background-position: center center;
   background-size: 50% 50%;
 }
-.checkbox:checked+label::before {
+
+.checkbox:checked + label::before {
   /*border-color: #0b76ef;*/
   /*background-color: #0b76ef;*/
   background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3e%3cpath fill='%23fff' d='M6.564.75l-3.59 3.612-1.538-1.55L0 4.26 2.974 7.25 8 2.193z'/%3e%3c/svg%3e");
