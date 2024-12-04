@@ -1,5 +1,5 @@
 <template>
-  <div :class="typewindow != 'subscreen' ? 'backgroundmain' : 'background'" :style="cssProps">
+  <div :class="typewindow != 'subscreen' ? 'backgroundmain' : 'background'" :style="cssProps" v-if="myJson.name != 'ReportGenerator'">
     <!-- <div v-clickoutside:[typewindow]="onClickOutside"> -->
     <div>
       <div id="mainbody" :style="cssProps">
@@ -21,6 +21,23 @@
       </div>
     </div>
   </div>
+  <div v-else class="reportGeneratorWindow">
+    <div>     
+      <span v-html="myJson.htmlText"></span>
+    </div>
+    <button @click="openModal">ExportToPDF</button>
+  </div>
+  <div class="wrapper" v-if="showModal">
+    <div class="modal_container">
+      <p>Значение для {{ report.name }}. Формат: "{{ report.format }}"</p>
+      <input v-model="report.value"/>
+      <div class="modal_buttons">
+        <!-- заменить на кнопки-компоненты -->
+        <button @click="reportAccept()">Ok</button>
+        <button @click="reportCancel()">Cancel</button>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script>
@@ -38,6 +55,7 @@ import Charttest from '../Charts/Test.vue'
 import Commands from "../Commands/Commands.vue";
 import Meters from "../Scales/Meter.vue"
 import Horizontals from "../Scales/Horizontal.vue";
+import { GetReportGenerator} from "../../actions/SonicaActions"
 
 export default {
   name: "window",
@@ -51,6 +69,14 @@ export default {
   },
   data() {
     return {
+      mas:'',
+      report:{
+        name: '',
+        value: '',
+        format: '',
+      },
+      reportMas:[],
+      showModal: false,
       multiplierwindow: 1,
       multiplier: 1,
       info: null,
@@ -154,6 +180,31 @@ export default {
     },
     closejson(){
       this.$store.dispatch('closewindow', this.windowname)
+    },
+    openModal(){
+      // let mas = JSON.parse(JSON.stringify(this.myJson.myBindings));
+      this.showModal = true
+      console.log(this.mas)
+      this.report.value = this.mas[this.reportMas.length].path.split(':')[1].replace('}', '')
+      this.report.format = this.mas[this.reportMas.length].path.split(':')[1].replace('}', '')
+      this.report.name = this.mas[this.reportMas.length].name
+      this.reportMas.push({name: this.report.name, value: this.report.value})
+    },
+    reportAccept(){
+      if  ((this.reportMas.length < this.myJson.myBindings.length - 1)) {
+        this.report.value = this.mas[this.reportMas.length].path.split(':')[1].replace('}', '')
+        this.report.format = this.mas[this.reportMas.length].path.split(':')[1].replace('}', '')
+        this.report.name = this.mas[this.reportMas.length].name
+        this.reportMas.push({name: this.report.name, value: this.report.value})
+      } else {
+        GetReportGenerator(this.reportMas, 'main', ()=>{
+          this.showModal = false
+        })
+      }
+    },
+    reportCancel(){
+      this.reportMas = []
+      this.showModal = false
     }
   },
 
@@ -162,76 +213,81 @@ export default {
     // setTimeout(function(){
     //   location.reload();
     // }, 3000);
-    window.addEventListener('resize', this.reportWindowSize)
-    this.width = window.innerWidth - 2
-    this.height = window.innerHeight ;
-    this.namewindow = this.myJson.path
-    this.windowname = this.namewindow.split('\\').join('')
-    if (this.path){
-      this.windowpath = this.path
-    } else {
-      this.windowpath = this.namewindow
-    }
-    this.multiplierwindow = (this.mainheight - 4)/this.myJson.canvas.height
-    if (this.multiplierwindow * this.myJson.canvas.width > window.innerWidth){
-      this.multiplierwindow = this.multiplierwindow * window.innerWidth / (this.multiplierwindow * this.myJson.canvas.width) - 0.005
-    }
-    if (this.myJson.canvas.width * this.multiplierwindow > window.innerWidth) {
-      this.multiplierwindow = window.innerWidth / (this.myJson.canvas.width + 50)
-    }
-    this.multiplier = this.multiplierwindow
-    this.$parent.multiplier = this.multiplier
-    this.$store.dispatch('mainmultiplier', [true, this.multiplier])
-    ;(this.myJson.widgets.$id == undefined ? this.myJson.widgets : this.myJson.widgets.$values).forEach(element => {
-      let res = element;
-
-      if (res.type.startsWith("primitives/Line")) {
-        this.lines.push(res);
-      } else
-      if (
-          res.type.startsWith("tile") ||
-          res.type.startsWith("primitives/Text") ||
-          res.type.startsWith("Tiles")
-      ) {
-        this.tiless.push(res);
-      } else
-      if (
-          res.type.startsWith("tooltip") ||
-          res.type.startsWith("neightbours/Tooltiper") ||
-          res.type.startsWith("neightbours/Navigator"))
-      {
-        this.tooltipers.push(res);
-      } else
-      if (res.type.startsWith("neightbours/Subscreen") || (res.type.startsWith("neightbours/Renter"))) {
-        this.subscreens.push(res);
-      } else
-      if (res.type.startsWith("primitives/Image")) {
-        this.imagestrans.push(res);
-      } else
-      if (res.type.startsWith("primitives/Logo")) {
-        this.imageslogo.push(res);
-      } else
-      if (res.type.startsWith("charts") || (res.type.startsWith("view/ClassicHystogramm")) || (res.type.startsWith("trends/TrendViewer"))){
-
-        this.charts.push(res);
-      } else
-      if (res.type.startsWith("primitives/Helper")) {
-        this.helper.push(res);
-      } else
-      if (res.type.startsWith("specials/DuvalTriangle")) {
-        this.duval.push(res);
-      } else
-      if (res.type.startsWith("commands")) {
-        this.commandss.push(res)
-      } else
-      if (res.type.startsWith("scales/Meter")) {
-        this.meter.push(res)
-      } else
-          // if (res.type.startsWith("scales/HorizontalSimple") || res.type.startsWith("scales/Horizontal")) {
-      if (res.type.startsWith("scales/Horizontal")) {
-        this.horizontal.push(res)
+    if (this.myJson.name != 'ReportGenerator') {
+      window.addEventListener('resize', this.reportWindowSize)
+      this.width = window.innerWidth - 2
+      this.height = window.innerHeight ;
+      this.namewindow = this.myJson.path
+      this.windowname = this.namewindow.split('\\').join('')
+      if (this.path){
+        this.windowpath = this.path
+      } else {
+        this.windowpath = this.namewindow
       }
-    });
+      this.multiplierwindow = (this.mainheight - 4)/this.myJson.canvas.height
+      if (this.multiplierwindow * this.myJson.canvas.width > window.innerWidth){
+        this.multiplierwindow = this.multiplierwindow * window.innerWidth / (this.multiplierwindow * this.myJson.canvas.width) - 0.005
+      }
+      if (this.myJson.canvas.width * this.multiplierwindow > window.innerWidth) {
+        this.multiplierwindow = window.innerWidth / (this.myJson.canvas.width + 50)
+      }
+      this.multiplier = this.multiplierwindow
+      this.$parent.multiplier = this.multiplier
+      this.$store.dispatch('mainmultiplier', [true, this.multiplier])
+      ;(this.myJson.widgets.$id == undefined ? this.myJson.widgets : this.myJson.widgets.$values).forEach(element => {
+        let res = element;
+
+        if (res.type.startsWith("primitives/Line")) {
+          this.lines.push(res);
+        } else
+        if (
+            res.type.startsWith("tile") ||
+            res.type.startsWith("primitives/Text") ||
+            res.type.startsWith("Tiles")
+        ) {
+          this.tiless.push(res);
+        } else
+        if (
+            res.type.startsWith("tooltip") ||
+            res.type.startsWith("neightbours/Tooltiper") ||
+            res.type.startsWith("neightbours/Navigator"))
+        {
+          this.tooltipers.push(res);
+        } else
+        if (res.type.startsWith("neightbours/Subscreen") || (res.type.startsWith("neightbours/Renter"))) {
+          this.subscreens.push(res);
+        } else
+        if (res.type.startsWith("primitives/Image")) {
+          this.imagestrans.push(res);
+        } else
+        if (res.type.startsWith("primitives/Logo")) {
+          this.imageslogo.push(res);
+        } else
+        if (res.type.startsWith("charts") || (res.type.startsWith("view/ClassicHystogramm")) || (res.type.startsWith("trends/TrendViewer"))){
+
+          this.charts.push(res);
+        } else
+        if (res.type.startsWith("primitives/Helper")) {
+          this.helper.push(res);
+        } else
+        if (res.type.startsWith("specials/DuvalTriangle")) {
+          this.duval.push(res);
+        } else
+        if (res.type.startsWith("commands")) {
+          this.commandss.push(res)
+        } else
+        if (res.type.startsWith("scales/Meter")) {
+          this.meter.push(res)
+        } else
+            // if (res.type.startsWith("scales/HorizontalSimple") || res.type.startsWith("scales/Horizontal")) {
+        if (res.type.startsWith("scales/Horizontal")) {
+          this.horizontal.push(res)
+        }
+      });
+    } else { 
+      this.mas = this.myJson.myBindings.map((element) =>  element);
+      this.mas.shift()
+    }
   },
 };
 </script>
@@ -302,5 +358,67 @@ export default {
 }
 #closewindow:active{
   background-color: rgb(4, 21, 253);
+}
+.reportGeneratorWindow div{
+  margin-top: 100px;
+  margin-bottom: 20px;
+  background-color: white;
+  padding: 5px;
+  border: solid 2px black;
+}
+.wrapper {
+  position: fixed;
+  z-index: 10;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  width: 100vw;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: rgba(0, 0, 0, 0.7);
+  color: white;
+  text-align: center;
+}
+
+.modal_container {
+  max-width: 610px;
+  padding: 30px 30px;
+  background: #212121;
+  border-radius: 15px;
+  border:solid 1px white;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  /* min-width: fit-content; */
+}
+.modal_container input{
+  height: 30px;
+  width: 250px;
+  outline: none;
+  font-size: 20px;
+}
+.modal_buttons {
+  padding-top: 2%;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  width: 250px;
+}
+.modal_buttons button{
+  width: 125px;
+  height: 30px;
+  background-color: transparent;
+  border: none;
+  color: white;
+}
+.modal_buttons button:hover{
+  background-color: blue;
+}
+p {
+  font-size: 16px;
+  font-weight: 700;
+  margin: 0 0 20px 0;
 }
 </style>

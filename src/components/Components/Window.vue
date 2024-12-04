@@ -290,6 +290,7 @@ export default {
   width: var(--windowWidth);
   height: var(--windowHeight);
   margin-bottom: 24px;
+  z-index: 2;
 }
 #head {
   border: solid 1px var(--background);

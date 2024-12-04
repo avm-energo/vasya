@@ -55,3 +55,34 @@ export async function PutAdminActive(callback) {
         store.dispatch('AddError_action', `${response.status} ${response.statusText}`)
     }
 } 
+
+export async function GetReportGenerator(mas, pathName, callback) {
+    let newMas = {}
+    mas.forEach(element => {
+        newMas[element.name] = element.value
+    });
+    const myHeaders = new Headers();
+    myHeaders.append("Content-Type", "application/json");
+    myHeaders.append("Authorization", `${localStorage.getItem('token')}`);
+    const response = await fetch(`http://${ip}/api/report/pdf/${pathName}`,
+    {
+        method: "POST",
+        headers: myHeaders,
+        body: JSON.stringify(newMas)
+    })
+    if (response.status === 200) {
+        console.log(response)
+        let blob = await response.blob();
+        var url = window.URL.createObjectURL(blob);
+        var a = document.createElement('a');
+        a.href = url;
+        a.download = "ReportGenerator.pdf";
+        document.body.appendChild(a); // we need to append the element to the dom -> otherwise it will not work in firefox
+        a.click();    
+        a.remove();
+        callback(true)
+    } else {
+        callback(false)
+        store.dispatch('AddError_action', `${response.status} ${response.statusText}`)
+    }
+} 

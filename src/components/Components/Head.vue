@@ -1,7 +1,7 @@
 <template>
   <div class="backgroundmain" :style="cssProps">
       <div id="mainbody" :style="cssProps">
-        <div class="wrapper" v-if="changeUser">
+        <!-- <div class="wrapper" v-if="changeUser">
           <div class="modal_container">
             <a class="close" @click="[changeUser = false, authPass = '']"></a>
             <div class="changeuser">
@@ -21,20 +21,20 @@
               </div>
             </div>
           </div>
-        </div>
+        </div> -->
         <svg v-show="this.lines.length" :height="this.myJson.canvas.height * this.multiplier" :width="this.myJson.canvas.width * this.multiplier" xmlns="http://www.w3.org/2000/svg" style="position: absolute; left: 0px; top: 0px;">
           <sline v-for="line in lines" :key="line.name" :params="line.properties" />
         </svg>
         <tiles v-for="elem  in tiless" :key="elem.name" :params="elem.properties" :name="elem.name" :screenPercentage="this.myJson.screenPercentage" :windowWidth="this.myJson.canvas.width" :windowHeight="this.myJson.canvas.height" :type="elem.type"/>
         <tooltiper v-for="elem in tooltipers" :key="elem.name" :params="elem"/>
         <helper v-for="elem in helper" :key="elem.name" :params="elem.properties"/>
-        <div class="Login"  :style="cssProps"><p @click="[outSide($event), openButtons()]" ref="headerrightuser">{{ userName }}</p></div>
+        <!-- <div class="Login"  :style="cssProps"><p @click="[outSide($event), openButtons()]" ref="headerrightuser">{{ userName }}</p></div>
         <div v-if="showButtons" class="userButtons" ref="userButtons" :style="{height:35 * this.multiplier + 'px', width: 110 * this.multiplier + 'px', top: 25 * this.multiplier + 'px', right: 25 * this.multiplier + 'px'}">
           <ButtonComponent class="button_logout" :reverseOrder="true" @click.stop="[logoutFromUser(), closeButtons()]" :navigationButton="true"
           icon="logout" :iconStyle="{ color: 'white', width: 25 * this.multiplier + 'px', height: 25 * this.multiplier + 'px', }" /> 
           <ButtonComponent class="button_logout" :reverseOrder="true" @click.stop="[changeUser = true, closeButtons()]" :navigationButton="true"
           icon="user" :iconStyle="{ color: '#267dff', width: 25 * this.multiplier + 'px', height: 25 * this.multiplier + 'px', }" /> 
-        </div>
+        </div> -->
         <!-- <button @click="bbb()">version</button> -->
       </div>
   </div>
@@ -250,147 +250,5 @@ export default {
   background: rgba(var(--backgroundArea1),var(--backgroundArea2),var(--backgroundArea3), var(--backgroundArea4));
   height: var(--backgroundheight);
   /* z-index: 1; */
-}
-.Login{
-  cursor: pointer;
-  /* z-index: 1; */
-  position: absolute;
-  top: 5px;
-  right: 10px;
-  font-size: var(--fontsize);
-  user-select: none;
-}
-.Login:hover{
-  color: rgb(0, 60, 255);
-}
-.userButtons{
-  z-index: 2;
-  border-radius: 10px;
-  position: absolute;
-  background-color: #574747;
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  /* height: 35px; */
-}
-.button_logout {
-  height: 100%;
-  width: 100%;
-  /* bottom: 20px; */
-  /* padding: 4px 15px 4px 20px; */
-  text-decoration: none;
-  font-size: 30px;
-  border: none;
-  outline: none;
-  cursor: pointer;
-}
-.wrapper {
-  z-index: 3;
-  position: absolute;
-  top: 0px;
-  left: 0px;
-  height: 100vh;
-  width: 100vw;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background: rgba(0, 0, 0, 0.7);
-  color: white;
-  text-align: center;
-}
-.modal_container {
-  border: solid 1px #0452c8;
-  position: relative;
-  /* min-width: 1100px; */
-  /* width: 90%; */
-  padding: 3px 10px 2px 10px;
-  background: #212121;
-  /* min-width: fit-content; */
-}
-.close {
-  z-index: 1;
-  position: absolute;
-  right: 0px;
-  top: 5px;
-  width: 25px;
-  height: 25px;
-  opacity: 0.3;
-}
-.close:hover {
-  opacity: 1;
-}
-.close:before, .close:after {
-  position: absolute;
-  left: 7px;
-  content: ' ';
-  height: 26px;
-  width: 2px;
-  background-color: rgb(252, 3, 3);
-}
-.close:before {
-  transform: rotate(45deg);
-}
-.close:after {
-  transform: rotate(-45deg);
-}
-.changeuser{
-  width: 270px;
-  height: 250px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: space-around;
-  font-size: 14px;
-}
-.changeuser_header p {
-  font-size: 20px;
-}
-.changeuser_input{
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  width: 60%;
-}
-.changeuser_button{
-  width: 100%;
-  display: flex;
-  flex-direction: row;
-  justify-content: space-around ;
-
-}
-.changeuser_buttons_button button{
-  padding-left: 15px;
-  padding-right: 15px;
-  height: 40px;
-  border: solid 1px #373737;
-  background-color: transparent;
-  color: #0364f5;
-}
-.changeuser_buttons_button button:hover{
-  background-color: #0452c8;
-  color: white;
-}
-.changeuser_buttons_button button:active{
-  background-color: #0445a6;
-  color: black;
-}
-input[type="text"] , input[type="password"], input[type="number"]{
-  border: solid 1px white;
-  background-color: #181818;
-  color: white;
-  /* border: none; */
-  font-size: 14px;
-  width: 100%;
-  height: 25px;
-  padding-left: 5px;
-  padding-right: 5px;
-  margin-top: 5px;
-  margin-bottom: 5px;
-  outline: none;
-}
-input::-webkit-outer-spin-button,
-input::-webkit-inner-spin-button {
-        -webkit-appearance: none;
-        margin: 0;
 }
 </style>
