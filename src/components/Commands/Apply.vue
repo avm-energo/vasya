@@ -44,6 +44,7 @@ export default {
       } else{
         json_obj = null
       }
+      const startTime = performance.now()
       if (json_obj  && this.params.writeParams) {
         if (json_obj != null) {
           const headers = {
@@ -51,6 +52,9 @@ export default {
             'Authorization': `${localStorage.getItem('token')}`
           };
           await axios.post(`http://${this.ip}/api/nodes/${this.encript((new TextEncoder()).encode(this.$parent.$parent.windowpath))}/widget/${this.encript((new TextEncoder()).encode(this.name))}/query/apply-form`, json_obj, { headers })
+          .then((res)=>{
+            console.log(res)
+          })
           this.$store.dispatch('clearcommandwidgets', this.$parent.$parent.windowname)
         }
       } 
@@ -61,8 +65,14 @@ export default {
       json_obj = {}
       await axios.post(`http://${this.ip}/api/nodes/${this.encript((new TextEncoder()).encode(this.$parent.$parent.windowpath))}/widget/${this.encript((new TextEncoder()).encode(this.name))}/query/apply-command`, json_obj, { headers }).
       then(response =>{
-        // console.log(response)
+        // console.log(response.text)
       })
+      const endTime = performance.now()
+      if ((endTime - startTime) < this.params.awaitTime) {
+        this.$store.dispatch('AddNotification_action', { text: 'Команда выполнена', type: 'Success', time: 5000 })
+      } else {
+        this.$store.dispatch('AddNotification_action', { text: 'Истекло время ожидания команды', type: 'Warning', time: 5000 })
+      }
     },
     encript(values) {
       const Alphabet = "12345678" + "9ABDEFGH" + "JKLMNPQR" + "STUVWXYZ";
@@ -84,7 +94,7 @@ export default {
     },
   },
   created(){
-    // console.log(this.ip)
+    // console.log(this.params)
   }
 };
 </script>
