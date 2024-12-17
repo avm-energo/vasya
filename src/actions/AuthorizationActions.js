@@ -25,8 +25,8 @@ export const login = async (login, password, callback) => {
             body: data,
         });
         const text = await response.json();
-        // console.log(text)
-        if (!text.status){
+        // console.log(response)
+        if (response.status == 200){
             store.dispatch('setIsAuth_action', true)
             // localStorage.setItem('role', text.role)
             localStorage.setItem('token', 'Bearer ' + text.access_token)
@@ -40,8 +40,8 @@ export const login = async (login, password, callback) => {
             store.dispatch('setProjectId_action', text.client.projectId)
             callback({ successful: true })
         } else {
-            console.log(response)
-            callback({ successful: false, message: text.ErrorMessages[0]})
+            // console.log(response)
+            callback({ successful: false, message: text.loginError.toString()})
         }
         // if (response.data.warning) {
         //     store.dispatch('AddNotification_action', { text: text.warning, type: 'Warning', time: 10000 })

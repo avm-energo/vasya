@@ -62,7 +62,7 @@ export default {
       auth_pass: "",
       visible_pass: "password",
       swicthLang: '',
-      errors: new Map().set('1', 'WrongName').set('2', 'WrongPassword').set('3', 'AlreadyAuthorised').set('4', 'TemporarilyBlocked').set('5', 'ExpiredAccount').set('16', 'UnknownError').set('6', 'OldProject')
+      errors: new Map().set('1', 'Пользователя с таким именем не существует').set('2', 'Неверный пароль').set('3', 'Пользователь уже авторизован').set('4', 'Учетная запись временно заблокирована, обратитесь к администратору').set('5', 'Срок действия учетной записи истек').set('16', 'Неизвестная ошибка').set('6', 'Старый проект')
     };
   },
   methods: {
@@ -73,7 +73,7 @@ export default {
       }
       this.LoadingModalActive(true);
       login(this.auth_login, this.auth_pass, (e) => {
-        console.log(e)
+        // console.log(e)
         this.LoadingModalActive(false);
         if (e.successful) {
           /*переход на другую страницу */
@@ -144,9 +144,9 @@ export default {
 
 .error_text {
   white-space: nowrap;
-  font-size: 13px;
-  font-family: Gilroy-ExtraBold;
-  color: rgb(163, 0, 0);
+  font-size: 14px;
+  font-family: Gilroy;
+  color: rgb(252, 93, 93);
   margin-left: 5px;
 }
 
