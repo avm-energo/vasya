@@ -30,7 +30,7 @@ export default {
   },
   methods:{
     async some(){
-      console.log(this.params)
+      // console.log(this.params)
       let res = this.$store.getters.commandwidgets(this.$parent.$parent.windowname)
       let json_obj
       if (res){
@@ -66,15 +66,14 @@ export default {
       let text = null
       await axios.post(`http://${this.ip}/api/nodes/${this.encript((new TextEncoder()).encode(this.$parent.$parent.windowpath))}/widget/${this.encript((new TextEncoder()).encode(this.name))}/query/apply-command`, json_obj, { headers }).
       then(response =>{
+        console.log(response)
         if (response.status == 200) {
-          text = this.params.codes.find((el => el.type == response.data.resultType)).description
-        } else if (response.status == 204) {
-          text = 'Команда выполнена'
+          text = response.data.resultData.description
+        } else if (response.status == 400) {
+          text = response.data.errorDetails
         } else {
           text = 'Истекло время ожидания команды'
         }
-        console.log(response.status)
-        console.log(response.data)
       })
       const endTime = performance.now()
       if ((endTime - startTime) < this.params.awaitTime) {
