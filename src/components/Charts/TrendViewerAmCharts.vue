@@ -90,7 +90,7 @@
             </g>
             </svg>
           </exportexcel>
-<!--          <button @click="createWorkers(4)">4 Воркера</button>-->
+          <!--          <button @click="createWorkers(4)">4 Воркера</button>-->
         </div>
         <!-- <button @click="some()">dsa</button> -->
       </div>
@@ -106,16 +106,16 @@
       <div id="chartdiv" ref="chartdiv"></div>
     </div>
   </div>
-<!--  <div id="box_loading" >-->
-<!--    <div id="box_loading_center">-->
-      <div id="box_loading_top" v-if="!this.getdata" :style="cssPropsLoading" >
-        <svg xmlns:svg="http://www.w3.org/2000/svg" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.0" width="24px" height="24px" viewBox="0 0 128 128" xml:space="preserve"><rect x="0" y="0" width="100%" height="100%" fill="#232323" /><g><path d="M71 39.2V.4a63.6 63.6 0 0 1 33.96 14.57L77.68 42.24a25.53 25.53 0 0 0-6.7-3.03z" fill="#000000"/><path d="M71 39.2V.4a63.6 63.6 0 0 1 33.96 14.57L77.68 42.24a25.53 25.53 0 0 0-6.7-3.03z" fill="#e1e1e1" transform="rotate(45 64 64)"/><path d="M71 39.2V.4a63.6 63.6 0 0 1 33.96 14.57L77.68 42.24a25.53 25.53 0 0 0-6.7-3.03z" fill="#e1e1e1" transform="rotate(90 64 64)"/><path d="M71 39.2V.4a63.6 63.6 0 0 1 33.96 14.57L77.68 42.24a25.53 25.53 0 0 0-6.7-3.03z" fill="#e1e1e1" transform="rotate(135 64 64)"/><path d="M71 39.2V.4a63.6 63.6 0 0 1 33.96 14.57L77.68 42.24a25.53 25.53 0 0 0-6.7-3.03z" fill="#bebebe" transform="rotate(180 64 64)"/><path d="M71 39.2V.4a63.6 63.6 0 0 1 33.96 14.57L77.68 42.24a25.53 25.53 0 0 0-6.7-3.03z" fill="#979797" transform="rotate(225 64 64)"/><path d="M71 39.2V.4a63.6 63.6 0 0 1 33.96 14.57L77.68 42.24a25.53 25.53 0 0 0-6.7-3.03z" fill="#6e6e6e" transform="rotate(270 64 64)"/><path d="M71 39.2V.4a63.6 63.6 0 0 1 33.96 14.57L77.68 42.24a25.53 25.53 0 0 0-6.7-3.03z" fill="#3c3c3c" transform="rotate(315 64 64)"/><animateTransform attributeName="transform" type="rotate" values="0 64 64;45 64 64;90 64 64;135 64 64;180 64 64;225 64 64;270 64 64;315 64 64" calcMode="discrete" dur="720ms" repeatCount="indefinite"></animateTransform></g><g><circle fill="#000000" cx="63.66" cy="63.16" r="12"/><animate attributeName="opacity" dur="720ms" begin="0s" repeatCount="indefinite" keyTimes="0;0.5;1" values="1;0;1"/></g></svg>
-        <div style="margin-left: 10px;">Загрузка: {{this.loading_per}}% </div>
-        <button @click="stopfetch(), stoplive()" v-show="this.seriesArr != null">Прервать загрузку</button>
-      </div>
+  <!--  <div id="box_loading" >-->
+  <!--    <div id="box_loading_center">-->
+  <div id="box_loading_top" v-if="!this.getdata" :style="cssPropsLoading" >
+    <svg xmlns:svg="http://www.w3.org/2000/svg" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.0" width="24px" height="24px" viewBox="0 0 128 128" xml:space="preserve"><rect x="0" y="0" width="100%" height="100%" fill="#232323" /><g><path d="M71 39.2V.4a63.6 63.6 0 0 1 33.96 14.57L77.68 42.24a25.53 25.53 0 0 0-6.7-3.03z" fill="#000000"/><path d="M71 39.2V.4a63.6 63.6 0 0 1 33.96 14.57L77.68 42.24a25.53 25.53 0 0 0-6.7-3.03z" fill="#e1e1e1" transform="rotate(45 64 64)"/><path d="M71 39.2V.4a63.6 63.6 0 0 1 33.96 14.57L77.68 42.24a25.53 25.53 0 0 0-6.7-3.03z" fill="#e1e1e1" transform="rotate(90 64 64)"/><path d="M71 39.2V.4a63.6 63.6 0 0 1 33.96 14.57L77.68 42.24a25.53 25.53 0 0 0-6.7-3.03z" fill="#e1e1e1" transform="rotate(135 64 64)"/><path d="M71 39.2V.4a63.6 63.6 0 0 1 33.96 14.57L77.68 42.24a25.53 25.53 0 0 0-6.7-3.03z" fill="#bebebe" transform="rotate(180 64 64)"/><path d="M71 39.2V.4a63.6 63.6 0 0 1 33.96 14.57L77.68 42.24a25.53 25.53 0 0 0-6.7-3.03z" fill="#979797" transform="rotate(225 64 64)"/><path d="M71 39.2V.4a63.6 63.6 0 0 1 33.96 14.57L77.68 42.24a25.53 25.53 0 0 0-6.7-3.03z" fill="#6e6e6e" transform="rotate(270 64 64)"/><path d="M71 39.2V.4a63.6 63.6 0 0 1 33.96 14.57L77.68 42.24a25.53 25.53 0 0 0-6.7-3.03z" fill="#3c3c3c" transform="rotate(315 64 64)"/><animateTransform attributeName="transform" type="rotate" values="0 64 64;45 64 64;90 64 64;135 64 64;180 64 64;225 64 64;270 64 64;315 64 64" calcMode="discrete" dur="720ms" repeatCount="indefinite"></animateTransform></g><g><circle fill="#000000" cx="63.66" cy="63.16" r="12"/><animate attributeName="opacity" dur="720ms" begin="0s" repeatCount="indefinite" keyTimes="0;0.5;1" values="1;0;1"/></g></svg>
+    <div style="margin-left: 10px;">Загрузка: {{this.loading_per}}% </div>
+    <button @click="stopfetch(), stoplive()" v-show="this.seriesArr != null">Прервать загрузку</button>
+  </div>
 
-<!--    </div>-->
-<!--  </div>-->
+  <!--    </div>-->
+  <!--  </div>-->
 </template>
 
 <script>
@@ -273,7 +273,7 @@ export default {
           });
     },
 
-    createWorkers (count) {
+    createWorkers(count) {
 
       const results = [];
       // Создаем массив веб-воркеров
@@ -302,7 +302,8 @@ export default {
 
         // Отправляем данные для обработки в веб-воркер
         worker.postMessage(
-            { index: i,
+            {
+              index: i,
               startOfInterval: startOfInterval,
               endOfInterval: endOfInterval,
               query: `http://${this.ip}/api/nodes/${this.encript((new TextEncoder()).encode(this.$parent.$parent.windowpath))}/widget/${this.encript((new TextEncoder()).encode(this.name))}/query/trend-history`,
@@ -310,11 +311,11 @@ export default {
 
         workers.push(worker);
       }
-    //   Конец цикла с воркером
+      //   Конец цикла с воркером
 
     },
 
-     divideTimeInterval (startDate, endDate) {
+    divideTimeInterval(startDate, endDate) {
       const diff = endDate.getTime() - startDate.getTime(); // Разница между датами в миллисекундах
       const intervalLength = diff / this.intervals_count; // Длина каждого промежутка
 
@@ -324,7 +325,7 @@ export default {
       for (let i = 0; i < this.intervals_count; i++) {
         const startOfInterval = new Date(startDate.getTime() + i * intervalLength); // Начало промежутка
         const endOfInterval = new Date(startDate.getTime() + (i + 1) * intervalLength); // Конец промежутка
-        intervals.push({ start: startOfInterval, end: endOfInterval }); // Добавление промежутка в массив
+        intervals.push({start: startOfInterval, end: endOfInterval}); // Добавление промежутка в массив
       }
 
       return intervals;
@@ -528,7 +529,6 @@ export default {
     this.chartDataArr = await this.getChartData(intervals[0].start, intervals[0].end, 0);
 
 
-
     this.seriesArr = []
 
 
@@ -717,8 +717,7 @@ export default {
         if (visible) {
           this.yAxisVisibleSeriesCount.set(yAxises.uid, this.yAxisVisibleSeriesCount.get(yAxises.uid) + 1);
           console.log("Series shown", target)
-        }
-        else {
+        } else {
           this.yAxisVisibleSeriesCount.set(yAxises.uid, this.yAxisVisibleSeriesCount.get(yAxises.uid) - 1);
           console.log("Series hidden", target)
         }
@@ -958,8 +957,7 @@ export default {
           sum = 0
           for (let j = 0; j < this.seriesArr.length; j++) {
             if (this.seriesArr[j].data._values[i]?.value) {
-              // element[this.seriesArr[j]._settings.name] = (this.seriesArr[j].data._values[i].value).toFixed(3).toString() + 'a'
-              element[this.seriesArr[j]._settings.name] = 'a'
+              element[this.seriesArr[j]._settings.name] = (this.seriesArr[j].data._values[i].value).toFixed(3).toString()
             } else {
               element[this.seriesArr[j]._settings.name] = '***'
               sum = sum + 1
@@ -992,7 +990,7 @@ export default {
 }
 
 #box_loading {
-  /* background: rgba(35, 35, 35, 0.8); */
+  //background: rgba(35, 35, 35, 0.8);
   position: absolute;
   /* border: solid 1px green; */
   width: var(--width);
@@ -1010,20 +1008,20 @@ export default {
   align-items: center;
   top: calc(var(--y) + 60px);
   left: calc(var(--x) + 8px);
-  /* bottom: 0; */
-  /* right: 0; */
+  //bottom: 0;
+  //right: 0;
   padding: 10px;
   display: flex;
   justify-content: center;
-  /* flex-direction: row; */
+  //flex-direction: row;
 }
 
 #box_loading_center {
-  /* border: solid 1px white; */
-  /* width: 30%; */
-  /* height: 30%; */
+  //border: solid 1px white;
+  //width: 30%;
+  //height: 30%;
   padding: 10px;
-  /* background-color: #232323; */
+  //background-color: #232323;
   align-items: center;
   display: flex;
   justify-content: center;

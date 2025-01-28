@@ -155,9 +155,9 @@ export default {
   },
 
   watch: {
-    mainmultiplier(newVal, oldVal) {
-      console.log(`mainmultiplier changed from ${oldVal[1]} to ${newVal[1]}`);
-    },
+    // mainmultiplier(newVal, oldVal) {
+    //   console.log(`mainmultiplier changed from ${oldVal[1]} to ${newVal[1]}`);
+    // },
   },
 
   methods: {
@@ -166,24 +166,31 @@ export default {
       // console.log(this.multiplierwindow, " this.multiplierwindow")
       // console.log(this.mainmultiplier[1], " this.mainmultiplier[1]")
       // console.log(this.multiplierwindowww, " this.multiplierwindowww")
-      // this.multiplier = window.innerWidth * window.innerHeight * this.multiplier / (this.width * this.height);
+      this.multiplier = window.innerWidth * window.innerHeight * this.multiplier / (this.width * this.height);
       this.width = window.innerWidth
       this.height = window.innerHeight
+      // console.log('Изначальный maultiplier в Window ', this.multiplier);
       this.multiplier = this.multiplierwindow * (this.mainmultiplier[1]/this.multiplierwindowww)
       if (this.typewindow == "modalwindow") {
+        console.log("Сработал первый if");
         if (this.myJson.canvas.width * this.multiplier + 30 > window.innerWidth) {
+          console.log("Сработал вторый if");
           this.multiplier = this.multiplier / ((this.myJson.canvas.width * this.multiplier)/window.innerWidth)
         }
       }
+      // console.log('Назначенный maultiplier в Window ', this.multiplier);
+
       // console.log(this.multiplier, " this.multiplier при срабатывании reportWindowSize");
     },
     closejson(){
+
       this.$store.dispatch('closewindow', this.windowname)
       window.removeEventListener('resize', this.reportWindowSize)
     },
   },
 
   created() {
+    // console.log("this.mainmultiplier во время создания Window ", this.mainmultiplier);
     if (this.myJson.title) {
       if (this.myJson.title.bool) {
         this.titletext = this.myJson.title.text
@@ -217,6 +224,8 @@ export default {
     this.multiplier = this.multiplierwindow
     this.multiplierwindoww = this.multiplier
     this.multiplierwindowww = this.mainmultiplier[1]
+    //console.log("Multiolier при создании Window", this.multiplier)
+    // this.reportWindowSize();
     ;(this.myJson.widgets.$id == undefined ? this.myJson.widgets : this.myJson.widgets.$values).forEach(element => {
       let res = element;
       if (res.type.startsWith("primitives/Line")) {

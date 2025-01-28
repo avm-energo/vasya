@@ -167,7 +167,12 @@ export default {
   methods: {
     reportWindowSize(){
       console.log('Set main maultiplier', this.multiplier);
-      let multiplierwindow = (window.innerHeight - (this.updatedmainheight) - 28)/this.myJson.canvas.height
+      let multiplierwindow;
+      if (this.updatedmainheight !== null) {
+        multiplierwindow = (window.innerHeight - (this.updatedmainheight) - 28)/this.myJson.canvas.height
+      } else {
+        multiplierwindow = (window.innerHeight - 123 - 4) / this.myJson.canvas.height;
+      }
       if (multiplierwindow * this.myJson.canvas.width > window.innerWidth){
         multiplierwindow = multiplierwindow * window.innerWidth / (multiplierwindow * this.myJson.canvas.width) - 0.005
         this.$store.dispatch('mainmultiplier', [true, multiplierwindow])
@@ -224,7 +229,8 @@ export default {
       } else {
         this.windowpath = this.namewindow
       }
-      this.multiplierwindow = (this.mainheight - 4)/this.myJson.canvas.height
+      this.multiplierwindow = (window.innerHeight - 123 - 4) / this.myJson.canvas.height;
+      console.log(this.multiplierwindow, " multiplierwindow Main");
       if (this.multiplierwindow * this.myJson.canvas.width > window.innerWidth){
         this.multiplierwindow = this.multiplierwindow * window.innerWidth / (this.multiplierwindow * this.myJson.canvas.width) - 0.005
       }
