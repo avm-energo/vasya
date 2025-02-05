@@ -1,4 +1,2 @@
-rm -rf /var/www/vasya 2>/dev/null
 rm /etc/nginx/conf.d/vasya.conf 2>/dev/null
-rm -rf /usr/local/share/vasya 2>/dev/null
 rm -rf /avtuk/sonica/vasya 2>/dev/null
