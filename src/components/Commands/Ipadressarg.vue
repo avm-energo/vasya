@@ -26,6 +26,7 @@ export default {
         regex:
           /^(?:(?:2[0-4]\d|25[0-5]|1\d{2}|[1-9]?\d)\.){3}(?:2[0-4]\d|25[0-5]|1\d{2}|[1-9]?\d)$/,
       },
+      inSubscreen: null,
     };
   },
   methods: {
@@ -66,7 +67,7 @@ export default {
     },
   },
   created(){
-    console.log(this.params)
+    this.inSubscreen = this.$parent.$parent.windowname != this.$parent.$parent.windowpath.split('\\').join('')
     this.ipadressarg.value = this.params.ipByte1 + '.' + this.params.ipByte2 + '.' + this.params.ipByte3 + '.' + this.params.ipByte4 
     this.ipadressarg.Name = this.name
     this.ipadressarg.prevvalue = this.ipadressarg.value
@@ -77,7 +78,7 @@ export default {
     }
     const today = new Date();
     var currentDateMilliseconds = today.getMilliseconds();
-    const ress = {'namewidget': this.ipadressarg.Namesub, 'namewindow': this.$parent.$parent.windowname}
+    const ress = {'namewidget': this.ipadressarg.Namesub, 'namewindow': this.inSubscreen ? this.$parent.$parent.windowpath : this.$parent.$parent.windowname}
     setTimeout(() => {
       setInterval(() => {
         let changedelem = this.$store.getters.elemByName(ress)?.properties
@@ -109,7 +110,7 @@ export default {
         this.ipadressarg.value
       );
       if (this.ipadressarg.isValid) {
-        const res = {'namewidget': this. ipadressarg.Name, 'namewindow': this.$parent.$parent.windowname , 'value': this. ipadressarg.value}
+        const res = {'namewidget': this. ipadressarg.Name, 'namewindow': this.inSubscreen ? this.$parent.$parent.windowpath : this.$parent.$parent.windowname , 'value': this. ipadressarg.value}
         this.$store.dispatch('addcommandwidgetmass', res)
       }
     }

@@ -18,6 +18,7 @@ export default {
         Name: null,
         value: null,
       },
+      inSubscreen: null,
     };
   },
   methods: {
@@ -55,6 +56,7 @@ export default {
     
   },
   created(){
+    this.inSubscreen = this.$parent.$parent.windowname != this.$parent.$parent.windowpath.split('\\').join('')
     this.boolarg.Name = this.name
     this.boolarg.value = this.params.value
     if (this.$parent.$parent.subscreenname){ 
@@ -64,7 +66,7 @@ export default {
     }
     const today = new Date();
     var currentDateMilliseconds = today.getMilliseconds();
-    const ress = {'namewidget': this.boolarg.Namesub, 'namewindow': this.$parent.$parent.windowname}
+    const ress = {'namewidget': this.boolarg.Namesub, 'namewindow': this.inSubscreen ? this.$parent.$parent.windowpath : this.$parent.$parent.windowname}
     setTimeout(() => {
       setInterval(() => {
         let changedelem = this.$store.getters.elemByName(ress)?.properties
@@ -90,7 +92,7 @@ export default {
   },
   watch: {
     'boolarg.value'(){
-      const res = {'namewidget': this.boolarg.Name, 'namewindow': this.$parent.$parent.windowname , 'value': this.boolarg.value.toString()}
+      const res = {'namewidget': this.boolarg.Name, 'namewindow': this.inSubscreen ? this.$parent.$parent.windowpath : this.$parent.$parent.windowname , 'value': this.boolarg.value.toString()}
       this.$store.dispatch('addcommandwidgetmass', res)
     }
   },

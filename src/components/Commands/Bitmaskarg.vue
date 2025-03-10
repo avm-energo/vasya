@@ -38,6 +38,7 @@ export default {
     return {
       leftside:null,
       widthtable:null,
+      inSubscreen:null,
       bitmaskarg: {
         Namesub: null,
         Name: null,
@@ -103,8 +104,8 @@ export default {
     }
   },
   created(){
+    this.inSubscreen = this.$parent.$parent.windowname != this.$parent.$parent.windowpath.split('\\').join('')
     this.bitmaskarg.Name = this.name
-    console.log(this.bitmaskarg.Name)
     if (this.$parent.$parent.subscreenname){ 
       this.bitmaskarg.Namesub = this.bitmaskarg.Name + '/' + this.$parent.$parent.subscreenname
     } else {
@@ -120,7 +121,7 @@ export default {
     setTimeout(()=>{this.bitmaskarg.window = false},1)
     const today = new Date();
     var currentDateMilliseconds = today.getMilliseconds();
-    const ress = {'namewidget': this.bitmaskarg.Namesub, 'namewindow': this.$parent.$parent.windowname}
+    const ress = {'namewidget': this.bitmaskarg.Namesub, 'namewindow': this.inSubscreen ? this.$parent.$parent.windowpath : this.$parent.$parent.windowname}
     setTimeout(() => {
       setInterval(() => {
         let changedelem = this.$store.getters.elemByName(ress)?.properties
@@ -180,7 +181,7 @@ export default {
           j++
         }  
       })
-      const res = {'namewidget': this.bitmaskarg.Name, 'namewindow': this.$parent.$parent.windowname , 'value': this.bitmaskarg.value}
+      const res = {'namewidget': this.bitmaskarg.Name, 'namewindow': this.inSubscreen ? this.$parent.$parent.windowpath : this.$parent.$parent.windowname , 'value': this.bitmaskarg.value}
       this.$store.dispatch('addcommandwidgetmass', res)
     }
   }

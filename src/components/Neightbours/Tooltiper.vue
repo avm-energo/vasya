@@ -64,7 +64,8 @@
         </svg>
       </div>
     </div>
-    <p class="p" :style="cssProps" v-if="((this.params.properties.width!=this.params.properties.height & this.params.properties.text != 'Navigator') || this.params.properties.leftIcon == 'None') && (this.params.properties.text.toLowerCase() != 'tooltiper')">{{button.value}}</p>    <!-- <p class="p" :style="cssProps" v-else-if="(this.params.properties.width > 60 && this.params.properties.width!=this.params.properties.height) || this.params.properties.angle != 0">{{button.value}}</p> -->
+    <p class="p" :style="cssProps" v-if="((this.params.properties.width!=this.params.properties.height & this.params.properties.text != 'Navigator') || this.params.properties.leftIcon == 'None') && (this.params.properties.text.toLowerCase() != 'tooltiper')">{{button.value}}</p>    
+    <!-- <p class="p" :style="cssProps" v-else-if="(this.params.properties.width > 60 && this.params.properties.width!=this.params.properties.height) || this.params.properties.angle != 0">{{button.value}}</p> -->
   </div>
 </template>
 
@@ -90,6 +91,7 @@ export default {
     // if (this.params.properties.leftIcon == 'Info') {
     //   console.log(this.params.properties.leftIcon)
     // }
+    console.log(this.params)
     this.button.Name = this.params.name
     if (this.$parent.subscreenname){ 
       this.button.Name += '/' + this.$parent.subscreenname
@@ -227,5 +229,22 @@ p {
 .button:active {
   background-color: var(--backgroundColor);
   filter: brightness(150%);
+}
+
+@keyframes glowing {
+  from {
+    background-color: var(--backgroundColor);
+  }
+  50% {
+    background-color: var(--backgroundColor);
+    filter: brightness(35%);
+    /* backdrop-filter: brightness(50%); */
+  }
+  to {
+    background-color: var(--backgroundColor);
+  }
+}
+.flash {
+  animation: glowing 2000ms infinite;
 }
 </style>

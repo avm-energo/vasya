@@ -22,6 +22,7 @@ export default {
         value: null,
         Namesub: null,
       },
+      inSubscreen: null,
     };
   },
   methods: {
@@ -59,7 +60,7 @@ export default {
     
   },
   created(){
-    console.log(this.params)
+    this.inSubscreen = this.$parent.$parent.windowname != this.$parent.$parent.windowpath.split('\\').join('')
     this.radioarg.Name = this.name
     this.radioarg.masvalue = this.params.state
     // this.radioarg.value = this.radioarg.masvalue.find((t) => t.isSelected == true).value
@@ -70,7 +71,7 @@ export default {
     }
     const today = new Date();
     var currentDateMilliseconds = today.getMilliseconds();
-    const ress = {'namewidget': this.radioarg.Namesub, 'namewindow': this.$parent.$parent.windowname}
+    const ress = {'namewidget': this.radioarg.Namesub, 'namewindow': this.inSubscreen ? this.$parent.$parent.windowpath : this.$parent.$parent.windowname}
     setTimeout(() => {
       setInterval(() => {
         let changedelem = this.$store.getters.elemByName(ress)?.properties
@@ -98,7 +99,7 @@ export default {
   },
   watch: {
     'radioarg.value'(){
-      const res = {'namewidget': this.radioarg.Name, 'namewindow': this.$parent.$parent.windowname , 'value': this.radioarg.value}
+      const res = {'namewidget': this.radioarg.Name, 'namewindow': this.inSubscreen ? this.$parent.$parent.windowpath : this.$parent.$parent.windowname , 'value': this.radioarg.value}
       this.$store.dispatch('addcommandwidgetmass', res)
     }
   },

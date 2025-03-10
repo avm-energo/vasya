@@ -12,7 +12,9 @@ export default {
   name: "app",
   props:['params', 'name', 'ip'],
   data() {
-    return {};
+    return {
+      pathName: null,
+    };
   },
   computed: {
     cssProps() {
@@ -30,13 +32,12 @@ export default {
   },
   methods:{
     async some(){
-      // console.log(this.params)
-      let res = this.$store.getters.commandwidgets(this.$parent.$parent.windowname)
+      let pathName = this.$store.getters.commandwidgets(this.$parent.$parent[this.pathName])
       let json_obj
-      if (res){
+      if (pathName){
         var items = {};
-        // console.log(res)
-        res.forEach(element => {
+        // console.log(this.pathName)
+        pathName.forEach(element => {
           items[element.namewidget] = element.value ? element.value.toString() : '';
         });
         const jsonString = JSON.stringify(Object.assign({}, items)) 
@@ -45,30 +46,31 @@ export default {
         json_obj = null
       }
       const startTime = performance.now()
-      if (json_obj  && this.params.writeParams) {
-        if (json_obj != null) {
-          const headers = {
-            'Content-Type': 'application/json',
-            'Authorization': `${localStorage.getItem('token')}`
-          };
-          await axios.post(`http://${this.ip}/api/nodes/${this.encript((new TextEncoder()).encode(this.$parent.$parent.windowpath))}/widget/${this.encript((new TextEncoder()).encode(this.name))}/query/apply-form`, json_obj, { headers })
-          .then((res)=>{
-            console.log(res)
-          })
-          this.$store.dispatch('clearcommandwidgets', this.$parent.$parent.windowname)
-        }
+      let text = null
+      if (json_obj && this.params.writeParams) {
+        console.log(json_obj)
+        const headers = {
+          'Content-Type': 'application/json',
+          'Authorization': `${localStorage.getItem('token')}`
+        };
+        await axios.post(`http://${this.ip}/api/nodes/${this.encript((new TextEncoder()).encode(this.$parent.$parent.windowpath))}/widget/${this.encript((new TextEncoder()).encode(this.name))}/query/apply-form`, json_obj, { headers })
+        .then((result)=>{
+          // console.log(result)
+        })
+        this.$store.dispatch('clearcommandwidgets', this.$parent.$parent.windowpath ? this.$parent.$parent.windowpath: this.$parent.$parent.windowname)
       } 
       const headers = {
-            'Content-Type': 'application/json',
-            'Authorization': `${localStorage.getItem('token')}`
-          };
+          'Content-Type': 'application/json',
+          'Authorization': `${localStorage.getItem('token')}`
+        };
       json_obj = {}
-      let text = null
       await axios.post(`http://${this.ip}/api/nodes/${this.encript((new TextEncoder()).encode(this.$parent.$parent.windowpath))}/widget/${this.encript((new TextEncoder()).encode(this.name))}/query/apply-command`, json_obj, { headers }).
       then(response =>{
-        console.log(response)
+        // console.log(response)
         if (response.status == 200) {
-          text = response.data.resultData.description
+          response.data != '' ? text = response.data.resultData.description : text = null
+        } else if (response.status == 204) {
+          text = null
         } else if (response.status == 400) {
           text = response.data.errorDetails
         } else {
@@ -77,9 +79,9 @@ export default {
       })
       const endTime = performance.now()
       if ((endTime - startTime) < this.params.awaitTime) {
-        this.$store.dispatch('AddNotification_action', { text: text, type: 'Success', time: 5000 })
+        if (text) this.$store.dispatch('AddNotification_action', { text: text, type: 'Success', time: 5000 })
       } else {
-        this.$store.dispatch('AddNotification_action', { text: text, type: 'Warning', time: 5000 })
+        if (text) this.$store.dispatch('AddNotification_action', { text: text, type: 'Warning', time: 5000 })
       }
     },
     encript(values) {
@@ -102,7 +104,12 @@ export default {
     },
   },
   created(){
-    // console.log(this.params)
+    if (this.$store.getters.commandwidgets(this.$parent.$parent.windowpath)) {
+      this.pathName = 'windowpath'
+    } else {
+      this.pathName = 'windowname'
+    }
+    console.log(this.params)
   }
 };
 </script>

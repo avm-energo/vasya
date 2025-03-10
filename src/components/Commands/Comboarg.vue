@@ -23,6 +23,7 @@ export default {
         masvalue: null,
         value: null,
       },
+      inSubscreen: null,
     };
   },
   methods:{
@@ -59,6 +60,7 @@ export default {
     },
   },
   created(){
+    this.inSubscreen = this.$parent.$parent.windowname != this.$parent.$parent.windowpath.split('\\').join('')
     this.comboarg.value = this.params.value
     this.comboarg.masvalue = this.params.cases
     this.comboarg.Name = this.name
@@ -69,7 +71,7 @@ export default {
     }
     const today = new Date();
     var currentDateMilliseconds = today.getMilliseconds();
-    const ress = {'namewidget': this.comboarg.Namesub, 'namewindow': this.$parent.$parent.windowname}
+    const ress = {'namewidget': this.comboarg.Namesub, 'namewindow': this.inSubscreen ? this.$parent.$parent.windowpath : this.$parent.$parent.windowname}
     setTimeout(() => {
       setInterval(() => {
         let changedelem = this.$store.getters.elemByName(ress)?.properties
@@ -96,7 +98,7 @@ export default {
   },
   watch: {
     'comboarg.value'(){
-      const res = {'namewidget': this.comboarg.Name, 'namewindow': this.$parent.$parent.windowname , 'value': this.comboarg.value}
+      const res = {'namewidget': this.comboarg.Name, 'namewindow': tthis.inSubscreen ? this.$parent.$parent.windowpath : this.$parent.$parent.windowname , 'value': this.comboarg.value}
       this.$store.dispatch('addcommandwidgetmass', res)
     }
   },

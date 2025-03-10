@@ -230,7 +230,7 @@ export default {
         this.windowpath = this.namewindow
       }
       this.multiplierwindow = (window.innerHeight - 123 - 4) / this.myJson.canvas.height;
-      console.log(this.multiplierwindow, " multiplierwindow Main");
+      // console.log(this.multiplierwindow, " multiplierwindow Main");
       if (this.multiplierwindow * this.myJson.canvas.width > window.innerWidth){
         this.multiplierwindow = this.multiplierwindow * window.innerWidth / (this.multiplierwindow * this.myJson.canvas.width) - 0.005
       }

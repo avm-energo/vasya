@@ -86,3 +86,22 @@ export async function GetReportGenerator(mas, pathName, callback) {
         store.dispatch('AddError_action', `${response.status} ${response.statusText}`)
     }
 } 
+
+export async function PostAcknowledge(id, callback) {
+    const myHeaders = new Headers();
+    myHeaders.append("Content-Type", "application/json");
+    myHeaders.append("Authorization", `${localStorage.getItem('token')}`);
+    const response = await fetch(`http://${ip}/api/nodes/footer/widget/6MXB7RKGFTT5RNKE/query/acknowledge`,
+    {
+        headers: myHeaders,
+        method: "POST",
+        body: `[${id}]`,
+    })
+    if (response.status === 200) {
+        let json = await response.json()
+        // console.log(json)
+        callback(true, json.status)
+    } else {
+        callback(false)
+    }
+}

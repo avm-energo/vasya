@@ -35,6 +35,7 @@ export default {
     }
   },
   created(){
+    // console.log(this.namewindow)
     if (this.params.properties.width > this.params.properties.screen.canvas.width) {
       this.subscreensize = this.params.properties.height/(this.params.properties.screen.canvas.height) * this.$parent.multiplier
     } else {

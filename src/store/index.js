@@ -198,7 +198,7 @@ export default createStore({
       var mas = JSON.parse(sessionStorage.getItem("localArray"))
       if (mas) {
         mas.forEach((element,index) =>{
-          console.log(index)
+          // console.log(index)
           setTimeout(() => {
             this.dispatch('addElemsfromStorage', JSON.parse(element))
           }, 50*index);
@@ -426,7 +426,7 @@ export default createStore({
     addcommandwidgetmass(state, params){
       if (state.commandwidgetmass.find((t) => t.namewindow === params.namewindow)) {
         // дописать логик
-        console.log('da')
+        // console.log('da')
       } else {
         state.commandwidgetmass.push({'namewindow': params.namewindow, 'widgets': []})
       }
@@ -441,8 +441,8 @@ export default createStore({
     },
 
     clearcommandwidgets(state, name){
-      console.log(state.commandwidgetmass.findIndex((t) => t.namewindow === name))
-      state.commandwidgetmass.splice(state.commandwidgetmass.findIndex((t) => t.namewindow === name), 1)
+      console.log(state.commandwidgetmass.find((t) => t.namewindow === name))
+      if (state.commandwidgetmass.findIndex((t) => t.namewindow === name) >= 0) state.commandwidgetmass.splice(state.commandwidgetmass.findIndex((t) => t.namewindow === name), 1)
       console.log(state.commandwidgetmass)
     }
 

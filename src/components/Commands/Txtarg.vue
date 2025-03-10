@@ -33,6 +33,7 @@ export default {
         disabled: false,
         prevvalue: null,
       },
+      inSubscreen: null,
     };
   },
   methods:{
@@ -76,37 +77,38 @@ export default {
     },
   },
   created(){
+    this.inSubscreen = this.$parent.$parent.windowname != this.$parent.$parent.windowpath.split('\\').join('')
     this.txtarg.value = this.params.value
     this.txtarg.prevvalue = this.txtarg.value
     this.txtarg.Name = this.name
     if (this.params.trigger == `ButtonApply`) {
-      const res = {'namewidget': this.txtarg.Name, 'namewindow': this.$parent.$parent.windowname , 'value': this.txtarg.value}
+      const res = {'namewidget': this.txtarg.Name, 'namewindow': this.inSubscreen ? this.$parent.$parent.windowpath : this.$parent.$parent.windowname, 'value': this.txtarg.value}
       this.$store.dispatch('addcommandwidgetmass', res)
-    }
+    } 
     // const res = {'namewidget': this.txtarg.Name, 'namewindow': this.$parent.$parent.windowname , 'value': this.txtarg.value}
     // this.$store.dispatch('addcommandwidgetmass', res)
     // if( this.type.startsWith("tiles") || (this.$parent.typewindow == 'head' ) || this.name.startsWith("Number") || this.name.startsWith("Flag")) {
-      if (this.$parent.$parent.subscreenname){ 
-        this.txtarg.Namesub = this.txtarg.Name + '/' + this.$parent.$parent.subscreenname
-      } else {
-        this.txtarg.Namesub = this.txtarg.Name
-      }
-      const today = new Date();
-      var currentDateMilliseconds = today.getMilliseconds();
-      const ress = {'namewidget': this.txtarg.Namesub, 'namewindow': this.$parent.$parent.windowname}
-      setTimeout(() => {
-        setInterval(() => {
-          let changedelem = this.$store.getters.elemByName(ress)?.properties
-          // console.log(changedelem)
-          if (changedelem) {
-            if (changedelem.value){
-              this.txtarg.value = changedelem.value
-              this.txtarg.prevvalue = this.txtarg.value
-            } 
-          }
-        },1000)
-      // }, 1000 - Math.abs(500 - currentDateMilliseconds));
-      }, 1000 - currentDateMilliseconds);
+    if (this.$parent.$parent.subscreenname){ 
+      this.txtarg.Namesub = this.txtarg.Name + '/' + this.$parent.$parent.subscreenname
+    } else {
+      this.txtarg.Namesub = this.txtarg.Name
+    }
+    const today = new Date();
+    var currentDateMilliseconds = today.getMilliseconds();
+    const ress = {'namewidget': this.txtarg.Namesub, 'namewindow': this.inSubscreen ? this.$parent.$parent.windowpath : this.$parent.$parent.windowname}
+    setTimeout(() => {
+      setInterval(() => {
+        let changedelem = this.$store.getters.elemByName(ress)?.properties
+        // console.log(changedelem)
+        if (changedelem) {
+          if (changedelem.value){
+            this.txtarg.value = changedelem.value
+            this.txtarg.prevvalue = this.txtarg.value
+          } 
+        }
+      },1000)
+    // }, 1000 - Math.abs(500 - currentDateMilliseconds));
+    }, 1000 - currentDateMilliseconds);
     // }
   },
   watch: {
@@ -121,8 +123,15 @@ export default {
       else {
         this.validate = true
       }
-      const res = {'namewidget': this.txtarg.Name, 'namewindow': this.$parent.$parent.windowname , 'value': this.txtarg.value}
+      const res = {'namewidget': this.txtarg.Name, 'namewindow': this.inSubscreen ? this.$parent.$parent.windowpath : this.$parent.$parent.windowname, 'value': this.txtarg.value}
       this.$store.dispatch('addcommandwidgetmass', res)
+      // if (this.$parent.$parent.windowname != this.$parent.$parent.windowpath.split('\\').join('')) {
+      //   const res = {'namewidget': this.txtarg.Name, 'namewindow': this.$parent.$parent.windowpath , 'value': this.txtarg.value}
+      //   this.$store.dispatch('addcommandwidgetmass', res)
+      // } else {
+      //   const res = {'namewidget': this.txtarg.Name, 'namewindow': this.$parent.$parent.windowname , 'value': this.txtarg.value}
+      //   this.$store.dispatch('addcommandwidgetmass', res)
+      // }
     }
   },
   computed: {

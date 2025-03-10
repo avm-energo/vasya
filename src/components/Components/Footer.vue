@@ -105,6 +105,8 @@ import Datepicker from "@vuepic/vue-datepicker";
 import "@vuepic/vue-datepicker/dist/main.css";
 import moment from "moment";
 import EventsHistoryTable from "./EventsHistoryTable.vue";
+import { PostAcknowledge } from "../../actions/SonicaActions"
+
 
 export default {
   name: "foooter",
@@ -301,29 +303,31 @@ export default {
 
     },
     some(id){
-      let obj = this.events[this.events.findIndex((s)=> s.id === id)]
-      // if (!obj.acknowtime) obj.acknowtime = moment(new Date()).format("YYYY-MM-DD HH:mm:ss")
-      obj.needAck = false
-      obj.ackTime = this.DateTime(Date.now())
-      obj.statusEventSignaling += 3
-      var url = `http://${this.myJson.ip}/api/nodes/footer/widget/6MXB7RKGFTT5RNKE/query/acknowledge`;
-      var xhr = new XMLHttpRequest();
-      xhr.open("POST", url);
-      xhr.setRequestHeader("Content-Type", "application/json");
-      xhr.onreadystatechange = function () {
-        if (xhr.readyState === 4) {
-            // console.log(xhr.status);
-            // console.log(xhr.responseText);
-        }};
-      var data = `[${id}]`;
-      xhr.send(data);
-      console.log(this.events)
+      if (localStorage.getItem('userName') == 'Guest') {
+        this.$store.dispatch('AddNotification_action', { text: 'Гость не может квитировать события!', type: 'Warning', time: 5000 })
+      } else {
+        PostAcknowledge( id,(state)=>{
+        if (state) {
+          let obj = this.events[this.events.findIndex((s)=> s.id === id)]
+          // if (!obj.acknowtime) obj.acknowtime = moment(new Date()).format("YYYY-MM-DD HH:mm:ss")
+          obj.needAck = false
+          obj.ackTime = this.DateTime(Date.now())
+          obj.statusEventSignaling += 3
+        } else {
+
+        }
+      })
+      }
     },
     Acknowledgedall(){
-      if (this.events){
-        this.events.forEach(elem => {
-          if (!elem.ackTime ) this.some(elem.id)
-        })
+      if (localStorage.getItem('userName') == 'Guest') {
+        this.$store.dispatch('AddNotification_action', { text: 'Гость не может квитировать события!', type: 'Warning', time: 5000 })
+      } else {
+        if (this.events){
+          this.events.forEach(elem => {
+            if (!elem.ackTime ) this.some(elem.id)
+          })
+        }
       }
     },
 

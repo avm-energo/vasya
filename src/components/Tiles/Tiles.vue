@@ -31,6 +31,8 @@ export default {
     };
   },
   created(){
+    // this.name == 'Text#6' ? console.log(this.params) : ''
+    // console.log(this.params)
     this.tiles.Name = this.name
     if (this.$parent.subscreenname){ 
       this.tiles.Name += '/' + this.$parent.subscreenname
@@ -94,7 +96,7 @@ export default {
         "--fontSize": [this.params.fontSize == 0 ? 14 / 1.1 : this.params.fontSize / 1.1]  * this.$parent.multiplier + "px",
         "--margin": [(this.params.vAlignment == 'Stretch' || this.params.vAlignment == 'Top') ? '' : this.params.margin.split(" : ")[0] + "px"],
         "--borderRadius": this.params.borderRadius * this.$parent.multiplier + "px",
-        "--vertical-rl": [(this.params.angle == 270 ||  this.params.angle == -90) ? 'vertical-lr' : 'horizontal-tb']
+        "--vertical-rl": [(this.params.angle == 270 ||  this.params.angle == -90) ? 'sideways-lr' : 'horizontal-tb']
       };
     },
   },
