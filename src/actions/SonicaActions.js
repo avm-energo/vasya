@@ -27,7 +27,7 @@ initializeIp();
 //     return stateCore || stateBooter
 // }
 export async function PutLogout(callback) {
-    const url = `http://${ip}/api/table/out/${localStorage.getItem('userId')}`;
+    const url = `http://${await getHost()}/api/table/out/${localStorage.getItem('userId')}`;
     const response = await fetch(url,{
         method: 'PUT',
         headers: { Authorization: `${localStorage.getItem('token')}` },
@@ -41,7 +41,7 @@ export async function PutLogout(callback) {
 }
 
 export async function PutAdminActive(callback) {
-    const response = await fetch(`http://${ip}/api/table/active/${localStorage.getItem('userId')}`,
+    const response = await fetch(`http://${await getHost()}/api/table/active/${localStorage.getItem('userId')}`,
     {
         method: "PUT",
         headers: { Authorization: `${localStorage.getItem('token')}` },
@@ -64,7 +64,7 @@ export async function GetReportGenerator(mas, pathName, callback) {
     const myHeaders = new Headers();
     myHeaders.append("Content-Type", "application/json");
     myHeaders.append("Authorization", `${localStorage.getItem('token')}`);
-    const response = await fetch(`http://${ip}/api/report/pdf/${pathName}`,
+    const response = await fetch(`http://${await getHost()}/api/report/pdf/${pathName}`,
     {
         method: "POST",
         headers: myHeaders,
@@ -91,7 +91,7 @@ export async function PostAcknowledge(id, callback) {
     const myHeaders = new Headers();
     myHeaders.append("Content-Type", "application/json");
     myHeaders.append("Authorization", `${localStorage.getItem('token')}`);
-    const response = await fetch(`http://${ip}/api/nodes/footer/widget/6MXB7RKGFTT5RNKE/query/acknowledge`,
+    const response = await fetch(`http://${await getHost()}/api/nodes/footer/widget/6MXB7RKGFTT5RNKE/query/acknowledge`,
     {
         headers: myHeaders,
         method: "POST",
@@ -101,6 +101,22 @@ export async function PostAcknowledge(id, callback) {
         let json = await response.json()
         // console.log(json)
         callback(true, json.status)
+    } else {
+        callback(false)
+    }
+}
+
+export async function GetLogOutTime(callback) {
+    const myHeaders = new Headers();
+    myHeaders.append("Content-Type", "application/json");
+    const response = await fetch(`http://${await getHost()}/api/table/time`,
+    {
+        headers: myHeaders,
+        method: "GET",
+    })
+    if (response.status === 200) {
+        let json = await response.json()
+        callback(true, json.userLogOutClient)
     } else {
         callback(false)
     }

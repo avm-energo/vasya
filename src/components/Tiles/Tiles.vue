@@ -32,7 +32,7 @@ export default {
   },
   created(){
     // this.name == 'Text#6' ? console.log(this.params) : ''
-    console.log(this.params)
+    // console.log(this.params)
     this.tiles.Name = this.name
     if (this.$parent.subscreenname){ 
       this.tiles.Name += '/' + this.$parent.subscreenname

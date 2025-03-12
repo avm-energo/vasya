@@ -5,12 +5,23 @@ import route from '../router/index';
 // Ваша функция, которая забирает значения из файла defaults.json
 export const getHost = async () => {
     let config = await fetch('defaults.json');
-    const data = await config.json(); // Вам не нужно вызывать config.text() и JSON.parse(a), используйте config.json()
+    const data = await config.json(); 
     return data.ip;
 };
 
+let ip = null;
+async function initializeIp() {
+    ip = await getHost();
+}
+
+// Вызываем initializeIp(), чтобы получить значение ip один раз
+initializeIp();
+
+
 export const login = async (login, password, callback) => {
     try {
+        console.log('dsds')
+
         const url = `http://${await getHost()}/api/table/auth`;
 
         const data = `{
@@ -54,6 +65,7 @@ export const login = async (login, password, callback) => {
 
 export const auth = async () => {
     try {
+        console.log('dsds')
         if (!localStorage.getItem('token')) {
             route.push('/authorization');
             return

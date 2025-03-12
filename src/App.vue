@@ -25,7 +25,10 @@ import Error from "./components/Modals/Error.vue";
 import Notification from "./components/Modals/Notification.vue";
 import { auth, login, logout } from "./actions/AuthorizationActions";
 import { mapGetters } from "vuex";
-import { PutLogout} from "./actions/SonicaActions";
+import { 
+  PutLogout,
+  GetLogOutTime,
+} from "./actions/SonicaActions";
 
 
 export default {
@@ -58,6 +61,9 @@ export default {
   },
   mounted() {
     document.addEventListener('mousemove', this.resetTimer);
+    GetLogOutTime((state,time)=>{
+      if (state) this.$store.state.afkTimer = time
+    })
   },
   methods:{
     uploadData(){
