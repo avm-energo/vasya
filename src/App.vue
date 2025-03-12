@@ -41,7 +41,7 @@ export default {
   created() {
     this.worker.postMessage({ interval: 1000 });
     auth();
-    this.$store.state.afkTimer = 60 * 5
+    // this.$store.state.afkTimer = 60 * 5
     this.uploadData()
 
   },
@@ -78,12 +78,13 @@ export default {
   watch:{
     timer:{
       handler(newStatus, oldStatus) {
-        // console.log(newStatus + '-' + oldStatus)
+        console.log(newStatus + '-' + oldStatus)
         if (newStatus != null && newStatus != oldStatus){
           // if (this.interval) clearInterval(this.interval)
           this.worker.addEventListener('message', (e) => {
             if (!this.innactiveStatus && this.name != 'Guest' && localStorage.getItem('userName')) {
               this.innactiveTimer++
+              console.log(this.innactiveTimer)
               if (this.innactiveTimer >= newStatus){
                 console.log(this.innactiveTimer)
                 this.innactiveStatus = true

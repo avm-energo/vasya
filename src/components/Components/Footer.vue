@@ -8,10 +8,10 @@
         <table id="table_footer" cellpadding="5">
           <thead>
             <tr>
-              <td class="table_footer_columns" @click="sort('comeTime')">Come</td>
-              <td class="table_footer_columns" @click="sort('leaveTime')">Leave</td> 
-              <td class="table_footer_columns" @click="sort('ackTime')">Acknowledged</td>
-              <td class="table_footer_columns" @click="sort('text')">Event</td>
+              <td class="table_footer_columns" @click="sortEvent('comeTime')">Come</td>
+              <td class="table_footer_columns" @click="sortEvent('leaveTime')">Leave</td> 
+              <td class="table_footer_columns" @click="sortEvent('ackTime')">Acknowledged</td>
+              <td class="table_footer_columns" @click="sortEvent('text')">Event</td>
             </tr>
           </thead>
           <tbody>
@@ -28,6 +28,7 @@
                     obj.warnType === 4 ? 'textred' :
                     obj.warnType === 2 ? 'textyellow' :
                     obj.warnType === 1 ? 'textgray' : '' : ''
+                    // obj.warnType === 1 ? 'textgray' : '' : ''
                 ]" 
                 @dblclick="obj.needAck ? some(obj.id) : ''">
               <td style="text-align: center;">{{ DateTime(obj.comeTime) }}</td>
@@ -83,8 +84,7 @@
       </div>
       <div id="history_window_body" @scroll="historyWindowScroll" :style="{ overflowY: isLoading ? 'hidden' : 'auto' }">
 <!--        -->
-
-          <EventsHistoryTable :history="filteredHistoryList" :historymasVisible="historymasVisible" @sort="sort" />
+          <EventsHistoryTable :history="historymas" :eventsfilter="eventsfilter" />
 <!--        -->
         <div id="box_loading" v-show="isLoading" >
           <div id="box_loading_center">
@@ -124,10 +124,11 @@ export default {
       tablestate: false,
       historystate: false,
       upHere: false,
-      currentSort: "",
-      currentSortDir: "",
+      eventList: {
+        currentSort: "comeTime",
+        currentSortDir: "asc",
+      },
       tick:null,
-      historymasVisible: 50,
       isLoading: false,
       sortedArray: null,
     };
@@ -163,7 +164,7 @@ export default {
         let obj = JSON.parse(await response.text())
         this.tick = obj.tick
         if (obj.data!=null){
-          // console.log(obj)
+          console.log(obj)
           // if (obj.data["footer-title"]!=null) {this.footertitle = obj.data["footer-title"]}
           if (obj.data["footer-title"]){
             // console.log('yest')
@@ -223,36 +224,14 @@ export default {
     //   return this.filteredHistoryList.slice(0, this.historymasVisible);
     //   // return this.historymas.slice(0, this.historymasVisible);
     // },
-
-    filteredHistoryList() {
-
-      if (this.currentSort === "" && this.currentSortDir === "") {
-        return this.historymas;
-      }
-      const sortArr = this.historymas
-        .sort((a, b) => {
-          let modifier = 1;
-          if (this.currentSortDir === "desc") modifier = -1;
-          if (a[this.currentSort] < b[this.currentSort]) return -1 * modifier;
-          if (a[this.currentSort] > b[this.currentSort]) return 1 * modifier;
-          return 0;
-        })
-        .filter((user) => {
-          return user.message
-            .toLowerCase()
-            .includes(this.eventsfilter.toLowerCase());
-        });
-      console.log("Данные отсортированы")
-      return sortArr;
-    },
     filteredEventsList() {
       if (this.events) {
       return this.events
         .sort((a, b) => {
           let modifier = 1;
-          if (this.currentSortDir === "desc") modifier = -1;
-          if (a[this.currentSort] < b[this.currentSort]) return -1 * modifier;
-          if (a[this.currentSort] > b[this.currentSort]) return 1 * modifier;
+          if (this.eventList.currentSortDir === "desc") modifier = -1;
+          if (a[this.eventList.currentSort] < b[this.eventList.currentSort]) return -1 * modifier;
+          if (a[this.eventList.currentSort] > b[this.eventList.currentSort]) return 1 * modifier;
           return 0;
         })
       } else {
@@ -279,7 +258,16 @@ export default {
     historymas(newValue) {
       this.isLoading = false;
       console.log("historymas изменилось");
-    }
+    },
+    // events:{
+    //   deep: true,
+    //   handler(newValue) {
+    //     newValue.forEach((el)=>{
+    //       console.log(el)
+  
+    //     })
+    //   }
+    // }
   },
   methods: {
     // sortArrayAsync(array, currentSortDir, currentSort) {
@@ -331,28 +319,15 @@ export default {
       }
     },
 
-    sort(s) {
+    sortEvent(s) {
       // await this.sortArrayAsync(this.historymas, this.currentSortDir, this.currentSort);
       console.log("Начало сортировки")
       // this.isLoading = true;
-      if (s === this.currentSort) {
-        this.currentSortDir = this.currentSortDir === "asc" ? "desc" : "asc";
+      if (s === this.eventList.currentSort) {
+        this.eventList.currentSortDir = this.eventList.currentSortDir === "asc" ? "desc" : "asc";
       }
-      this.currentSort = s;
+      this.eventList.currentSort = s;
       this.historymasVisible = 50;
-    },
-    async updatedata() {
-      console.log('Данные запрошены');
-      this.currentSortDir = "";
-      this.currentSort = "";
-      this.historymasVisible = 50;
-      this.isLoading = true;
-      const data = [];
-      data.push(this.endtime);
-      data.push(this.starttime);
-      await this.$store.dispatch("gethistorytime", data);
-      console.log(this.starttime, " - Начало");
-      console.log(this.endtime, " - Конец");
     },
     clickfooter() {
       this.tablestate = !this.tablestate;
@@ -405,15 +380,16 @@ export default {
 tbody{
   overflow: auto;
 }
-  .table_footer_columns{
-    color: white;
-    text-align: center;
-    cursor: pointer;
-  }
+.table_footer_columns{
+  color: white;
+  text-align: center;
+  cursor: pointer;
+  min-width: 150px
+}
 
-  .table_footer_columns:hover {
-    background: #373737;
-  }
+.table_footer_columns:hover {
+  background: #373737;
+}
 #footer_title {
   font-size: 16px;
   user-select: none;
@@ -437,6 +413,8 @@ tbody{
   background-color: rgb(61, 61, 61);
   border: 0px;
   margin-left: 10px;
+  padding-left: 10px;
+  padding-right: 10px;
 }
 #footer_title:hover {
   filter: brightness(150%);
@@ -497,18 +475,21 @@ tbody{
     }
     .backgroundred{
       background-color: red;
+      color: white;
     }
     .backgroundyellow{
-      background-color: rgb(255,229,96);
+      background-color: yellow;
+      color: black
     }
     .backgroundgray{
       background-color: gray;
+      color: black;
     }
     .textred{
       color: red;
     }
     .textyellow{
-      color: rgb(255,229,96);
+      color: yellow;
     }
     .textgray{
       color: white;

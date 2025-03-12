@@ -32,7 +32,7 @@ export default {
   },
   created(){
     // this.name == 'Text#6' ? console.log(this.params) : ''
-    // console.log(this.params)
+    console.log(this.params)
     this.tiles.Name = this.name
     if (this.$parent.subscreenname){ 
       this.tiles.Name += '/' + this.$parent.subscreenname
@@ -75,7 +75,6 @@ export default {
       // }, 1000 - Math.abs(500 - currentDateMilliseconds));
       }, 1000 - currentDateMilliseconds);
     }
-    
   },
   computed: {
     cssProps() {
@@ -100,6 +99,13 @@ export default {
       };
     },
   },
+  watch: {
+    'tiles.value'(newValue){
+      if (parseFloat(newValue)) {
+        this.tiles.value = newValue.replace(',','.')
+      }
+    }
+  }
 };
 </script>
 <style scoped>
