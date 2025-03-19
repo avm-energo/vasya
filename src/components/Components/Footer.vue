@@ -359,7 +359,7 @@ export default {
 
 <style>
 #footer {
-  z-index: 2;
+  z-index: 200;
   position: absolute;
   left: 0;
   bottom: 0;
