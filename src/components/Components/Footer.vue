@@ -31,10 +31,10 @@
                     // obj.warnType === 1 ? 'textgray' : '' : ''
                 ]" 
                 @dblclick="obj.needAck ? some(obj.id) : ''">
-              <td style="text-align: center;">{{ DateTime(obj.comeTime) }}</td>
-              <td style="text-align: center;">{{ obj.leaveTime != 0 ? DateTime(obj.leaveTime) : ''}}</td>
-              <td style="text-align: center;">{{ obj.ackTime ? DateTime(obj.ackTime) : ''}}</td>
-              <td style="text-align: center;">{{ obj.text }}</td>
+              <td style="text-align: center; padding: 0 7px 0 7px;">{{ DateTime(obj.comeTime) }}</td>
+              <td style="text-align: center; padding: 0 7px 0 7px;">{{ obj.leaveTime != 0 ? DateTime(obj.leaveTime) : ''}}</td>
+              <td style="text-align: center; padding: 0 7px 0 7px;">{{ obj.ackTime ? DateTime(obj.ackTime) : ''}}</td>
+              <td style="text-align: center; padding: 0 7px 0 7px;">{{ obj.text }}</td>
             </tr>
           </tbody>
         </table>
