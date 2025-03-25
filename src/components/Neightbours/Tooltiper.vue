@@ -91,7 +91,7 @@ export default {
     // if (this.params.properties.leftIcon == 'Info') {
     //   console.log(this.params.properties.leftIcon)
     // }
-    console.log(this.params)
+    // console.log(this.params)
     this.button.Name = this.params.name
     if (this.$parent.subscreenname){ 
       this.button.Name += '/' + this.$parent.subscreenname

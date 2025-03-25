@@ -242,7 +242,6 @@ export default {
       this.$store.dispatch('mainmultiplier', [true, this.multiplier])
       ;(this.myJson.widgets.$id == undefined ? this.myJson.widgets : this.myJson.widgets.$values).forEach(element => {
         let res = element;
-
         if (res.type.startsWith("primitives/Line")) {
           this.lines.push(res);
         } else

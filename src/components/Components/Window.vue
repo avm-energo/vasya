@@ -22,6 +22,8 @@
         <helper v-for="elem in helper" :key="elem.name" :params="elem.properties"/>
         <duval v-for="elem in duval" :key="elem.name" :params="elem.properties" :name="elem.name"/>
         <vector v-for="elem in vector" :key="elem.name" :params="elem.properties" :name="elem.name"/>
+        <horizontals v-for="elem in horizontal" :key="elem.name" :params="elem.properties" :name="elem.name"/>
+
       </div>
     </div>
   </div>
@@ -41,6 +43,7 @@ import Helper from '../Primitives/Helper.vue'
 import Duval from '../Specials/DuvalTriangle.vue'
 import Vector from '../Specials/VectorDiagram.vue'
 import Commands from "../Commands/Commands.vue";
+import Horizontals from "../Scales/Horizontal.vue";
 
 
 export default {
@@ -76,6 +79,7 @@ export default {
       duval:[],
       vector: [],
       commandss:[],
+      horizontal:[],
       width: 0,
       height: 0,
       windowname: null,
@@ -97,7 +101,8 @@ export default {
     Chart,
     Helper,
     Duval,
-    Vector
+    Vector,
+    Horizontals
 
   },
 
@@ -228,6 +233,7 @@ export default {
     // this.reportWindowSize();
     ;(this.myJson.widgets.$id == undefined ? this.myJson.widgets : this.myJson.widgets.$values).forEach(element => {
       let res = element;
+
       if (res.type.startsWith("primitives/Line")) {
         this.lines.push(res);
       } else
@@ -269,6 +275,9 @@ export default {
       } else
       if (res.type.startsWith("commands")) {
         this.commandss.push(res)
+      } else 
+      if (res.type.startsWith("scales/Horizontal")) {
+        this.horizontal.push(res)
       }
       // console.log('this.multiplier in start = ', this.multiplier);
     });
