@@ -166,7 +166,7 @@ export default {
 
   methods: {
     reportWindowSize(){
-      console.log('Set main maultiplier', this.multiplier);
+      // console.log('Set main maultiplier', this.multiplier);
       let multiplierwindow;
       if (this.updatedmainheight !== null) {
         multiplierwindow = (window.innerHeight - (this.updatedmainheight) - 28)/this.myJson.canvas.height
@@ -234,8 +234,20 @@ export default {
       if (this.multiplierwindow * this.myJson.canvas.width > window.innerWidth){
         this.multiplierwindow = this.multiplierwindow * window.innerWidth / (this.multiplierwindow * this.myJson.canvas.width) - 0.005
       }
+      // console.log("MAIN this.myJson.canvas.width * this.multiplierwindow = ", this.myJson.canvas.width * this.multiplierwindow);
+      // console.log("MAIN window.innerWidth = ", window.innerWidth);
+      //
+      // console.log("MAIN this.myJson.canvas.height * this.multiplierwindow = ", this.myJson.canvas.height * this.multiplierwindow);
+      // console.log("MAIN window.innerHeight = ", window.innerHeight - 151);
       if (this.myJson.canvas.width * this.multiplierwindow > window.innerWidth) {
         this.multiplierwindow = window.innerWidth / (this.myJson.canvas.width + 50)
+      }
+      if (this.myJson.canvas.height * this.multiplierwindow > window.innerHeight - 151) {
+        // console.log("this.multiplierwindow = ", this.multiplierwindow);
+        // console.log("Header: ", window.innerWidth / 100 * 5);
+        this.multiplierwindow = ( window.innerHeight - ( window.innerWidth / 100 * 5 + 24 + 10) ) / (this.myJson.canvas.height);
+        // console.log("this.multiplierwindow = ", this.multiplierwindow);
+        // console.log("MAIN Окно явно больше чем место для него")
       }
       this.multiplier = this.multiplierwindow
       this.$parent.multiplier = this.multiplier

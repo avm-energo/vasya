@@ -178,7 +178,7 @@ export default {
           this.multiplier = this.multiplier / ((this.myJson.canvas.width * this.multiplier)/window.innerWidth)
         }
       }
-      // console.log('Назначенный maultiplier в Window ', this.multiplier);
+      console.log('Назначенный maultiplier в Window ', this.multiplier);
 
       // console.log(this.multiplier, " this.multiplier при срабатывании reportWindowSize");
     },
@@ -188,7 +188,10 @@ export default {
       window.removeEventListener('resize', this.reportWindowSize)
     },
   },
-
+  updated() {
+    // console.log("Сейчас будет принудительный ресайз")
+    // window.dispatchEvent(new Event('resize'));
+  },
   created() {
     // console.log("this.mainmultiplier во время создания Window ", this.mainmultiplier);
     if (this.myJson.title) {
@@ -211,15 +214,24 @@ export default {
     //скалирование модального окна из переданного параметра scrennPercentage
     if (this.myJson.screenPercentage){
       let ss = ((window.innerHeight - 100) * (this.myJson.screenPercentage/100))/this.myJson.canvas.height
-      //console.log('Скалирование без переданного параметра')
+      // console.log('Скалирование без переданного параметра')
       this.multiplierwindow = this.multiplierwindow * ss
     }
 
     this.width = window.innerWidth;
     this.height = window.innerHeight;
+    // console.log("WINDOW this.myJson.canvas.width * this.multiplierwindow = ", this.myJson.canvas.width * this.multiplierwindow);
+    // console.log("WINDOW window.innerWidth = ", window.innerWidth);
+    //
+    // console.log("WINDOW this.myJson.canvas.height * this.multiplierwindow = ", this.myJson.canvas.height * this.multiplierwindow);
+    // console.log("WINDOW window.innerHeight = ", window.innerHeight);
     //если модальнгое окно превышает размер рабочего окна, то оно уменьшается
     if (this.myJson.canvas.width * this.multiplierwindow > window.innerWidth) {
       this.multiplierwindow = window.innerWidth / (this.myJson.canvas.width + 100)
+    }
+    if (this.myJson.canvas.height * this.multiplierwindow > window.innerHeight) {
+      console.log("WINDOW Окно явно больше чем место для него")
+      // this.multiplierwindow = window.innerWidth / (this.myJson.canvas.width + 100)
     }
     this.multiplier = this.multiplierwindow
     this.multiplierwindoww = this.multiplier
