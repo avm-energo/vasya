@@ -1,5 +1,6 @@
 <template>
-    <div class="progress-wrapper" :style="wrapperStyle">
+    <div class="progress-wrapper" :style="wrapperStyle" @mouseover="isHovered = true" 
+    @mouseleave="isHovered = false">
       <!-- Текст заголовка -->
       <div class="header-text" :style="{ fontSize: textSize + 'px' }">
         {{ headerText }}
@@ -33,9 +34,11 @@
             class="limit-mark left-mark"
             :class="limit.type"
             :style="{ width: calculatePosition(limit.value) + '%' }"
-          ></div>
-          
-          
+          >
+          <div v-show="isHovered" style="position: relative;  border-right: solid 2px; left: 0px; height: 22px;" :style="{color: limit.type == 'low-warning' ? colors.warning : colors.alarm, borderColor: limit.type == 'low-warning' ? colors.warning : colors.alarm}">
+              <p style="height: 80%; position: absolute; top: 5px; background-color: black; padding-left: 5px; padding-right: 5px;" :style="{left: limit.type == 'low-warning' ? 'calc(100% + 2px)' : '', right:  limit.type == 'low-alarm' ? '0px' : ''}">{{ limit.value }}</p>
+          </div>
+          </div>
           <!-- Правые пределы -->
           <div
             v-for="limit in sortedRightLimits"
@@ -43,7 +46,11 @@
             class="limit-mark right-mark"
             :class="limit.type"
             :style="{ width: calculatePosition(limit.value, 'right') + '%' }"
-          ></div>
+          >
+          <div v-show="isHovered" style="position: relative;  border-left: solid 2px; right: 0px; height: 22px;" :style="{color: limit.type == 'high-warning' ? colors.warning : colors.alarm, borderColor: limit.type == 'high-warning' ? colors.warning : colors.alarm}">
+            <p style="height: 80%; position: absolute; top: 5px; background-color: black; padding-left: 5px; padding-right: 5px;" :style="{right: limit.type == 'high-warning' ? 'calc(100% + 2px)' : '' }">{{ limit.value }}</p>
+          </div>
+          </div>
         </div>
       </div>
       
@@ -56,8 +63,15 @@
   </template>
   
   <script>
+import { color } from '@amcharts/amcharts5'
+
   export default {
     name: 'TemperatureProgressBar',
+    data(){
+      return{
+        isHovered: false
+      }
+    },
     props: {
       mark:{
         type: String,
@@ -132,6 +146,9 @@
         )
       },
       
+    },
+    created(){
+      console.log(this.validLimits)
     },
     computed: {
       validLimits() {
@@ -234,8 +251,8 @@
   .progress-container {
     width: 100%;
     position: relative;
-    border-radius: 4px;
-    overflow: hidden;
+    /* border-radius: 4px; */
+    /* overflow: hidden; */
     border: solid 1px white;
   }
   
@@ -249,7 +266,7 @@
   .progress-fill {
     position: absolute;
     height: 100%;
-    border-radius: 4px;
+    /* border-radius: 4px; */
     transition: width 0.3s ease, background-color 0.3s ease;
   }
   
@@ -271,11 +288,14 @@
   .left-mark {
     left: 0;
     /* transform: translateX(-50%); */
+    /* border-radius: 0 0 0 20px; */
   }
   
   .right-mark {
     right: 0;
     /* transform: translateX(50%); */
+    /* border-radius: 0 0 20px 0; */
+
   }
   
   .low-alarm, .high-alarm {

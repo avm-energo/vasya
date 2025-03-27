@@ -53,7 +53,7 @@
 <script>
 
 import KProgress from 'k-progress-v3'
-import TemperatureProgressBar from './TemperatureProgressBar.vue'
+import TemperatureProgressBar from './ProgressBar.vue'
 
 export default {
   name: 'Horizontal',
