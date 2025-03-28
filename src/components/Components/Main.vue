@@ -14,7 +14,7 @@
         <imagelogo v-for="elem in imageslogo" :key="elem.name" :params="elem.properties"/>
         <chart v-for="elem in charts" :key="elem.name" :params="elem"/>
         <helper v-for="elem in helper" :key="elem.name" :params="elem.properties"/>
-        <duval v-for="elem in duval" :key="elem.name" :params="elem.properties" :name="elem.name"/>
+        <duval v-for="elem in duval" :key="elem.name" :params="elem.properties" :name="elem.name" :ip="this.ip"/>
         <meters v-for="elem in meter" :key="elem.name" :params="elem.properties" :name="elem.name"/>
         <horizontals v-for="elem in horizontal" :key="elem.name" :params="elem.properties" :name="elem.name"/>
 
@@ -137,6 +137,9 @@ export default {
   //   }
   // },
   computed: {
+    ip() {
+      return this.$store.getters.ip;
+    },
     cssProps() {
       return {
         "--margin": 'auto',

@@ -42,6 +42,9 @@
 </template>
 
 <script>
+import axios from "axios";
+import store from "@/store";
+
 export default {
   data() {
     return {
@@ -57,14 +60,10 @@ export default {
         c2h4: null,
         ch4: null,
       },
-      // duvalArr: null,
-      historyC2H2: null,
-      historyC2H4: null,
-      historyCH4: null,
       duvalMode: false,
     }
   },
-  props: ["params", "name"],
+  props: ["params", "name", "ip"],
   created() {
     this.duval.Name = this.name
     if (this.$parent.subscreenname) {
@@ -77,46 +76,52 @@ export default {
       const {ctx} = this;
       var imageData = ctx.getImageData(0, 0, 410, 400);
       ctx.putImageData(imageData, 0, 0);
-      // this.drawFirstDot(this.params.CH4[0].value, this.params.C2H2[0].value, this.params.C2H4[0].value, "yellow");
+
       setInterval(() => {
-        let changedelem = this.$store.getters.elemByName(res)?.properties;
-
-
-        if (changedelem) {
-
-          console.log(changedelem, " ChangeDelem");
-          ctx.putImageData(imageData, 0, 0);
-
-          if (Number.isFinite(changedelem.CH4) && Number.isFinite(changedelem.C2H2) && Number.isFinite(changedelem.C2H4))
+        if (this.duvalMode === false) {
+          let changedelem = this.$store.getters.elemByName(res)?.properties;
+          if (changedelem) {
+            ctx.putImageData(imageData, 0, 0);
             this.drawFirstDot(changedelem.CH4, changedelem.C2H2, changedelem.C2H4, "yellow");
-          else {
-            if (this.historyCH4 === null) {
-              console.log(changedelem);
-              console.log('Сработал createHistory event');
-              // [this.historyC2H2, this.historyC2H4, this.historyCH4] = this.createHistory(changedelem.C2H2, changedelem.C2H4, changedelem.CH4);
-            } else {
-              this.replaceDot(changedelem.C2H2[changedelem.C2H2.length - 1], 'C2H2');
-              this.replaceDot(changedelem.CH4[changedelem.CH4.length - 1], 'CH4');
-              this.replaceDot(changedelem.C2H4[changedelem.C2H4.length - 1], 'C2H4');
-            }
-
-            if (this.duvalMode === false) {
-              console.log("Rezime 1");
-              ctx.putImageData(imageData, 0, 0);
-              // const l = Math.min(changedelem.CH4.length - 1, changedelem.C2H2.length - 1, changedelem.C2H4.length - 1) - 1
-              // this.drawFirstDot(changedelem.CH4[l].value, changedelem.C2H2[l].value, changedelem.C2H4[l].value, "yellow")
-              this.drawFirstDot(this.historyCH4[0].value, this.historyC2H2[0].value, this.historyC2H4[0].value, "yellow");
-            } else if (this.duvalMode === true) {
-              console.log("Rezime 2");
-              ctx.putImageData(imageData, 0, 0);
-              this.drawArray(this.historyC2H2, this.historyC2H4, this.historyCH4);
-            }
           }
+        } else {
+          const headers = {
+            'Content-Type': 'application/json',
+            'Authorization': `${localStorage.getItem('token')}`
+          };
+          axios.get(`http://${this.ip}/api/nodes/${this.encript((new TextEncoder()).encode(this.$parent.windowpath))}/widget/${this.encript((new TextEncoder()).encode(this.duval.Name))}/query/triangle-history/15`, { headers })
+              .then((result)=>{
+                if (result.data.resultData.length !== 0) {
+                  ctx.putImageData(imageData, 0, 0);
+                  this.drawArray(result.data.resultData);
+                  console.log(result.data.resultData);
+                } else {
+                  store.dispatch('AddNotification_action', { text: `Ошибка: Остутствуют данные для формирования истории Треугольника Дюваль`, type: 'Error', time: 2000 });
+                }
+              })
         }
       }, 1000)
     }, 1000 - currentDateMilliseconds);
   },
   methods: {
+    encript(values) {
+      const Alphabet = "12345678" + "9ABDEFGH" + "JKLMNPQR" + "STUVWXYZ";
+      var bitsCount = 8 * values.length;
+      var ans = new Array(Math.trunc(bitsCount / 5) + (bitsCount % 5 == 0 ? 0 : 1));
+      for (let i = 0; i < ans.length; i++) {
+        var bitNum = i * 5;
+        var byteNum = Math.trunc(bitNum / 8);
+        var byteOffset = bitNum % 8;
+        var symbol = values[byteNum] >> byteOffset;
+        if (byteOffset > 3 && byteNum < (values.length - 1)) {
+          var symbolOffset = 8 - byteOffset;
+          symbol |= values[byteNum + 1] << symbolOffset;
+        }
+        symbol &= 0b11111;
+        ans[i] = Alphabet[symbol];
+      }
+      return ans.join("")
+    },
     drawDuval() {
       const {ctx} = this;
       var {imageData} = this;
@@ -503,78 +508,18 @@ export default {
       ctx.strokeStyle = color;
       ctx.stroke();
     },
-    drawArray(historyC2H2, historyC2H4, historyCH4) {
-      for (let i = 0; i < Math.min(historyCH4.length, historyC2H2.length, historyC2H4.length); i++) {
-
-        if (i === 0) this.drawFirstDot(historyCH4[i].value, historyC2H2[i].value, historyC2H4[i].value, "red")
+    drawArray(history) {
+      for (let i = 0; i < history.length; i++) {
+        if (i === history.length - 1) this.drawFirstDot(history[i].cH4, history[i].c2H2, history[i].c2H4, "red")
         else {
           let color = null;
-          if (i > 0 && i <= 5) color = '#fc6700';
-          else if (i > 5 && i <= 10) color = '#ffcb33';
-          else if (i > 10 && i <= 15) color = '#feff67';
+          if (i > 11 && i < 15) color = '#fc6700';
+          else if (i > 7 && i <= 11) color = '#ffcb33';
+          else if (i > 3 && i <= 7) color = '#feff67';
           else color = 'white';
-          this.drawDot(historyCH4[i].value, historyC2H2[i].value, historyC2H4[i].value, color, i);
-          // this.drawDot(elem.CH4[i].value, elem.C2H2[i].value, elem.C2H4[i].value, color)
+          this.drawDot(history[i].cH4, history[i].c2H2, history[i].c2H4, color, i);
         }
       }
-    },
-    replaceDot(dot, arr) {
-
-      if (arr === 'CH4') {
-        this.historyCH4.unshift(dot);
-        if (this.historyCH4.length > 20) this.historyCH4.pop();
-      } else if (arr === 'C2H4') {
-        this.historyC2H4.unshift(dot);
-        if (this.historyC2H4.length > 20) this.historyC2H4.pop();
-      } else if (arr === 'C2H2') {
-        this.historyC2H2.unshift(dot);
-        if (this.historyC2H2.length > 20) this.historyC2H2.pop();
-      }
-    },
-    createHistory(c2h2, c2h4, ch4) {
-      let historyC2H2 = [c2h2[c2h2.length - 1]];
-      let historyC2H4 = [c2h4[c2h4.length - 1]];
-      let historyCH4 = [ch4[ch4.length - 1]];
-
-      let indexC2H2 = c2h2.length - 1;
-      let indexC2H4 = c2h4.length - 1;
-      let indexCH4 = ch4.length - 1;
-
-      for (let i = 0; i < Math.min(c2h2.length - 1, c2h4.length - 1, ch4.length - 1); i++) {
-        let currentPoints = [
-          historyC2H2[historyC2H2.length - 1],
-          historyC2H4[historyC2H4.length - 1],
-          historyCH4[historyCH4.length - 1],
-        ];
-
-        let maxTime = Math.max(
-            currentPoints[0].time,
-            currentPoints[1].time,
-            currentPoints[2].time
-        );
-        // console.log(currentPoints);
-        // console.log(maxTime);
-
-        if (currentPoints[0].time === maxTime) {
-          if (indexC2H2 >= 0) {
-            historyC2H2.push(c2h2[--indexC2H2]);
-          }
-        } else historyC2H2.push(c2h2[indexC2H2]);
-
-        if (currentPoints[1].time === maxTime) {
-          if (indexC2H4 >= 0) {
-            historyC2H4.push(c2h4[--indexC2H4]);
-          }
-        } else historyC2H4.push(c2h4[indexC2H4]);
-
-        if (currentPoints[2].time === maxTime) {
-          if (indexCH4 >= 0) {
-            historyCH4.push(ch4[--indexCH4]);
-          }
-        } else historyCH4.push(ch4[indexCH4]);
-
-      }
-      return [historyC2H2, historyC2H4, historyCH4];
     },
   },
   mounted() {

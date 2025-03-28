@@ -20,7 +20,7 @@
         <tooltiper v-for="elem in tooltipers" :key="elem.name" :params="elem"/>
         <chart v-for="elem in charts" :key="elem.name" :params="elem"/>
         <helper v-for="elem in helper" :key="elem.name" :params="elem.properties"/>
-        <duval v-for="elem in duval" :key="elem.name" :params="elem.properties" :name="elem.name"/>
+        <duval v-for="elem in duval" :key="elem.name" :params="elem.properties" :name="elem.name" :ip="this.ip"/>
         <vector v-for="elem in vector" :key="elem.name" :params="elem.properties" :name="elem.name"/>
       </div>
     </div>
@@ -122,6 +122,9 @@ export default {
   // },
 
   computed: {
+    ip() {
+      return this.$store.getters.ip;
+    },
     cssProps() {
       return {
         "--margin": [this.typewindow == 'modalwindow' ? 0 : 'auto'],
