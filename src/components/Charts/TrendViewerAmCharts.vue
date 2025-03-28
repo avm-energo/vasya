@@ -133,6 +133,7 @@ import moment from "moment";
 import exportexcel from "vue-json-excel3"
 
 import axios from 'axios'
+import store from "@/store";
 
 export default {
   name: "Histogram",
@@ -227,6 +228,10 @@ export default {
       this.controller = new AbortController();
     },
     exporttoexcel() {
+      if (this.datajson.length !== 0)
+        console.log('Export To Excel is in Progress!');
+      else
+        store.dispatch('AddNotification_action', { text: `Ошибка: Остутствуют данные для формирования отчета Excel`, type: 'Error', time: 5000 });
     },
     encript(values) {
       const Alphabet = "12345678" + "9ABDEFGH" + "JKLMNPQR" + "STUVWXYZ";
@@ -622,10 +627,30 @@ export default {
             fill: linecolor,
             stroke: linecolor,
             tooltip: am5.Tooltip.new(root, {
+              labelText: "{name}: {valueY}",
+              getFillFromSprite: false,
+              getStrokeFromSprite: false,
+              autoTextColor: false,
               pointerOrientation: "horizontal",
-              showTooltipOn: "always",
-              labelText: "{name}: {valueY}"
-            }),
+              pointerLength: 10,
+              background: am5.PointedRectangle.new(root, {
+                fill: am5.color("#333"),
+                stroke: am5.color("#ffffff"),
+                strokeWidth: 1,
+                fillOpacity: 0.9,
+                pointerLength: 12,
+                pointerBaseWidth: 15,
+                cornerRadiusTL: 5,
+                cornerRadiusTR: 5,
+                cornerRadiusBL: 5,
+                cornerRadiusBR: 5
+              }),
+              label: am5.Label.new(root, {
+                fill: am5.color("#ffffff"),
+                fontSize: 16,
+                fontWeight: "bold"
+              })
+            })
           }));
 
       series.uid = this.chartInfo[i].uid
@@ -636,6 +661,24 @@ export default {
       });
 
       series.strokes.template.setAll({strokeWidth: 1});
+      // series.strokes.template.setAll({
+      //   tooltipText: "{categoryX}: {valueY}",
+      //   tooltip: am5.Tooltip.new(root, {
+      //     labelText: "{categoryX}: {valueY}",
+      //     getFillFromSprite: false,   // Отключаем получение цвета из колонки
+      //     getStrokeFromSprite: false, // Отключаем получение цвета границы
+      //     background: am5.Rectangle.new(root, {
+      //       fill: am5.color("#333"), // Цвет фона тултипа
+      //       fillOpacity: 0.8,
+      //     }),
+      //     label: am5.Label.new(root, {
+      //       fill: am5.color("#ffffff"),  // Цвет текста тултипа
+      //       fontSize: 16,               // Размер текста
+      //       fontWeight: "bold"          // Жирный текст
+      //     })
+      //   })
+      // });
+
       yRenderer.grid.template.set("strokeOpacity", 0.05);
       // yRenderer.labels.template.set("fill", series.get("fill"));
       yRenderer.setAll({
@@ -959,11 +1002,13 @@ export default {
             if (this.seriesArr[j].data._values[i]?.value) {
               element[this.seriesArr[j]._settings.name] = (this.seriesArr[j].data._values[i].value).toFixed(3).toString()
             } else {
-              element[this.seriesArr[j]._settings.name] = '***'
+              element[this.seriesArr[j]._settings.name] = 0
               sum = sum + 1
             }
           }
+          //
           if (this.seriesArr.length != sum) items.push(JSON.parse(JSON.stringify(element)))
+          // items.push(JSON.parse(JSON.stringify(element)))
         }
         return items
       } else {

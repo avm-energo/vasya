@@ -20,7 +20,7 @@
         <tooltiper v-for="elem in tooltipers" :key="elem.name" :params="elem"/>
         <chart v-for="elem in charts" :key="elem.name" :params="elem"/>
         <helper v-for="elem in helper" :key="elem.name" :params="elem.properties"/>
-        <duval v-for="elem in duval" :key="elem.name" :params="elem.properties" :name="elem.name"/>
+        <duval v-for="elem in duval" :key="elem.name" :params="elem.properties" :name="elem.name" :ip="this.ip"/>
         <vector v-for="elem in vector" :key="elem.name" :params="elem.properties" :name="elem.name"/>
         <horizontals v-for="elem in horizontal" :key="elem.name" :params="elem.properties" :name="elem.name"/>
 
@@ -127,6 +127,9 @@ export default {
   // },
 
   computed: {
+    ip() {
+      return this.$store.getters.ip;
+    },
     cssProps() {
       return {
         "--margin": [this.typewindow == 'modalwindow' ? 0 : 'auto'],
@@ -183,7 +186,7 @@ export default {
           this.multiplier = this.multiplier / ((this.myJson.canvas.width * this.multiplier)/window.innerWidth)
         }
       }
-      // console.log('Назначенный maultiplier в Window ', this.multiplier);
+      console.log('Назначенный maultiplier в Window ', this.multiplier);
 
       // console.log(this.multiplier, " this.multiplier при срабатывании reportWindowSize");
     },
@@ -193,7 +196,10 @@ export default {
       window.removeEventListener('resize', this.reportWindowSize)
     },
   },
-
+  updated() {
+    // console.log("Сейчас будет принудительный ресайз")
+    // window.dispatchEvent(new Event('resize'));
+  },
   created() {
     // console.log("this.mainmultiplier во время создания Window ", this.mainmultiplier);
     if (this.myJson.title) {
@@ -216,15 +222,24 @@ export default {
     //скалирование модального окна из переданного параметра scrennPercentage
     if (this.myJson.screenPercentage){
       let ss = ((window.innerHeight - 100) * (this.myJson.screenPercentage/100))/this.myJson.canvas.height
-      //console.log('Скалирование без переданного параметра')
+      // console.log('Скалирование без переданного параметра')
       this.multiplierwindow = this.multiplierwindow * ss
     }
 
     this.width = window.innerWidth;
     this.height = window.innerHeight;
+    // console.log("WINDOW this.myJson.canvas.width * this.multiplierwindow = ", this.myJson.canvas.width * this.multiplierwindow);
+    // console.log("WINDOW window.innerWidth = ", window.innerWidth);
+    //
+    // console.log("WINDOW this.myJson.canvas.height * this.multiplierwindow = ", this.myJson.canvas.height * this.multiplierwindow);
+    // console.log("WINDOW window.innerHeight = ", window.innerHeight);
     //если модальнгое окно превышает размер рабочего окна, то оно уменьшается
     if (this.myJson.canvas.width * this.multiplierwindow > window.innerWidth) {
       this.multiplierwindow = window.innerWidth / (this.myJson.canvas.width + 100)
+    }
+    if (this.myJson.canvas.height * this.multiplierwindow > window.innerHeight) {
+      console.log("WINDOW Окно явно больше чем место для него")
+      // this.multiplierwindow = window.innerWidth / (this.myJson.canvas.width + 100)
     }
     this.multiplier = this.multiplierwindow
     this.multiplierwindoww = this.multiplier
