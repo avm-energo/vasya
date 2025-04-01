@@ -168,7 +168,7 @@ export default {
   position: absolute;
   bottom: 50%;
   left: 50%;
-  transform: translate(-50%, -15%);
+  transform: translate(-50%, -50%);
   bottom: 0;
   width: 45%;
   z-index: 4;

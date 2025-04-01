@@ -62,7 +62,7 @@
             <div style="width: 40%"><datepicker v-model="starttime" :style="cssPropsHistory" class="dattepicker" :dark="true"/></div>
             &#160;&#160;To:&#160;&#160;
             <div style="width: 40%"><datepicker v-model="endtime" :style="cssPropsHistory" class="dattepicker" :dark="true"/></div>
-            <a class="icons__item" @click="updatedata">
+            <a class="icons__item" @click="updatedata()">
               <svg
                 width="30"
                 height="30"
@@ -82,15 +82,23 @@
           </div>
         </div>
       </div>
-      <div id="history_window_body" @scroll="historyWindowScroll" :style="{ overflowY: isLoading ? 'hidden' : 'auto' }">
+      <div class="history_window_body_typeButtons">
+        <button :class="{buttonChoosen: filterButtons.alarm}" @click="filterButtons.alarm = !filterButtons.alarm">ALARM</button>
+        <button :class="{buttonChoosen: filterButtons.warning}" @click="filterButtons.warning = !filterButtons.warning">WARNING</button>
+        <button :class="{buttonChoosen: filterButtons.normal}" @click="filterButtons.normal = !filterButtons.normal">NORMAL</button>
+        <button :class="{buttonChoosen: filterButtons.come}" @click="filterButtons.come = !filterButtons.come">COME</button>
+        <button :class="{buttonChoosen: filterButtons.leave}" @click="filterButtons.leave = !filterButtons.leave">LEAVE</button>
+        <button :class="{buttonChoosen: filterButtons.acknowledged}" @click="filterButtons.acknowledged = !filterButtons.acknowledged">ACKNOWLEDGED</button>
+      </div>
+      <div id="history_window_body" @scroll="historyWindowScroll" :style="{ overflowY: isLoading ? 'hidden' : 'auto', paddingRight: isLoading && historymas.length>60 ? '12px' : '' }">
 <!--        -->
-          <EventsHistoryTable :history="historymas" :eventsfilter="eventsfilter" />
+          <EventsHistoryTable :history="historymas" :eventsfilter="eventsfilter" :historymasVisible="historymasVisible" :filterButtons="filterButtons"/>
 <!--        -->
         <div id="box_loading" v-show="isLoading" >
           <div id="box_loading_center">
             <div id="box_loading_top">
               <svg xmlns:svg="http://www.w3.org/2000/svg" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.0" width="64px" height="64px" viewBox="0 0 128 128" xml:space="preserve"><rect x="0" y="0" width="100%" height="100%" fill="#232323" /><g><path d="M71 39.2V.4a63.6 63.6 0 0 1 33.96 14.57L77.68 42.24a25.53 25.53 0 0 0-6.7-3.03z" fill="#000000"/><path d="M71 39.2V.4a63.6 63.6 0 0 1 33.96 14.57L77.68 42.24a25.53 25.53 0 0 0-6.7-3.03z" fill="#e1e1e1" transform="rotate(45 64 64)"/><path d="M71 39.2V.4a63.6 63.6 0 0 1 33.96 14.57L77.68 42.24a25.53 25.53 0 0 0-6.7-3.03z" fill="#e1e1e1" transform="rotate(90 64 64)"/><path d="M71 39.2V.4a63.6 63.6 0 0 1 33.96 14.57L77.68 42.24a25.53 25.53 0 0 0-6.7-3.03z" fill="#e1e1e1" transform="rotate(135 64 64)"/><path d="M71 39.2V.4a63.6 63.6 0 0 1 33.96 14.57L77.68 42.24a25.53 25.53 0 0 0-6.7-3.03z" fill="#bebebe" transform="rotate(180 64 64)"/><path d="M71 39.2V.4a63.6 63.6 0 0 1 33.96 14.57L77.68 42.24a25.53 25.53 0 0 0-6.7-3.03z" fill="#979797" transform="rotate(225 64 64)"/><path d="M71 39.2V.4a63.6 63.6 0 0 1 33.96 14.57L77.68 42.24a25.53 25.53 0 0 0-6.7-3.03z" fill="#6e6e6e" transform="rotate(270 64 64)"/><path d="M71 39.2V.4a63.6 63.6 0 0 1 33.96 14.57L77.68 42.24a25.53 25.53 0 0 0-6.7-3.03z" fill="#3c3c3c" transform="rotate(315 64 64)"/><animateTransform attributeName="transform" type="rotate" values="0 64 64;45 64 64;90 64 64;135 64 64;180 64 64;225 64 64;270 64 64;315 64 64" calcMode="discrete" dur="720ms" repeatCount="indefinite"></animateTransform></g><g><circle fill="#000000" cx="63.66" cy="63.16" r="12"/><animate attributeName="opacity" dur="720ms" begin="0s" repeatCount="indefinite" keyTimes="0;0.5;1" values="1;0;1"/></g></svg>
-              <div style="margin-left: 10px;">Загрузка...</div>
+              <div style="color: white;">Загрузка...</div>
             </div>
           </div>
         </div>
@@ -131,6 +139,15 @@ export default {
       tick:null,
       isLoading: false,
       sortedArray: null,
+      historymasVisible: 110,
+      filterButtons:{
+        alarm: false,
+        warning: false,
+        normal: false,
+        come: false,
+        leave: false,
+        Acknowledged: false,
+      }
     };
   },
   props: {
@@ -240,6 +257,7 @@ export default {
     },
     historymas() {
       // console.log('Данные получены');
+      // console.log(this.$store.getters.historymas)
       // console.log(this.$store.getters.historymas.length, " - Текущее число событий");
       return this.$store.getters.historymas;
     },
@@ -257,7 +275,7 @@ export default {
   watch: {
     historymas(newValue) {
       this.isLoading = false;
-      console.log("historymas изменилось");
+      this.$store.dispatch('AddNotification_action', { text: 'Events uploaded ' + newValue.length, type: 'Success', time: 10000 })
     },
     // events:{
     //   deep: true,
@@ -270,6 +288,18 @@ export default {
     // }
   },
   methods: {
+    async updatedata() {
+      console.log('Данные запрошены');
+      // this.historymasVisible = 50;
+      this.isLoading = true;
+      const data = [];
+      data.push(this.endtime);
+      data.push(this.starttime);
+      await this.$store.dispatch("gethistorytime", data);
+      console.log(this.starttime, " - Начало");
+      console.log(this.endtime, " - Конец");
+      // this.isLoading = !this.isLoading;
+    },
     // sortArrayAsync(array, currentSortDir, currentSort) {
     //   console.log(array, " - Array in Worker")
     //   // Создаем Promise и возвращаем результат отсортированного массива
@@ -283,7 +313,7 @@ export default {
     //   });
     // },
     historyWindowScroll(e) {
-      if (e.target.scrollTop + e.target.clientHeight + 100 >= e.target.scrollHeight) {
+      if (e.target.scrollTop + e.target.clientHeight + 50 >= e.target.scrollHeight) {
         if (this.historymasVisible <= this.historymas.length) {
           this.historymasVisible += 100;
         }
@@ -327,7 +357,7 @@ export default {
         this.eventList.currentSortDir = this.eventList.currentSortDir === "asc" ? "desc" : "asc";
       }
       this.eventList.currentSort = s;
-      this.historymasVisible = 50;
+      this.historymasVisible = 100;
     },
     clickfooter() {
       this.tablestate = !this.tablestate;
@@ -339,7 +369,8 @@ export default {
       
     },
     clickhistory() {
-      this.historymasVisible = 50;
+      this.tablestate = false
+      this.historymasVisible = 100;
       this.historystate = !this.historystate;
       if (this.historystate) {
         this.endtime = moment(new Date());
@@ -515,6 +546,7 @@ tbody{
   justify-content: space-between;
   width: 100%;
   height: 30px;
+  background-color: #212121;
 }
 #history_background {
   z-index: 2;
@@ -533,13 +565,14 @@ tbody{
 #history_window {
   border: solid 1px blue;
   background-color: #101010ff;
-  width: 60%;
+  width: 90%;
   height: 80%;
 
 }
 #history_window_head_datefilter {
   display: flex;
   justify-content: space-between;
+  background-color: #212121;
 }
 #history_window_head_datefilter_date {
   color: white;
@@ -557,15 +590,49 @@ tbody{
   flex-direction: row;
   align-items: center;
   justify-content: center;
+  padding-bottom: 20px;
 }
 #history_window_body {
-  padding-top: 10px;
   width: 100%;
-  height: 80%;
+  height: 88.6%;
   overflow-y: auto;
-  scrollbar-color: #d4aa70 #e4e4e4;
-  scrollbar-width: thin;
   position: relative;
+}
+#history_window_body::-webkit-scrollbar {
+  width: 12px;               /* ширина scrollbar */
+}
+#history_window_body::-webkit-scrollbar-track {
+  background: #212121;        /* цвет дорожки */
+}
+#history_window_body::-webkit-scrollbar-thumb {
+  background-color: #414141;    /* цвет плашки */
+}
+#history_window_body::-webkit-scrollbar-thumb:hover {
+  background-color: #515151;    /* цвет плашки */
+}
+#history_window_body::-webkit-scrollbar-button:single-button {
+  background-color: #212121;
+  display: block;
+  height: 20px;
+  width: 16px;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+#history_window_body::-webkit-scrollbar-button:single-button:vertical:decrement {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 6'%3E%3Cpath fill='%23888' d='M5 0l5 6H0z'/%3E%3C/svg%3E");
+}
+
+#history_window_body::-webkit-scrollbar-button:single-button:vertical:decrement:hover {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 6'%3E%3Cpath fill='%23555' d='M5 0l5 6H0z'/%3E%3C/svg%3E");
+}
+
+/* Стрелка вниз (встроенный SVG) */
+#history_window_body::-webkit-scrollbar-button:single-button:vertical:increment {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 6'%3E%3Cpath fill='%23888' d='M5 6l5-6H0z'/%3E%3C/svg%3E");
+}
+
+#history_window_body::-webkit-scrollbar-button:single-button:vertical:increment:hover {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 6'%3E%3Cpath fill='%23555' d='M5 6l5-6H0z'/%3E%3C/svg%3E");
 }
 
 .nonScrollable {
@@ -577,6 +644,8 @@ tbody{
   width: 38px;
   height: 38px;
   fill: white;
+  padding-left: 5px;
+  padding-right: 5px;
 }
 .icons__item:hover {
   background-color: #267dff;
@@ -609,6 +678,7 @@ tbody{
   width: 100%;
   height: 100%;
   top: 0;
+  left: 0;
   /* left: var(--x); */
   /* top: var(--y); */
   align-items: center;
@@ -638,5 +708,26 @@ tbody{
    --dp-icon-color: #959595;
    --dp-danger-color: #e53935;
    --dp-highlight-color: rgba(0, 92, 178, 0.2);
+}
+
+.history_window_body_typeButtons{
+  background-color: #212121;
+}
+.history_window_body_typeButtons button{
+  width: calc(100% / 6);
+  background-color: transparent;
+  color: white;
+  border: solid 1px transparent;
+  padding-top: 8px;
+  padding-bottom: 8px;
+}
+.history_window_body_typeButtons button:hover{
+  background-color: #16466C;
+}
+.history_window_body_typeButtons button:active{
+  background-color: #0767B3;
+}
+.buttonChoosen{
+  border-color: #0767B3 !important;
 }
 </style>
