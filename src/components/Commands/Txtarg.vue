@@ -75,12 +75,15 @@ export default {
       }
       return ans.join("")
     },
+    updateIndo(){
+      this.txtarg.value = this.params.value
+      this.txtarg.prevvalue = this.txtarg.value
+      this.txtarg.Name = this.name
+    }
   },
   created(){
+    this.updateIndo()
     this.inSubscreen = this.$parent.$parent.windowname != this.$parent.$parent.windowpath.split('\\').join('')
-    this.txtarg.value = this.params.value
-    this.txtarg.prevvalue = this.txtarg.value
-    this.txtarg.Name = this.name
     if (this.params.trigger == `ButtonApply`) {
       const res = {'namewidget': this.txtarg.Name, 'namewindow': this.inSubscreen ? this.$parent.$parent.windowpath : this.$parent.$parent.windowname, 'value': this.txtarg.value}
       this.$store.dispatch('addcommandwidgetmass', res)
@@ -132,6 +135,10 @@ export default {
       //   const res = {'namewidget': this.txtarg.Name, 'namewindow': this.$parent.$parent.windowname , 'value': this.txtarg.value}
       //   this.$store.dispatch('addcommandwidgetmass', res)
       // }
+    },
+    params(newValue){
+      console.log(this.name == 'Text#8' ? 'ddd' : '')
+      this.updateIndo()
     }
   },
   computed: {

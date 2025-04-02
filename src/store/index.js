@@ -4,6 +4,26 @@ import { createStore } from "vuex";
 import moment from "moment";
 // import { log4js } from "log4js";
 
+function encript(values) {
+  const  Alphabet = "12345678" + "9ABDEFGH" + "JKLMNPQR" + "STUVWXYZ";
+  var bitsCount = 8 * values.length;
+  var ans = new Array(Math.trunc(bitsCount / 5) + (bitsCount%5==0?0:1));
+  for (let i = 0; i < ans.length; i++) {
+      var bitNum = i * 5;
+      var byteNum = Math.trunc(bitNum / 8);
+      var byteOffset = bitNum % 8;  
+      var symbol = values[byteNum] >> byteOffset;
+      if (byteOffset > 3 && byteNum<(values.length-1))
+      {
+          var symbolOffset = 8 - byteOffset;
+          symbol |= values[byteNum+1]<<symbolOffset;
+      }
+      symbol &= 0b11111; // cut a tail
+      ans[i] = Alphabet[symbol];
+  }
+  return ans.join("")
+}
+
 export default createStore({
   state: {
     isLoading: false,
@@ -34,6 +54,7 @@ export default createStore({
     historymas: [],
     mainmultiplier: true,
     afkTimer: null,
+    prevMainWindow: '>:\\Screens:\\Main',
   },
   getters: {
     ip: (state) => state.ip,
@@ -209,26 +230,6 @@ export default createStore({
     },
 
     async updateElems(state, name) {
-
-      function encript(values) {
-        const  Alphabet = "12345678" + "9ABDEFGH" + "JKLMNPQR" + "STUVWXYZ";
-        var bitsCount = 8 * values.length;
-        var ans = new Array(Math.trunc(bitsCount / 5) + (bitsCount%5==0?0:1));
-        for (let i = 0; i < ans.length; i++) {
-            var bitNum = i * 5;
-            var byteNum = Math.trunc(bitNum / 8);
-            var byteOffset = bitNum % 8;  
-            var symbol = values[byteNum] >> byteOffset;
-            if (byteOffset > 3 && byteNum<(values.length-1))
-            {
-                var symbolOffset = 8 - byteOffset;
-                symbol |= values[byteNum+1]<<symbolOffset;
-            }
-            symbol &= 0b11111; // cut a tail
-            ans[i] = Alphabet[symbol];
-        }
-        return ans.join("")
-      }
       const today = new Date();
       var currentDateMilliseconds = today.getMilliseconds();
       let ticknumber = state.tickmas.length
@@ -236,7 +237,7 @@ export default createStore({
       // console.log(name)
       state.tickmas.push(con)
       let response = await fetch(
-        `http://${state.ip}/api/nodes/${encript((new TextEncoder()).encode(name))}/delta/0/${
+        `http://${state.ip}/api/nodes/${encript(((new TextEncoder()).encode(name)))}/delta/0/${
           state.tickmas[ticknumber].tick
         }`,{
           headers: { Authorization: `${localStorage.getItem('token')}` },
@@ -250,7 +251,7 @@ export default createStore({
             try {
               // console.log(state.tickmas[ticknumber].tick)
               let response = await fetch(
-                `http://${state.ip}/api/nodes/${encript((new TextEncoder()).encode(name))}/delta/0/${
+                `http://${state.ip}/api/nodes/${encript(((new TextEncoder()).encode(name)))}/delta/0/${
                   state.tickmas[ticknumber].tick ? state.tickmas[ticknumber].tick : -1
                 }`,{
                   headers: { Authorization: `${localStorage.getItem('token')}` },
@@ -296,30 +297,11 @@ export default createStore({
     },
 
     async addElems(state, data) {
+      console.log(data)
       if (state.tickmas.find(res => res.name == data.name.split('\\').join(''))) 
       {
         this.dispatch("closewindow", state.tickmas[state.tickmas.length-1].name);
       } else {
-        function encript(values) {
-          const  Alphabet = "12345678" + "9ABDEFGH" + "JKLMNPQR" + "STUVWXYZ";
-          var bitsCount = 8 * values.length;
-          var ans = new Array(Math.trunc(bitsCount / 5) + (bitsCount%5==0?0:1));
-          for (let i = 0; i < ans.length; i++) {
-              var bitNum = i * 5;
-              var byteNum = Math.trunc(bitNum / 8);
-              var byteOffset = bitNum % 8;  
-              var symbol = values[byteNum] >> byteOffset;
-              if (byteOffset > 3 && byteNum<(values.length-1))
-              {
-                  var symbolOffset = 8 - byteOffset;
-                  symbol |= values[byteNum+1]<<symbolOffset;
-              }
-              symbol &= 0b11111; // cut a tail
-              ans[i] = Alphabet[symbol];
-          }
-          return ans.join("")
-        }
-
         let response = await fetch(
           `http://${state.ip}/api/nodes/${encript((new TextEncoder()).encode(data.name))}/current`,{
             headers: { Authorization: `${localStorage.getItem('token')}` },
@@ -341,8 +323,7 @@ export default createStore({
           } else {
             var localArray = [JSON.stringify({name: data.name, title: data.title, screenPercentage: data.screenPercentage})]
             sessionStorage.setItem('localArray', JSON.stringify(localArray))
-          }
-          
+          }  
         } else {
           state.notification.push({
             id: state.notification.length ? state.notification.reverse()[0].id + 1 : 0,
@@ -355,25 +336,6 @@ export default createStore({
     },
 
     async addElemsfromStorage(state, data){
-      function encript(values) {
-        const  Alphabet = "12345678" + "9ABDEFGH" + "JKLMNPQR" + "STUVWXYZ";
-        var bitsCount = 8 * values.length;
-        var ans = new Array(Math.trunc(bitsCount / 5) + (bitsCount%5==0?0:1));
-        for (let i = 0; i < ans.length; i++) {
-            var bitNum = i * 5;
-            var byteNum = Math.trunc(bitNum / 8);
-            var byteOffset = bitNum % 8;  
-            var symbol = values[byteNum] >> byteOffset;
-            if (byteOffset > 3 && byteNum<(values.length-1))
-            {
-                var symbolOffset = 8 - byteOffset;
-                symbol |= values[byteNum+1]<<symbolOffset;
-            }
-            symbol &= 0b11111; // cut a tail
-            ans[i] = Alphabet[symbol];
-        }
-        return ans.join("")
-      }
       let response = await fetch(
         `http://${state.ip}/api/nodes/${encript((new TextEncoder()).encode(data.name))}/current`, {
           headers: { Authorization: `${localStorage.getItem('token')}` },
@@ -444,16 +406,49 @@ export default createStore({
       console.log(state.commandwidgetmass.find((t) => t.namewindow === name))
       if (state.commandwidgetmass.findIndex((t) => t.namewindow === name) >= 0) state.commandwidgetmass.splice(state.commandwidgetmass.findIndex((t) => t.namewindow === name), 1)
       console.log(state.commandwidgetmass)
-    }
+    },
 
-    // changemain(state, name){
-    //   console.log(state.buttonstate.find((t) => t.path === name))
-    //   this.mainstate = state.buttonstate.find((t) => t.path === name).name
-    //   console.log(this.mainstate)
-    // }
+    async changeMainWindow(state, data){
+      if (state.prevMainWindow != data.name) {
+        this.dispatch("closewindow", state.tickmas.find((el)=> el.name == state.prevMainWindow.split('\\').join('')).name);
+        if (state.tickmas.find(res => res.name == data.name.split('\\').join(''))) 
+          {
+            this.dispatch("closewindow", state.tickmas[state.tickmas.length-1].name);
+          } else {
+            let response = await fetch(
+              `http://${state.ip}/api/nodes/${encript((new TextEncoder()).encode(data.name))}/current`,{
+                headers: { Authorization: `${localStorage.getItem('token')}` },
+              }
+            );
+            if (response.ok){
+              // console.log(`http://${state.ip}/api/nodes/${encript((new TextEncoder()).encode(data.name))}/current`)
+              const res = JSON.parse(await response.text());
+              res.title = data.title
+              res.screenPercentage = data.screenPercentage
+              res.typename = data.name
+              state.main = res;
+              this.dispatch("updateElems", data.name);
+            } else {
+              state.notification.push({
+                id: state.notification.length ? state.notification.reverse()[0].id + 1 : 0,
+                text:'Ваш уровень доступа недостаточен для выполнения данной операции',
+                type: 'Warning',
+                time: 5000
+              });
+            }
+          }
+      }
+      state.prevMainWindow = data.name
+    }
 
   },
   actions: {
+    changeMainWindow({ commit }, elems) {
+      commit("changeMainWindow", elems);
+    },
+    encript({ commit }, elems) {
+      commit("encript", elems);
+    },
     fetchElems({ commit }, elems) {
       commit("fetchElems", elems);
     },

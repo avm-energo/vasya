@@ -60,7 +60,7 @@ import { GetReportGenerator} from "../../actions/SonicaActions"
 export default {
   name: "window",
   props: {
-    myJson:{},
+    myJson:{default:{}},
     subscreensize:{default:1},
     //фон для вложенный subscreen
     boolback:{default:true},
@@ -166,8 +166,78 @@ export default {
       return this.$store.getters.updatedmainheight
     }
   },
+  watch:{
+    myJson:{
+      immediate: true,
+      handler(newVal){
+        this.updateJson()
+      }
+    }
+  },
 
   methods: {
+    updateJson(){
+      this.lines = []
+      this.tiless = []
+      this.tooltipers = []
+      this.subscreens = []
+      this.imagestrans = []
+      this.imageslogo = []
+      this.charts = []
+      this.helper = []
+      this.duval = []
+      this.commandss = []
+      this.meter = []
+      this.horizontal = []
+      ;(this.myJson.widgets.$id == undefined ? this.myJson.widgets : this.myJson.widgets.$values).forEach(element => {
+        let res = element;
+        if (res.type.startsWith("primitives/Line")) {
+          this.lines.push(res);
+        } else
+        if (
+            res.type.startsWith("tile") ||
+            res.type.startsWith("primitives/Text") ||
+            res.type.startsWith("Tiles")
+        ) {
+          this.tiless.push(res);
+        } else
+        if (
+            res.type.startsWith("tooltip") ||
+            res.type.startsWith("neightbours/Tooltiper") ||
+            res.type.startsWith("neightbours/Navigator"))
+        {
+          this.tooltipers.push(res);
+        } else
+        if (res.type.startsWith("neightbours/Subscreen") || (res.type.startsWith("neightbours/Renter"))) {
+          this.subscreens.push(res);
+        } else
+        if (res.type.startsWith("primitives/Image")) {
+          this.imagestrans.push(res);
+        } else
+        if (res.type.startsWith("primitives/Logo")) {
+          this.imageslogo.push(res);
+        } else
+        if (res.type.startsWith("charts") || (res.type.startsWith("view/ClassicHystogramm")) || (res.type.startsWith("trends/TrendViewer"))){
+          this.charts.push(res);
+        } else
+        if (res.type.startsWith("primitives/Helper")) {
+          this.helper.push(res);
+        } else
+        if (res.type.startsWith("specials/DuvalTriangle")) {
+          this.duval.push(res);
+        } else
+        if (res.type.startsWith("commands")) {
+          this.commandss.push(res)
+        } else
+        if (res.type.startsWith("scales/Meter")) {
+          this.meter.push(res)
+        } else
+            // if (res.type.startsWith("scales/HorizontalSimple") || res.type.startsWith("scales/Horizontal")) {
+        if (res.type.startsWith("scales/Horizontal")) {
+          this.horizontal.push(res)
+        }
+      });
+    },
     reportWindowSize(){
       // console.log('Set main maultiplier', this.multiplier);
       let multiplierwindow;
@@ -217,7 +287,6 @@ export default {
   },
 
   created() {
-    console.log(this.myJson)
     // setTimeout(function(){
     //   location.reload();
     // }, 3000);
@@ -255,55 +324,6 @@ export default {
       this.multiplier = this.multiplierwindow
       this.$parent.multiplier = this.multiplier
       this.$store.dispatch('mainmultiplier', [true, this.multiplier])
-      ;(this.myJson.widgets.$id == undefined ? this.myJson.widgets : this.myJson.widgets.$values).forEach(element => {
-        let res = element;
-        if (res.type.startsWith("primitives/Line")) {
-          this.lines.push(res);
-        } else
-        if (
-            res.type.startsWith("tile") ||
-            res.type.startsWith("primitives/Text") ||
-            res.type.startsWith("Tiles")
-        ) {
-          this.tiless.push(res);
-        } else
-        if (
-            res.type.startsWith("tooltip") ||
-            res.type.startsWith("neightbours/Tooltiper") ||
-            res.type.startsWith("neightbours/Navigator"))
-        {
-          this.tooltipers.push(res);
-        } else
-        if (res.type.startsWith("neightbours/Subscreen") || (res.type.startsWith("neightbours/Renter"))) {
-          this.subscreens.push(res);
-        } else
-        if (res.type.startsWith("primitives/Image")) {
-          this.imagestrans.push(res);
-        } else
-        if (res.type.startsWith("primitives/Logo")) {
-          this.imageslogo.push(res);
-        } else
-        if (res.type.startsWith("charts") || (res.type.startsWith("view/ClassicHystogramm")) || (res.type.startsWith("trends/TrendViewer"))){
-
-          this.charts.push(res);
-        } else
-        if (res.type.startsWith("primitives/Helper")) {
-          this.helper.push(res);
-        } else
-        if (res.type.startsWith("specials/DuvalTriangle")) {
-          this.duval.push(res);
-        } else
-        if (res.type.startsWith("commands")) {
-          this.commandss.push(res)
-        } else
-        if (res.type.startsWith("scales/Meter")) {
-          this.meter.push(res)
-        } else
-            // if (res.type.startsWith("scales/HorizontalSimple") || res.type.startsWith("scales/Horizontal")) {
-        if (res.type.startsWith("scales/Horizontal")) {
-          this.horizontal.push(res)
-        }
-      });
     } else { 
       this.mas = this.myJson.myBindings.map((element) =>  element);
       this.mas.shift()

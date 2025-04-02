@@ -26,11 +26,11 @@
       <ButtonComponent class="button_logout" :reverseOrder="true" @click.stop="[logoutFromUser(), closeButtons()]" :navigationButton="true"
       icon="logout" :iconStyle="{ color: 'white', width: '25', height: '25' }" /> 
       <ButtonComponent class="button_logout" :reverseOrder="true" @click.stop="[changeUser = true, closeButtons()]" :navigationButton="true"
-      icon="user" :iconStyle="{ color: '#267dff', width: '25', height: '25' }" /> 
+      icon="user" :iconStyle="{ color: '#267dff', width: '25', height: '25' }" />
     </div>
     <sonica-head v-if="head!=null" :myJson="head" typewindow="head" />
     <sonica-footer v-if="footer!=null" :myJson="footer" />
-    <sonica-main v-if="main!=null" :myJson="main" typewindow="main" />
+    <sonica-main v-if="mainJson!=null" :myJson="mainJson" typewindow="main" />
     <sonica-window
       v-for="elem in elems"
       :key="elem.name"
@@ -74,6 +74,7 @@ export default {
       authLogin: null,
       authPass: null,
       changeUser: false,
+      mainJson: null,
     };
   },
 
@@ -169,7 +170,13 @@ export default {
     });
     this.worker.postMessage({ interval: 10000 });
   },
+  watch: {
+    '$store.getters.main': function() {
+      this.mainJson = this.$store.getters.main
+    }
+  },
   mounted(){
+    this.mainJson = this.$store.getters.main
     this.linkerRedirect = function (e) {
       if (e.code === 'KeyL' && e.ctrlKey) {
         e.preventDefault();
@@ -195,9 +202,9 @@ export default {
     footer() {
       return this.$store.getters.footer;
     },
-    main() {
-      return this.$store.getters.main;
-    },
+    // main() {
+      
+    // },
     isLoading() {
       return this.$store.getters.isLoading;
     },

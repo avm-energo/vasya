@@ -28,12 +28,13 @@ export default {
         Enabled: true,
         tooltip: '',
       },
+      intervalId: null,
     };
   },
   created(){
-    // this.name == 'Text#6' ? console.log(this.params) : ''
-    // console.log(this.params)
-    this.tiles.Name = this.name
+    // this.name == 'Number#34' ? console.log(this.params) : ''
+    // console.log(this.name + this.params.text)
+    this.updateIndo()
     if (this.$parent.subscreenname){ 
       this.tiles.Name += '/' + this.$parent.subscreenname
     }
@@ -43,28 +44,13 @@ export default {
     // } else {
     //   this.tiles.value = this.params.text
     // }
-
-    let size = this.params.text.search(/\S|$/)
-    let newline = this.params.text.search(/\r|\n/)
-    let text = ""
-    for (var i = 0; i < size; i++) {text = text + `\u2002`}
-    this.tiles.value = text + this.params.text.slice(size)
-    if (newline > 0 ) {
-      this.tiles.value = (this.params.text.slice(0 , newline) + '' + this.params.text.slice(newline))
-    }
-    this.tiles.ForegroundColor = this.params.foreground,
-    this.tiles.BackgroundColor = this.params.background,
-    this.tiles.Flashing = false,
-    this.tiles.AlarmInfo = "Good",
-    this.tiles.Visible = this.params.visible,
-    this.tiles.Enabled = true
     // this.tiles.tooltip = "подсказка!"
     if( this.type.startsWith("tiles") || (this.$parent.typewindow == 'head' ) || this.name.startsWith("Number") || this.name.startsWith("Flag")) {
       const today = new Date();
       var currentDateMilliseconds = today.getMilliseconds();
       const res = {'namewidget': this.tiles.Name, 'namewindow': this.$parent.windowname}
       setTimeout(() => {
-        setInterval(() => {
+        this.intervalId = setInterval(() => {
           let changedelem= this.$store.getters.elemByName(res)?.properties
           if (changedelem) {
             if (changedelem.text) this.tiles.value = changedelem.text
@@ -74,6 +60,25 @@ export default {
         },1000)
       // }, 1000 - Math.abs(500 - currentDateMilliseconds));
       }, 1000 - currentDateMilliseconds);
+    }
+  },
+  methods:{
+    updateIndo(){
+      this.tiles.Name = this.name
+      let size = this.params.text.search(/\S|$/)
+      let newline = this.params.text.search(/\r|\n/)
+      let text = ""
+      for (var i = 0; i < size; i++) {text = text + `\u2002`}
+      this.tiles.value = text + this.params.text.slice(size)
+      if (newline > 0 ) {
+        this.tiles.value = (this.params.text.slice(0 , newline) + '' + this.params.text.slice(newline))
+      }
+      this.tiles.ForegroundColor = this.params.foreground,
+      this.tiles.BackgroundColor = this.params.background,
+      this.tiles.Flashing = false,
+      this.tiles.AlarmInfo = "Good",
+      this.tiles.Visible = this.params.visible,
+      this.tiles.Enabled = true
     }
   },
   computed: {
@@ -104,7 +109,13 @@ export default {
       if (parseFloat(newValue)) {
         this.tiles.value = newValue.replace(',','.')
       }
+    },
+    params(newVal){
+      this.updateIndo()
     }
+  },
+  unmounted(){
+    clearInterval(this.intervalId)
   }
 };
 </script>

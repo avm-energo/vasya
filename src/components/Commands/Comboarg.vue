@@ -98,7 +98,7 @@ export default {
   },
   watch: {
     'comboarg.value'(){
-      const res = {'namewidget': this.comboarg.Name, 'namewindow': tthis.inSubscreen ? this.$parent.$parent.windowpath : this.$parent.$parent.windowname , 'value': this.comboarg.value}
+      const res = {'namewidget': this.comboarg.Name, 'namewindow': this.inSubscreen ? this.$parent.$parent.windowpath : this.$parent.$parent.windowname , 'value': this.comboarg.value}
       this.$store.dispatch('addcommandwidgetmass', res)
     }
   },

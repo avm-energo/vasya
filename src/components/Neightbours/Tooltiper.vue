@@ -72,7 +72,14 @@
 <script>
 export default {
   name: "app",
-  props: ["params", "windowWidth", "subscreensize",],
+  props: {
+    params:{},
+    windowWidth:{},
+    subscreensize:{},
+    tooltiperFromHeader:{
+      default: false
+    }
+  },
   data() {
     return {
       button: {
@@ -91,7 +98,6 @@ export default {
     // if (this.params.properties.leftIcon == 'Info') {
     //   console.log(this.params.properties.leftIcon)
     // }
-    console.log(this.params)
     this.button.Name = this.params.name
     if (this.$parent.subscreenname){ 
       this.button.Name += '/' + this.$parent.subscreenname
@@ -125,7 +131,11 @@ export default {
       // if (this.$parent.windowname == ">:Header" || this.params.type == "neightbours/Navigator"){
       //   this.$store.dispatch("changemain", this.params.properties.path.split('\\').join(''))
       // } else {
-        if (this.params.properties.text != "Главный экран") this.$store.dispatch("addElems", data);
+        if (this.tooltiperFromHeader) {
+          this.$store.dispatch("changeMainWindow", data);
+        } else {
+          this.$store.dispatch("addElems", data);
+        }
       // }
     },
   },

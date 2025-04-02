@@ -43,6 +43,7 @@ import Helper from '../Primitives/Helper.vue'
 import Duval from '../Specials/DuvalTriangle.vue'
 import Vector from '../Specials/VectorDiagram.vue'
 import Commands from "../Commands/Commands.vue";
+import Meters from "../Scales/Meter.vue"
 import Horizontals from "../Scales/Horizontal.vue";
 
 
@@ -102,7 +103,8 @@ export default {
     Helper,
     Duval,
     Vector,
-    Horizontals
+    Horizontals,
+    Meters
 
   },
 
@@ -148,7 +150,9 @@ export default {
         '--backgroundArea3': parseInt(this.myJson.canvas.backgroundArea.slice(4,6), 16),
         '--backgroundArea4': [this.typewindow == 'modalwindow' ? ((parseInt(this.myJson.canvas.backgroundArea.slice(6,8), 16))/255-0.06) : ((parseInt(this.myJson.canvas.backgroundArea.slice(6,8), 16))/255)] ,
         '--fontsize' :  15 + 'px',
-        "--zindex": [this.typewindow != 'modalwindow' ? '' : 1]
+        "--zindex": [this.typewindow != 'modalwindow' ? '' : 1],
+        "--subscreenScale": [this.subscreensize || 1],
+
       };
     },
     mainheight(){
@@ -163,6 +167,9 @@ export default {
   },
 
   watch: {
+    myJson(){
+      this.updateJson()
+    }
     // mainmultiplier(newVal, oldVal) {
     //   console.log(`mainmultiplier changed from ${oldVal[1]} to ${newVal[1]}`);
     // },
@@ -195,12 +202,116 @@ export default {
       this.$store.dispatch('closewindow', this.windowname)
       window.removeEventListener('resize', this.reportWindowSize)
     },
+    updateJson(){
+      this.lines = []
+      this.tiless = []
+      this.tooltipers = []
+      this.subscreens = []
+      this.imagestrans = []
+      this.imageslogo = []
+      this.charts = []
+      this.helper = []
+      this.duval = []
+      this.commandss = []
+      this.meter = []
+      this.horizontal = []
+      ;(this.myJson.widgets.$id == undefined ? this.myJson.widgets : this.myJson.widgets.$values).forEach(element => {
+        let res = element;
+
+        if (res.type.startsWith("primitives/Line")) {
+          this.lines.push(res);
+        } else
+        if (
+            res.type.startsWith("tile") ||
+            res.type.startsWith("primitives/Text") ||
+            res.type.startsWith("Tiles")
+        ) {
+          this.tiless.push(res);
+        } else
+        if (
+            res.type.startsWith("tooltip") ||
+            res.type.startsWith("neightbours/Tooltiper") ||
+            res.type.startsWith("neightbours/Navigator"))
+        {
+          this.tooltipers.push(res);
+        } else
+        if (res.type.startsWith("neightbours/Subscreen") || (res.type.startsWith("neightbours/Renter"))) {
+          this.subscreens.push(res);
+        } else
+        if (res.type.startsWith("primitives/Image")) {
+          this.imagestrans.push(res);
+        } else
+        if (res.type.startsWith("primitives/Logo")) {
+          this.imageslogo.push(res);
+        } else
+        if (res.type.startsWith("charts") || (res.type.startsWith("view/ClassicHystogramm")) || (res.type.startsWith("trends/TrendViewer"))){
+
+          this.charts.push(res);
+        } else
+        if (res.type.startsWith("primitives/Helper")) {
+          this.helper.push(res);
+        } else
+        if (res.type.startsWith("specials/DuvalTriangle")) {
+          this.duval.push(res);
+        }
+        if (res.type.startsWith("specials/VectorDiagram")) {
+          this.vector.push(res);
+        } else
+        if (res.type.startsWith("commands")) {
+          this.commandss.push(res)
+        } else 
+        if (res.type.startsWith("scales/Meter")) {
+          this.meter.push(res)
+        } else
+        if (res.type.startsWith("scales/Horizontal")) {
+          this.horizontal.push(res)
+        }
+        // console.log('this.multiplier in start = ', this.multiplier);
+      });
+      this.multiplierwindow = 1
+      this.multiplierwindoww = 1
+      this.multiplierwindowww = 1
+      this.multiplier = 1
+      this.multiplierwindow = this.multiplierwindow * this.subscreensize
+      this.windowname = this.namewindow.split('\\').join('')
+      if (this.path){
+        this.windowpath = this.path
+      } else {
+        this.windowpath = this.namewindow
+      }
+      //скалирование модального окна из переданного параметра scrennPercentage
+      if (this.myJson.screenPercentage){
+        let ss = ((window.innerHeight - 100) * (this.myJson.screenPercentage/100))/this.myJson.canvas.height
+        // console.log('Скалирование без переданного параметра')
+        this.multiplierwindow = this.multiplierwindow * ss
+      }
+
+      this.width = window.innerWidth;
+      this.height = window.innerHeight;
+      // console.log("WINDOW this.myJson.canvas.width * this.multiplierwindow = ", this.myJson.canvas.width * this.multiplierwindow);
+      // console.log("WINDOW window.innerWidth = ", window.innerWidth);
+      //
+      // console.log("WINDOW this.myJson.canvas.height * this.multiplierwindow = ", this.myJson.canvas.height * this.multiplierwindow);
+      // console.log("WINDOW window.innerHeight = ", window.innerHeight);
+      //если модальнгое окно превышает размер рабочего окна, то оно уменьшается
+      if (this.myJson.canvas.width * this.multiplierwindow > window.innerWidth) {
+        this.multiplierwindow = window.innerWidth / (this.myJson.canvas.width + 100)
+      }
+      if (this.myJson.canvas.height * this.multiplierwindow > window.innerHeight) {
+        console.log("WINDOW Окно явно больше чем место для него")
+        // this.multiplierwindow = window.innerWidth / (this.myJson.canvas.width + 100)
+      }
+      this.multiplier = this.multiplierwindow
+      this.multiplierwindoww = this.multiplier
+      this.multiplierwindowww = this.mainmultiplier[1]
+    }
   },
   updated() {
     // console.log("Сейчас будет принудительный ресайз")
     // window.dispatchEvent(new Event('resize'));
   },
   created() {
+    this.updateJson()
     // console.log("this.mainmultiplier во время создания Window ", this.mainmultiplier);
     if (this.myJson.title) {
       if (this.myJson.title.bool) {
@@ -212,96 +323,16 @@ export default {
       }
     }
     window.addEventListener('resize', this.reportWindowSize)
-    this.multiplierwindow= this.multiplierwindow * this.subscreensize
-    this.windowname = this.namewindow.split('\\').join('')
-    if (this.path){
-      this.windowpath = this.path
-    } else {
-      this.windowpath = this.namewindow
-    }
-    //скалирование модального окна из переданного параметра scrennPercentage
-    if (this.myJson.screenPercentage){
-      let ss = ((window.innerHeight - 100) * (this.myJson.screenPercentage/100))/this.myJson.canvas.height
-      // console.log('Скалирование без переданного параметра')
-      this.multiplierwindow = this.multiplierwindow * ss
-    }
-
-    this.width = window.innerWidth;
-    this.height = window.innerHeight;
-    // console.log("WINDOW this.myJson.canvas.width * this.multiplierwindow = ", this.myJson.canvas.width * this.multiplierwindow);
-    // console.log("WINDOW window.innerWidth = ", window.innerWidth);
-    //
-    // console.log("WINDOW this.myJson.canvas.height * this.multiplierwindow = ", this.myJson.canvas.height * this.multiplierwindow);
-    // console.log("WINDOW window.innerHeight = ", window.innerHeight);
-    //если модальнгое окно превышает размер рабочего окна, то оно уменьшается
-    if (this.myJson.canvas.width * this.multiplierwindow > window.innerWidth) {
-      this.multiplierwindow = window.innerWidth / (this.myJson.canvas.width + 100)
-    }
-    if (this.myJson.canvas.height * this.multiplierwindow > window.innerHeight) {
-      console.log("WINDOW Окно явно больше чем место для него")
-      // this.multiplierwindow = window.innerWidth / (this.myJson.canvas.width + 100)
-    }
-    this.multiplier = this.multiplierwindow
-    this.multiplierwindoww = this.multiplier
-    this.multiplierwindowww = this.mainmultiplier[1]
+    
     //console.log("Multiolier при создании Window", this.multiplier)
     // this.reportWindowSize();
-    ;(this.myJson.widgets.$id == undefined ? this.myJson.widgets : this.myJson.widgets.$values).forEach(element => {
-      let res = element;
-
-      if (res.type.startsWith("primitives/Line")) {
-        this.lines.push(res);
-      } else
-      if (
-          res.type.startsWith("tile") ||
-          res.type.startsWith("primitives/Text") ||
-          res.type.startsWith("Tiles")
-      ) {
-        this.tiless.push(res);
-      } else
-      if (
-          res.type.startsWith("tooltip") ||
-          res.type.startsWith("neightbours/Tooltiper") ||
-          res.type.startsWith("neightbours/Navigator"))
-      {
-        this.tooltipers.push(res);
-      } else
-      if (res.type.startsWith("neightbours/Subscreen") || (res.type.startsWith("neightbours/Renter"))) {
-        this.subscreens.push(res);
-      } else
-      if (res.type.startsWith("primitives/Image")) {
-        this.imagestrans.push(res);
-      } else
-      if (res.type.startsWith("primitives/Logo")) {
-        this.imageslogo.push(res);
-      } else
-      if (res.type.startsWith("charts") || (res.type.startsWith("view/ClassicHystogramm")) || (res.type.startsWith("trends/TrendViewer"))){
-
-        this.charts.push(res);
-      } else
-      if (res.type.startsWith("primitives/Helper")) {
-        this.helper.push(res);
-      } else
-      if (res.type.startsWith("specials/DuvalTriangle")) {
-        this.duval.push(res);
-      }
-      if (res.type.startsWith("specials/VectorDiagram")) {
-        this.vector.push(res);
-      } else
-      if (res.type.startsWith("commands")) {
-        this.commandss.push(res)
-      } else 
-      if (res.type.startsWith("scales/Horizontal")) {
-        this.horizontal.push(res)
-      }
-      // console.log('this.multiplier in start = ', this.multiplier);
-    });
   },
 };
 </script>
 
 <style scoped>
 #mainbody {
+  /* transform: scale(var(--subscreenScale)); */
   margin: var(--margin);
   position: relative;
   width: var(--width);

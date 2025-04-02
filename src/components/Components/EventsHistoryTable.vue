@@ -56,9 +56,7 @@ export default {
             key => this.filterButtons[key]
           );
           if (activeFilters.length === 0) return [];
-
-         
-            // Группируем фильтры по типу условия (state или type)
+          
             const stateConditions = [];
             const typeConditions = [];
 
@@ -73,19 +71,16 @@ export default {
               }
             });
 
-            // Если есть условия из обеих групп -> применяем И
             if (stateConditions.length > 0 && typeConditions.length > 0) {
               return (
-                stateConditions.some(condition => condition) && // Хотя бы одно из state
-                typeConditions.some(condition => condition)      // Хотя бы одно из type
+                stateConditions.some(condition => condition) && 
+                typeConditions.some(condition => condition)  
               );
             }
-            // Иначе применяем ИЛИ внутри одной группы
             else {
               return [...stateConditions, ...typeConditions].some(condition => condition);
             }
         })
-      console.log("Данные отсортированы")
       return sortArr;
     },
   },

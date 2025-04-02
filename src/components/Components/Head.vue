@@ -26,7 +26,7 @@
           <sline v-for="line in lines" :key="line.name" :params="line.properties" />
         </svg>
         <tiles v-for="elem  in tiless" :key="elem.name" :params="elem.properties" :name="elem.name" :screenPercentage="this.myJson.screenPercentage" :windowWidth="this.myJson.canvas.width" :windowHeight="this.myJson.canvas.height" :type="elem.type"/>
-        <tooltiper v-for="elem in tooltipers" :key="elem.name" :params="elem"/>
+        <tooltiper v-for="elem in tooltipers" :key="elem.name" :params="elem" tooltiperFromHeader='true'/>
         <helper v-for="elem in helper" :key="elem.name" :params="elem.properties"/>
         <!-- <div class="Login"  :style="cssProps"><p @click="[outSide($event), openButtons()]" ref="headerrightuser">{{ userName }}</p></div>
         <div v-if="showButtons" class="userButtons" ref="userButtons" :style="{height:35 * this.multiplier + 'px', width: 110 * this.multiplier + 'px', top: 25 * this.multiplier + 'px', right: 25 * this.multiplier + 'px'}">

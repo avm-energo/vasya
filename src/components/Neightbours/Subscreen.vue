@@ -1,6 +1,6 @@
 <template>
 <div class="Subscreen" :style="cssProps">
-    <window  :myJson = params.properties.screen :subscreensize = subscreensize :boolback="false" typewindow="subscreen" :namewindow="this.namewindow" :subscreenname="this.params.name" :path="this.params.properties.path"/>
+    <window  :myJson = myJson :subscreensize = subscreensize :boolback="false" typewindow="subscreen" :namewindow="this.namewindow" :subscreenname="this.params.name" :path="this.params.properties.path"/>
     <!-- <window  :myJson = params.properties.screen :subscreensize = this.params.properties.scale :boolback="false" /> -->
 </div>
 </template>
@@ -14,8 +14,8 @@ export default {
   name: 'Subscreen',
   data(){
     return{
-      subscreensize: 1
-      
+      subscreensize: 1,
+      myJson: null,
     }
   },
   props:['params', 'namewindow'],
@@ -36,6 +36,7 @@ export default {
   },
   created(){
     // console.log(this.namewindow)
+    this.myJson = this.params.properties.screen
     if (this.params.properties.width > this.params.properties.screen.canvas.width) {
       this.subscreensize = this.params.properties.height/(this.params.properties.screen.canvas.height) * this.$parent.multiplier
     } else {
@@ -43,6 +44,19 @@ export default {
     }
   },
   methods: {
+  },
+  watch:{
+    params:{
+      handler(){
+        this.myJson = this.params.properties.screen
+        if (this.params.properties.width > this.params.properties.screen.canvas.width) {
+          this.subscreensize = this.params.properties.height/(this.params.properties.screen.canvas.height) * this.$parent.multiplier
+        } else {
+          this.subscreensize = this.params.properties.width/(this.params.properties.screen.canvas.width) * this.$parent.multiplier
+        }
+      },
+      deep: true
+    }
   },
 }
 </script>
