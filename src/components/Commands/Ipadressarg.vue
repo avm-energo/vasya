@@ -95,12 +95,12 @@ export default {
       return {
         "--x": (this.params.x / 1) * this.$parent.$parent.multiplier + "px",
         "--y": (this.params.y / 1) * this.$parent.$parent.multiplier + "px",
-        "--width": [ this.params.width > 125 ? this.params.width : 125 ] * this.$parent.$parent.multiplier + "px",
-        "--height": (this.params.height / 1) * this.$parent.$parent.multiplier + "px",
+        "--width": [ this.params.width > 125 ? this.params.width : 125 ] * this.$parent.$parent.multiplier * [this.params.scale || 1] + "px",
+        "--height": (this.params.height / 1) * this.$parent.$parent.multiplier * [this.params.scale || 1] + "px",
         "--background": "#" + this.params.background,
         "--borderBrush": "#" + this.params.borderBrush,
         "--foreground": "#" + this.params.foreground,
-        "--fontsize": this.params.textSize * this.$parent.$parent.multiplier * 1.2 + "px",
+        "--fontsize": this.params.textSize * this.$parent.$parent.multiplier * 1.2  * [this.params.scale || 1] + "px",
       };
     }
   },

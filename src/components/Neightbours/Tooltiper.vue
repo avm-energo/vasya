@@ -91,7 +91,7 @@ export default {
     // if (this.params.properties.leftIcon == 'Info') {
     //   console.log(this.params.properties.leftIcon)
     // }
-    // console.log(this.params)
+    console.log(this.params)
     this.button.Name = this.params.name
     if (this.$parent.subscreenname){ 
       this.button.Name += '/' + this.$parent.subscreenname
@@ -135,16 +135,15 @@ export default {
         "--x": (this.params.properties.x / 1) * this.$parent.multiplier + "px",
         "--y": (this.params.properties.y / 1) * this.$parent.multiplier + "px",
         "--z": this.params.properties.z,
-        "--width": (this.params.properties.width / 1) * this.$parent.multiplier + "px",
-        "--height": (this.params.properties.height / 1) * this.$parent.multiplier + "px",
+        "--width": (this.params.properties.width / 1) * this.$parent.multiplier * [this.params.properties.scale || 1]  + "px",
+        "--height": (this.params.properties.height / 1) * this.$parent.multiplier * [this.params.properties.scale || 1]  + "px",
         "--backgroundColor": [this.button.neightbourState == "Red" ? "Red" : [ this.button.neightbourState == "Yellow" ? "Yellow" : "#" + this.button.BackgroundColor, ],],
         "--color": [this.button.neightbourState == "Yellow" ? "Black": this.button.ForegroundColor,],
         "--borderThickness": [this.params.properties.windowBorderBrush ? this.$parent.multiplier + 'px' : '0px'],
         "--borderBrush": this.params.properties.borderBrush ? this.params.properties.borderBrush : 'transparent',
-        "--scale": this.params.properties.scale,
         "--flexdir":  [this.params.properties.angle != 0 ? 'column' : 'row'],
         "--borderRadius": this.params.properties.borderRadius,
-        "--fontSize":(this.params.properties.fontSize / 1.1) * this.$parent.multiplier + "px",
+        "--fontSize":(this.params.properties.fontSize / 1) * this.$parent.multiplier * [this.params.properties.scale || 1] + "px",
         "--textalign":[this.params.properties.leftIcon == 'None' ? 'center' : 'left'],
         "--vertical-rl": [(this.params.properties.angle == 270 ||  this.params.properties.angle == -90) ? 'vertical-lr' : 'horizontal-tb'],
         "--lineheight": [this.params.properties.angle != 0 ? (this.params.properties.width / 1) * this.$parent.multiplier + 'px' : '']

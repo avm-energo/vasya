@@ -217,7 +217,7 @@ export default {
   },
 
   created() {
-    // console.log(this.myJson)
+    console.log(this.myJson)
     // setTimeout(function(){
     //   location.reload();
     // }, 3000);

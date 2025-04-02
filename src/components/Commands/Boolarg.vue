@@ -81,12 +81,12 @@ export default {
       return {
         "--x": (this.params.x / 1) * this.$parent.$parent.multiplier + "px",
         "--y": (this.params.y / 1) * this.$parent.$parent.multiplier + "px",
-        "--width": this.params.width * this.$parent.$parent.multiplier + "px",
-        "--height": (this.params.height / 1) * this.$parent.$parent.multiplier + "px",
+        "--width": this.params.width * this.$parent.$parent.multiplier * [this.params.scale || 1] + "px",
+        "--height": (this.params.height / 1) * this.$parent.$parent.multiplier * [this.params.scale || 1] + "px",
         "--background": "#" + this.params.background,
         "--borderBrush": "#" + this.params.borderBrush,
         "--foreground": "#" + this.params.foreground,
-        "--fontsize": this.params.fontSize * this.$parent.$parent.multiplier + "px",
+        "--fontsize": this.params.fontSize * this.$parent.$parent.multiplier * [this.params.scale || 1] + "px",
       };
     }
   },
