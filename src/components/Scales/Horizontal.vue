@@ -34,7 +34,7 @@
   ]"
   :position="{ x: (this.params.x / 1) * this.$parent.multiplier, y: (this.params.y / 1) * this.$parent.multiplier }"
   :dimensions="{ width: this.params.width * this.$parent.multiplier * [this.params.scale ? this.params.scale : 1], height: (this.params.height / 1) * this.$parent.multiplier }"
-  :bar-height="20"
+  :bar-height="16"
   :limit-height="4"
   :text-size="14"
   :label-size="14"

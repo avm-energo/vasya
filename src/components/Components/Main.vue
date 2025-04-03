@@ -1,5 +1,5 @@
 <template>
-  <div :class="typewindow != 'subscreen' ? 'backgroundmain' : 'background'" :style="cssProps" v-if="myJson.name != 'ReportGenerator'">
+  <div class='backgroundmain' :style="cssProps" v-if="myJson.name != 'ReportGenerator'">
     <!-- <div v-clickoutside:[typewindow]="onClickOutside"> -->
     <div>
       <div id="mainbody" :style="cssProps">
@@ -61,11 +61,6 @@ export default {
   name: "window",
   props: {
     myJson:{default:{}},
-    subscreensize:{default:1},
-    //фон для вложенный subscreen
-    boolback:{default:true},
-    typewindow:{},
-    subscreenname:{default: ''}
   },
   data() {
     return {
@@ -143,20 +138,21 @@ export default {
     cssProps() {
       return {
         "--margin": 'auto',
-        "--windowWidth": [this.boolback ? this.width + "px": this.myJson.canvas.width*this.multiplier + "px"],
-        "--windowHeight": [this.boolback ? this.height + "px": this.myJson.canvas.height* this.multiplier + "px"],
+        "--windowWidth": this.width + "px",
+        "--windowHeight": this.height + "px",
         "--width": this.myJson.canvas.width * this.multiplier + "px",
         "--height": this.myJson.canvas.height * this.multiplier + "px",
         "--background": "#" + this.myJson.canvas.background,
-        "--borderRadius": this.myJson.canvas.borderRadius + "px",
-        "--borderThickness": [this.typewindow != 'modalwindow' ? this.myJson.canvas.borderThickness + "px" : '1px'],
+        "--borderRadius": [this.myJson.canvas.borderRadius || 0]  + 'px',
+        "--borderThickness": this.myJson.canvas.borderThickness + "px",
+        "--borderColor": '#' + this.myJson.canvas.foreground,
         '--backgroundArea1': parseInt(this.myJson.canvas.backgroundArea.slice(0,2), 16),
         '--backgroundArea2': parseInt(this.myJson.canvas.backgroundArea.slice(2,4), 16),
         '--backgroundArea3': parseInt(this.myJson.canvas.backgroundArea.slice(4,6), 16),
-        '--backgroundArea4': [this.typewindow == 'modalwindow' ? ((parseInt(this.myJson.canvas.backgroundArea.slice(6,8), 16))/255-0.06) : ((parseInt(this.myJson.canvas.backgroundArea.slice(6,8), 16))/255)] ,
+        '--backgroundArea4': (parseInt(this.myJson.canvas.backgroundArea.slice(6,8), 16))/255,
         '--fontsize' :  15 + 'px',
         '--backgroundheight': [this.updatedmainheight ? window.innerHeight - (this.updatedmainheight) - 24 : this.mainheight] + 'px',
-        "--zindex": [this.typewindow != 'modalwindow' ? '' : 1]
+        "--zindex": '',
       };
     },
     mainheight(){
@@ -170,7 +166,7 @@ export default {
     myJson:{
       immediate: true,
       handler(newVal){
-        console.log(newVal)
+        // console.log(newVal)
         this.updateJson()
       }
     }
@@ -178,18 +174,9 @@ export default {
 
   methods: {
     updateJson(){
-      this.lines = []
-      this.tiless = []
-      this.tooltipers = []
-      this.subscreens = []
-      this.imagestrans = []
-      this.imageslogo = []
-      this.charts = []
-      this.helper = []
-      this.duval = []
-      this.commandss = []
-      this.meter = []
-      this.horizontal = []
+      ["lines", "tiless", "tooltipers", "subscreens", "imagestrans", 
+      "imageslogo", "charts", "helper", "duval", "commandss", 
+      "meter", "horizontal"].forEach(key => this[key] = []);
       ;(this.myJson.widgets.$id == undefined ? this.myJson.widgets : this.myJson.widgets.$values).forEach(element => {
         let res = element;
         if (res.type.startsWith("primitives/Line")) {
@@ -314,7 +301,6 @@ export default {
     // setTimeout(function(){
     //   location.reload();
     // }, 3000);
-    console.log('dsd')
     if (this.myJson.name != 'ReportGenerator') {
       window.addEventListener('resize', this.reportWindowSize)
       this.width = window.innerWidth - 2
@@ -342,7 +328,9 @@ export default {
   height: var(--height);
   color: white;
   background-color: var(--background);
-  border: solid var(--borderThickness) white;
+  border-style: solid;
+  border-width: var(--borderThickness);
+  border-color: var(--borderColor);
   border-radius: var(--borderRadius);
 
 }

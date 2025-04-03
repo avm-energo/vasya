@@ -95,7 +95,7 @@ export default {
     };
   },
   created() {
-    console.log(this.params)
+    // console.log(this.params)
     // if (this.params.properties.leftIcon == 'Info') {
     //   console.log(this.params.properties.leftIcon)
     // }
@@ -122,6 +122,7 @@ export default {
       let data = [];
       data.name = this.params.properties.path;
       data.title = [];
+      data.moreInfo = this.params
       if (this.params.properties.title) {
         data.title.text = this.params.properties.title;
         data.title.bool = true
@@ -134,9 +135,9 @@ export default {
       //   this.$store.dispatch("changemain", this.params.properties.path.split('\\').join(''))
       // } else {
         if (this.tooltiperFromHeader) {
-          this.$store.dispatch("changeMainWindow", data);
+          this.$store.dispatch("changeMainWindow", this.params);
         } else {
-          this.$store.dispatch("addElems", data);
+          this.$store.dispatch("addElems", this.params);
         }
       // }
     },

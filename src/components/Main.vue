@@ -30,12 +30,11 @@
     </div>
     <sonica-head v-if="head!=null" :myJson="head" typewindow="head" />
     <sonica-footer v-if="footer!=null" :myJson="footer" />
-    <sonica-main v-if="mainJson!=null" :myJson="mainJson" typewindow="main" />
+    <sonica-main v-if="mainJson!=null" :myJson="mainJson"/>
     <sonica-window
       v-for="elem in elems"
       :key="elem.name"
       :myJson="elem"
-      :namewindow="elem.typename"
       typewindow="modalwindow"
     />
     <div v-if="linkerShow" class="sonica-linker">

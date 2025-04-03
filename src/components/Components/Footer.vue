@@ -59,9 +59,9 @@
         <div id="history_window_head_datefilter">
           <div id="history_window_head_datefilter_date">
             &#160;&#160;From:&#160;&#160;
-            <div style="width: 40%"><datepicker v-model="starttime" :style="cssPropsHistory" class="dattepicker" :dark="true"/></div>
+            <div style="width: 40%"><datepicker v-model="starttime" :clearable="false" :style="cssPropsHistory" class="dattepicker" :dark="true"/></div>
             &#160;&#160;To:&#160;&#160;
-            <div style="width: 40%"><datepicker v-model="endtime" :style="cssPropsHistory" class="dattepicker" :dark="true"/></div>
+            <div style="width: 40%"><datepicker v-model="endtime" :clearable="false" :style="cssPropsHistory" class="dattepicker" :dark="true"/></div>
             <a class="icons__item" @click="updatedata()">
               <svg
                 width="30"
@@ -77,7 +77,7 @@
           </div>
           <div id="history_window_head_datefilter_filter">
             <p style="margin-right: 10px;">
-              <input type="text" placeholder="Filter" v-model="eventsfilter" style="height:25px; font-size:18px;"/>
+              <input type="text" placeholder="Filter" v-model="eventsfilter" style="height:35px; font-size:18px; padding-top: 10px; padding-bottom: 10px;"/>
             </p>
           </div>
         </div>
@@ -389,6 +389,9 @@ export default {
 </script>
 
 <style>
+.dattepicker{
+  user-select: none !important;
+}
 #footer {
   z-index: 200;
   position: absolute;

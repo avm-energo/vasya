@@ -297,33 +297,31 @@ export default createStore({
     },
 
     async addElems(state, data) {
-      console.log(data)
-      if (state.tickmas.find(res => res.name == data.name.split('\\').join(''))) 
+      // console.log(data.properties.path)
+      if (state.tickmas.find(res => res.name == data.properties.path.split('\\').join(''))) 
       {
         this.dispatch("closewindow", state.tickmas[state.tickmas.length-1].name);
       } else {
         let response = await fetch(
-          `http://${state.ip}/api/nodes/${encript((new TextEncoder()).encode(data.name))}/current`,{
+          `http://${state.ip}/api/nodes/${encript((new TextEncoder()).encode(data.properties.path))}/current`,{
             headers: { Authorization: `${localStorage.getItem('token')}` },
           }
         );
         if (response.ok){
           // console.log(`http://${state.ip}/api/nodes/${encript((new TextEncoder()).encode(data.name))}/current`)
           const res = JSON.parse(await response.text());
-          res.title = data.title
-          res.screenPercentage = data.screenPercentage
-          res.typename = data.name
+          res.infoFromTooltiper = data
           state.elems.push(res);
-          this.dispatch("updateElems", data.name);
-          var localArray = sessionStorage.getItem('localArray')
-          if (localArray) {
-            var localArray = JSON.parse(sessionStorage.getItem("localArray"))
-            localArray.push(JSON.stringify({name: data.name, title: data.title, screenPercentage: data.screenPercentage}))
-            sessionStorage.setItem('localArray', JSON.stringify(localArray))
-          } else {
-            var localArray = [JSON.stringify({name: data.name, title: data.title, screenPercentage: data.screenPercentage})]
-            sessionStorage.setItem('localArray', JSON.stringify(localArray))
-          }  
+          this.dispatch("updateElems", data.properties.path);
+          // var localArray = sessionStorage.getItem('localArray')
+          // if (localArray) {
+          //   var localArray = JSON.parse(sessionStorage.getItem("localArray"))
+          //   localArray.push(JSON.stringify({name: data.name, title: data.title, screenPercentage: data.screenPercentage}))
+          //   sessionStorage.setItem('localArray', JSON.stringify(localArray))
+          // } else {
+          //   var localArray = [JSON.stringify({name: data.name, title: data.title, screenPercentage: data.screenPercentage})]
+          //   sessionStorage.setItem('localArray', JSON.stringify(localArray))
+          // }  
         } else {
           state.notification.push({
             id: state.notification.length ? state.notification.reverse()[0].id + 1 : 0,
@@ -356,9 +354,9 @@ export default createStore({
       clearInterval(state.tickmas[index].interval);
       clearTimeout(state.tickmas[index].timeout)
       state.tickmas.splice(index,1)
-      var localArray = JSON.parse(sessionStorage.getItem("localArray"))
-      localArray.pop()
-      sessionStorage.setItem('localArray', JSON.stringify(localArray))
+      // var localArray = JSON.parse(sessionStorage.getItem("localArray"))
+      // localArray.pop()
+      // sessionStorage.setItem('localArray', JSON.stringify(localArray))
     },
 
     changemainheight(state, h){
@@ -409,26 +407,23 @@ export default createStore({
     },
 
     async changeMainWindow(state, data){
-      console.log(state.tickmas)
-      if (state.prevMainWindow != data.name) {
+      if (state.prevMainWindow != data.properties.path) {
         this.dispatch("closewindow", state.tickmas.find((el)=> el.name == state.prevMainWindow.split('\\').join('')).name);
-        if (state.tickmas.find(res => res.name == data.name.split('\\').join(''))) 
+        if (state.tickmas.find(res => res.name == data.properties.path.split('\\').join(''))) 
           {
             this.dispatch("closewindow", state.tickmas[state.tickmas.length-1].name);
           } else {
             let response = await fetch(
-              `http://${state.ip}/api/nodes/${encript((new TextEncoder()).encode(data.name))}/current`,{
+              `http://${state.ip}/api/nodes/${encript((new TextEncoder()).encode(data.properties.path))}/current`,{
                 headers: { Authorization: `${localStorage.getItem('token')}` },
               }
             );
             if (response.ok){
               // console.log(`http://${state.ip}/api/nodes/${encript((new TextEncoder()).encode(data.name))}/current`)
               const res = JSON.parse(await response.text());
-              res.title = data.title
-              res.screenPercentage = data.screenPercentage
-              res.typename = data.name
+              res.infoFromTooltiper = data
               state.main = res;
-              this.dispatch("updateElems", data.name);
+              this.dispatch("updateElems", data.properties.path);
             } else {
               state.notification.push({
                 id: state.notification.length ? state.notification.reverse()[0].id + 1 : 0,
@@ -439,7 +434,7 @@ export default createStore({
             }
           }
       }
-      state.prevMainWindow = data.name
+      state.prevMainWindow = data.properties.path
     },
     changeDefaultMainWindowName(state, name){
       state.prevMainWindow = name

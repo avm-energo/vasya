@@ -2,28 +2,29 @@
   <div :class="typewindow == 'modalwindow' ? 'background' : [ typewindow != 'subscreen' ? 'backgroundmain' : 'background']" :style="cssProps" @click.self="[typewindow == 'modalwindow' ? closejson() : '']">
     <!-- <div v-clickoutside:[typewindow]="onClickOutside"> -->
     <div>
-      <div id="head" v-show="myJson.title">
-        <div id="headtext">{{titlebool ? titletext : ''}}</div>
+      <div id="head" v-show="infoFromTooltiper?.title">
+        <div id="headtext">{{ infoFromTooltiper?.title }}</div>
         <div id="closewindow" @click.stop="closejson">x</div>
       </div>
-      <div id="mainbody" :style="cssProps">
-        <imagetrans v-for="elem in imagestrans" :key="elem.name" :params="elem.properties"/>
-        <imagelogo v-for="elem in imageslogo" :key="elem.name" :params="elem.properties"/>
+      <div id="mainBodyBackground" :style="cssProps">
+        <div id="mainbody" :style="cssProps">
+          <imagetrans v-for="elem in imagestrans" :key="elem.name" :params="elem.properties"/>
+          <imagelogo v-for="elem in imageslogo" :key="elem.name" :params="elem.properties"/>
 
-        <tiles v-for="elem  in tiless" :key="elem.name" :params="elem.properties" :name="elem.name" :screenPercentage="this.myJson.screenPercentage" :windowWidth="this.myJson.canvas.width" :windowHeight="this.myJson.canvas.height" :type="elem.type"/>
-        <svg v-show="this.lines.length" :height="this.myJson.canvas.height * this.multiplier" :width="this.myJson.canvas.width * this.multiplier" xmlns="http://www.w3.org/2000/svg" style="position: absolute; left: 0px; top: 0px;">
-          <sline v-for="line in lines" :key="line.name" :params="line.properties" />
-        </svg>
-        <commands v-for="elem in commandss" :key="elem.name" :params="elem"/>
-        <!-- было windowname -->
-        <subscreen v-for="elem in subscreens" :key="elem.name" :params="elem" :name="elem.type" :namewindow="this.namewindow"/>
-        <tooltiper v-for="elem in tooltipers" :key="elem.name" :params="elem"/>
-        <chart v-for="elem in charts" :key="elem.name" :params="elem"/>
-        <helper v-for="elem in helper" :key="elem.name" :params="elem.properties"/>
-        <duval v-for="elem in duval" :key="elem.name" :params="elem.properties" :name="elem.name" :ip="this.ip"/>
-        <vector v-for="elem in vector" :key="elem.name" :params="elem.properties" :name="elem.name"/>
-        <horizontals v-for="elem in horizontal" :key="elem.name" :params="elem.properties" :name="elem.name"/>
-
+          <svg v-show="this.lines.length" :height="this.myJson.canvas.height * this.multiplier" :width="this.myJson.canvas.width * this.multiplier" xmlns="http://www.w3.org/2000/svg" style="position: absolute; left: 0px; top: 0px;">
+            <sline v-for="line in lines" :key="line.name" :params="line.properties" />
+          </svg>
+          <tiles v-for="elem  in tiless" :key="elem.name" :params="elem.properties" :name="elem.name" :screenPercentage="this.myJson.screenPercentage" :windowWidth="this.myJson.canvas.width" :windowHeight="this.myJson.canvas.height" :type="elem.type"/>
+          <commands v-for="elem in commandss" :key="elem.name" :params="elem"/>
+          <!-- было windowname -->
+          <subscreen v-for="elem in subscreens" :key="elem.name" :params="elem" :name="elem.type" :namewindow="this.namewindow"/>
+          <tooltiper v-for="elem in tooltipers" :key="elem.name" :params="elem"/>
+          <chart v-for="elem in charts" :key="elem.name" :params="elem"/>
+          <helper v-for="elem in helper" :key="elem.name" :params="elem.properties"/>
+          <duval v-for="elem in duval" :key="elem.name" :params="elem.properties" :name="elem.name" :ip="this.ip"/>
+          <vector v-for="elem in vector" :key="elem.name" :params="elem.properties" :name="elem.name"/>
+          <horizontals v-for="elem in horizontal" :key="elem.name" :params="elem.properties" :name="elem.name"/>
+        </div>
       </div>
     </div>
   </div>
@@ -58,7 +59,7 @@ export default {
     typewindow:{default: 'modalwindow'},
     namewindow:{default:''},
     subscreenname:{default: ''},
-    path:{default: '',}
+    path:{default: '',},
   },
   data() {
     return {
@@ -87,6 +88,7 @@ export default {
       titlebool: null,
       titletext: null,
       windowpath: null,
+      infoFromTooltiper: null,
     };
   },
 
@@ -143,13 +145,12 @@ export default {
         "--width": this.myJson.canvas.width * this.multiplier + "px",
         "--height": [this.myJson.canvas.height * this.multiplier > window.innerHeight ? this.height - 50 : this.myJson.canvas.height * this.multiplier] + "px",
         "--background": "#" + this.myJson.canvas.background,
-        "--borderRadius": this.myJson.canvas.borderRadius + "px",
+        "--borderRadius": [this.myJson.canvas.borderRadius || 0]  + 'px',
         "--borderThickness": [this.typewindow != 'modalwindow' ? this.myJson.canvas.borderThickness + "px" : '1px'],
-        '--backgroundArea1': parseInt(this.myJson.canvas.backgroundArea.slice(0,2), 16),
-        '--backgroundArea2': parseInt(this.myJson.canvas.backgroundArea.slice(2,4), 16),
-        '--backgroundArea3': parseInt(this.myJson.canvas.backgroundArea.slice(4,6), 16),
-        '--backgroundArea4': [this.typewindow == 'modalwindow' ? ((parseInt(this.myJson.canvas.backgroundArea.slice(6,8), 16))/255-0.06) : ((parseInt(this.myJson.canvas.backgroundArea.slice(6,8), 16))/255)] ,
-        '--fontsize' :  15 + 'px',
+        "--borderColor": '#' + this.infoFromTooltiper?.windowBorderBrush,
+        '--headerFontsize' :  this.infoFromTooltiper?.titleFontSize + 'px',
+        '--headerBackground' : '#' + this.infoFromTooltiper?.windowBackground,
+        '--headerForeColor' : '#' + this.infoFromTooltiper?.windowForeground,
         "--zindex": [this.typewindow != 'modalwindow' ? '' : 1],
         "--subscreenScale": [this.subscreensize || 1],
 
@@ -187,34 +188,26 @@ export default {
       // console.log('Изначальный maultiplier в Window ', this.multiplier);
       this.multiplier = this.multiplierwindow * (this.mainmultiplier[1]/this.multiplierwindowww)
       if (this.typewindow == "modalwindow") {
-        console.log("Сработал первый if");
+        // console.log("Сработал первый if");
         if (this.myJson.canvas.width * this.multiplier + 30 > window.innerWidth) {
-          console.log("Сработал вторый if");
+          // console.log("Сработал вторый if");
           this.multiplier = this.multiplier / ((this.myJson.canvas.width * this.multiplier)/window.innerWidth)
         }
       }
-      console.log('Назначенный maultiplier в Window ', this.multiplier);
+      // console.log('Назначенный maultiplier в Window ', this.multiplier);
 
       // console.log(this.multiplier, " this.multiplier при срабатывании reportWindowSize");
     },
     closejson(){
-
       this.$store.dispatch('closewindow', this.windowname)
       window.removeEventListener('resize', this.reportWindowSize)
     },
     updateJson(){
-      this.lines = []
-      this.tiless = []
-      this.tooltipers = []
-      this.subscreens = []
-      this.imagestrans = []
-      this.imageslogo = []
-      this.charts = []
-      this.helper = []
-      this.duval = []
-      this.commandss = []
-      this.meter = []
-      this.horizontal = []
+      ["lines", "tiless", "tooltipers", "subscreens", "imagestrans", 
+      "imageslogo", "charts", "helper", "duval", "commandss", 
+      "meter", "horizontal"].forEach(key => this[key] = []);
+      this.infoFromTooltiper = this.myJson.infoFromTooltiper?.properties
+      // console.log(this.myJson)
       ;(this.myJson.widgets.$id == undefined ? this.myJson.widgets : this.myJson.widgets.$values).forEach(element => {
         let res = element;
 
@@ -273,7 +266,7 @@ export default {
       this.multiplierwindowww = 1
       this.multiplier = 1
       this.multiplierwindow = this.multiplierwindow * this.subscreensize
-      this.windowname = this.namewindow.split('\\').join('')
+      this.windowname = this.infoFromTooltiper?.path.split('\\').join('')
       if (this.path){
         this.windowpath = this.path
       } else {
@@ -339,7 +332,9 @@ export default {
   height: var(--height);
   color: white;
   background-color: var(--background);
-  border: solid var(--borderThickness) white;
+  border-style: solid;
+  border-width: var(--borderThickness);
+  border-color: var(--borderColor);
   border-radius: var(--borderRadius);
 }
 .background {
@@ -350,7 +345,7 @@ export default {
   position: absolute;
   left: 0px;
   top: 0px;
-  background: rgba(var(--backgroundArea1),var(--backgroundArea2),var(--backgroundArea3), var(--backgroundArea4));
+  background: rgba(0, 0, 0, 0.45);
   width: var(--windowWidth);
   height: var(--windowHeight);
   margin-bottom: 24px;
@@ -358,19 +353,20 @@ export default {
 }
 #head {
   border: solid 1px var(--background);
-  color: white;
+  color: var(--headerForeColor);;
   padding: 0px;
   display: flex;
   justify-content: space-between;
   width: var(--width);
   height: 25px;
-  background-color: var(--background);
+  background-color: var(--headerBackground);
   margin-bottom: 5px;
+  padding-left: 10px;
   /* cursor: grab; */
 }
 #headtext{
   padding: 3px;
-  font-size: var(--fontsize);
+  font-size: rgb(var(--headerFontsize));
   /* vertical-align: text-bottom; */
   user-select: none;
 }
@@ -388,5 +384,9 @@ export default {
 }
 #closewindow:active{
   background-color: rgb(4, 21, 253);
+}
+#mainBodyBackground{
+  background-color: var(--headerBackground);
+
 }
 </style>

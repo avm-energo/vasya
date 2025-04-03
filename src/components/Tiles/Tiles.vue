@@ -97,7 +97,7 @@ export default {
         "--scale": this.params.scale,
         "--align": this.params.hAlignment,
         "--valign": [(this.params.vAlignment == 'Stretch' || this.params.vAlignment == 'Top') ? [(this.params.angle == 270 ||  this.params.angle ==-90) ? 'auto' : ''] : 'auto'],
-        "--fontSize": [this.params.fontSize == 0 ? 14 / 1.1 : this.params.fontSize / 1.1]  * this.$parent.multiplier * this.params.scale + "px",
+        "--fontSize": [this.params.fontSize == 0 ? 13 / 1.1 : this.params.fontSize / 1.1]  * this.$parent.multiplier * this.params.scale + "px",
         "--margin": [(this.params.vAlignment == 'Stretch' || this.params.vAlignment == 'Top') ? '' : this.params.margin.split(" : ")[0] + "px"],
         "--borderRadius": this.params.borderRadius * this.$parent.multiplier + "px",
         "--vertical-rl": [(this.params.angle == 270 ||  this.params.angle == -90) ? 'sideways-lr' : 'horizontal-tb']
