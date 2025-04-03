@@ -95,9 +95,11 @@ export default {
     };
   },
   created() {
+    console.log(this.params)
     // if (this.params.properties.leftIcon == 'Info') {
     //   console.log(this.params.properties.leftIcon)
     // }
+    if (this.params.properties.text == 'Главный экран' && this.tooltiperFromHeader) this.$store.dispatch("changeDefaultMainWindowName", this.params.properties.path);
     this.button.Name = this.params.name
     if (this.$parent.subscreenname){ 
       this.button.Name += '/' + this.$parent.subscreenname
@@ -152,7 +154,7 @@ export default {
         "--borderThickness": [this.params.properties.windowBorderBrush ? this.$parent.multiplier + 'px' : '0px'],
         "--borderBrush": this.params.properties.borderBrush ? this.params.properties.borderBrush : 'transparent',
         "--flexdir":  [this.params.properties.angle != 0 ? 'column' : 'row'],
-        "--borderRadius": this.params.properties.borderRadius,
+        "--borderRadius": [this.params.properties.borderRadius || '0px'],
         "--fontSize":(this.params.properties.fontSize / 1) * this.$parent.multiplier * [this.params.properties.scale || 1] + "px",
         "--textalign":[this.params.properties.leftIcon == 'None' ? 'center' : 'left'],
         "--vertical-rl": [(this.params.properties.angle == 270 ||  this.params.properties.angle == -90) ? 'vertical-lr' : 'horizontal-tb'],

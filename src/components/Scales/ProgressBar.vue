@@ -63,7 +63,6 @@
   </template>
   
   <script>
-import { color } from '@amcharts/amcharts5'
 
   export default {
     name: 'TemperatureProgressBar',
@@ -148,7 +147,7 @@ import { color } from '@amcharts/amcharts5'
       
     },
     created(){
-      console.log(this.validLimits)
+      // console.log(this.validLimits)
     },
     computed: {
       validLimits() {

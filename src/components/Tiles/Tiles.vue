@@ -88,8 +88,8 @@ export default {
         "--y": this.params.y  * this.$parent.multiplier + (this.params.height*this.params.scale - this.params.height)/2*this.$parent.multiplier + "px",
         // при 1 X вылезает поверх всех окон
         "--z": [this.params.text == 'X' ? 0 : ''],
-        "--width": this.params.width  * this.$parent.multiplier + "px",
-        "--height": this.params.height  * this.$parent.multiplier + "px",
+        "--width": this.params.width  * this.$parent.multiplier * this.params.scale + "px",
+        "--height": this.params.height  * this.$parent.multiplier * this.params.scale + "px",
         "--backgroundColor": "#" + [ this.tiles.BackgroundColor == "Blue" ? "#373737" : this.tiles.BackgroundColor, ],
         "--color": "#" + this.tiles.ForegroundColor,
         "--borderThickness": this.params.borderThickness  * this.$parent.multiplier + "px",
@@ -97,7 +97,7 @@ export default {
         "--scale": this.params.scale,
         "--align": this.params.hAlignment,
         "--valign": [(this.params.vAlignment == 'Stretch' || this.params.vAlignment == 'Top') ? [(this.params.angle == 270 ||  this.params.angle ==-90) ? 'auto' : ''] : 'auto'],
-        "--fontSize": [this.params.fontSize == 0 ? 14 / 1.1 : this.params.fontSize / 1.1]  * this.$parent.multiplier + "px",
+        "--fontSize": [this.params.fontSize == 0 ? 14 / 1.1 : this.params.fontSize / 1.1]  * this.$parent.multiplier * this.params.scale + "px",
         "--margin": [(this.params.vAlignment == 'Stretch' || this.params.vAlignment == 'Top') ? '' : this.params.margin.split(" : ")[0] + "px"],
         "--borderRadius": this.params.borderRadius * this.$parent.multiplier + "px",
         "--vertical-rl": [(this.params.angle == 270 ||  this.params.angle == -90) ? 'sideways-lr' : 'horizontal-tb']
@@ -126,7 +126,7 @@ export default {
   user-select: none;
   -ms-user: none;
   display: flex;
-  transform: scale(var(--scale));
+  /* transform: scale(var(--scale)); */
   position: absolute;
   left: var(--x);
   top: var(--y);

@@ -54,7 +54,7 @@ export default createStore({
     historymas: [],
     mainmultiplier: true,
     afkTimer: null,
-    prevMainWindow: '>:\\Screens:\\Main',
+    prevMainWindow: null,
   },
   getters: {
     ip: (state) => state.ip,
@@ -409,6 +409,7 @@ export default createStore({
     },
 
     async changeMainWindow(state, data){
+      console.log(state.tickmas)
       if (state.prevMainWindow != data.name) {
         this.dispatch("closewindow", state.tickmas.find((el)=> el.name == state.prevMainWindow.split('\\').join('')).name);
         if (state.tickmas.find(res => res.name == data.name.split('\\').join(''))) 
@@ -439,10 +440,16 @@ export default createStore({
           }
       }
       state.prevMainWindow = data.name
-    }
+    },
+    changeDefaultMainWindowName(state, name){
+      state.prevMainWindow = name
+    },
 
   },
   actions: {
+    changeDefaultMainWindowName({ commit }, elems) {
+      commit("changeDefaultMainWindowName", elems);
+    },
     changeMainWindow({ commit }, elems) {
       commit("changeMainWindow", elems);
     },
