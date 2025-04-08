@@ -22,7 +22,7 @@
     </div>
   </div>
   <div v-else class="reportGeneratorWindow">
-    <div>     
+    <div>
       <span v-html="myJson.htmlText"></span>
     </div>
     <button @click="openModal">ExportToPDF</button>
@@ -160,7 +160,8 @@ export default {
     },
     updatedmainheight(){
       return this.$store.getters.updatedmainheight
-    }
+    },
+
   },
   watch:{
     myJson:{
@@ -169,7 +170,37 @@ export default {
         // console.log(newVal)
         this.updateJson()
       }
+    },
+    mainheight(newMainHeight, oldMainHeight) {
+      let multiplierwindow;
+      multiplierwindow = ( newMainHeight - 10 ) / (this.myJson.canvas.height);
+
+      if (multiplierwindow * this.myJson.canvas.width > window.innerWidth) {
+        multiplierwindow =  window.innerWidth / ( this.myJson.canvas.width) - 0.005;
+      }
+
+      this.multiplierwindow = multiplierwindow;
+      this.multiplier = this.multiplierwindow
+      this.$parent.multiplier = this.multiplier
+      this.$store.dispatch('mainmultiplier', [false, this.multiplier])
+    },
+    updatedmainheight(newUpdatedMainHeight, oldUpdatedMainHeight) {
+      let multiplierwindow;
+
+      multiplierwindow = (window.innerHeight - (newUpdatedMainHeight) - 24 - 10) / this.myJson.canvas.height
+      if (this.myJson.canvas.height * multiplierwindow > this.mainheight) {
+        multiplierwindow = ( this.mainheight ) / ( this.myJson.canvas.height );
+
+      } else if (multiplierwindow * this.myJson.canvas.width > window.innerWidth) {
+        multiplierwindow =  window.innerWidth / (  this.myJson.canvas.width) - 0.005;
+      }
+
+      this.multiplierwindow = multiplierwindow;
+      this.multiplier = this.multiplierwindow
+      this.$parent.multiplier = this.multiplier
+      this.$store.dispatch('mainmultiplier', [false, this.multiplier])
     }
+
   },
 
   methods: {
@@ -225,50 +256,38 @@ export default {
           this.horizontal.push(res)
         }
       });
-      this.multiplierwindow = (window.innerHeight - 123 - 4) / this.myJson.canvas.height;
-      // console.log(this.multiplierwindow, " multiplierwindow Main");
-      if (this.multiplierwindow * this.myJson.canvas.width > window.innerWidth){
-        this.multiplierwindow = this.multiplierwindow * window.innerWidth / (this.multiplierwindow * this.myJson.canvas.width) - 0.005
+
+      this.multiplierwindow = (window.innerHeight) / this.myJson.canvas.height;
+
+      if (this.multiplierwindow * this.myJson.canvas.width > window.innerWidth) {
+        this.multiplierwindow = window.innerWidth / ( this.myJson.canvas.width) - 0.005
       }
-      // console.log("MAIN this.myJson.canvas.width * this.multiplierwindow = ", this.myJson.canvas.width * this.multiplierwindow);
-      // console.log("MAIN window.innerWidth = ", window.innerWidth);
-      //
-      // console.log("MAIN this.myJson.canvas.height * this.multiplierwindow = ", this.myJson.canvas.height * this.multiplierwindow);
-      // console.log("MAIN window.innerHeight = ", window.innerHeight - 151);
-      if (this.myJson.canvas.width * this.multiplierwindow > window.innerWidth) {
-        this.multiplierwindow = window.innerWidth / (this.myJson.canvas.width + 50)
-      }
-      if (this.myJson.canvas.height * this.multiplierwindow > window.innerHeight - 151) {
-        // console.log("this.multiplierwindow = ", this.multiplierwindow);
-        // console.log("Header: ", window.innerWidth / 100 * 5);
-        this.multiplierwindow = ( window.innerHeight - ( window.innerWidth / 100 * 5 + 24 + 10) ) / (this.myJson.canvas.height);
-        // console.log("this.multiplierwindow = ", this.multiplierwindow);
-        // console.log("MAIN Окно явно больше чем место для него")
-      }
+
       this.multiplier = this.multiplierwindow
       this.$parent.multiplier = this.multiplier
       this.$store.dispatch('mainmultiplier', [true, this.multiplier])
     },
     reportWindowSize(){
-      // console.log('Set main maultiplier', this.multiplier);
       let multiplierwindow;
       if (this.updatedmainheight !== null) {
-        multiplierwindow = (window.innerHeight - (this.updatedmainheight) - 28)/this.myJson.canvas.height
+        multiplierwindow = (window.innerHeight - (this.updatedmainheight) - 24 - 10) / this.myJson.canvas.height
       } else {
-        multiplierwindow = (window.innerHeight - 123 - 4) / this.myJson.canvas.height;
+        multiplierwindow = ( this.mainheight - 10 ) / ( this.myJson.canvas.height );
       }
-      if (multiplierwindow * this.myJson.canvas.width > window.innerWidth){
-        multiplierwindow = multiplierwindow * window.innerWidth / (multiplierwindow * this.myJson.canvas.width) - 0.005
-        this.$store.dispatch('mainmultiplier', [true, multiplierwindow])
-      } else {
-        this.$store.dispatch('mainmultiplier', [false, multiplierwindow])
+      // if (this.myJson.canvas.height * multiplierwindow > this.mainheight) {
+      //   console.log(`${this.myJson.canvas.height * multiplierwindow} > ${this.mainheight}`);
+      // }
+      if (multiplierwindow * this.myJson.canvas.width > window.innerWidth) {
+        multiplierwindow = window.innerWidth / ( this.myJson.canvas.width) - 0.005;
       }
-      // console.log(this.multiplier)
+
+      this.$store.dispatch('mainmultiplier', [true, multiplierwindow])
       this.multiplier =  multiplierwindow
       this.$parent.multiplier = this.multiplier
     },
     closejson(){
       this.$store.dispatch('closewindow', this.windowname)
+      window.removeEventListener('resize', this.reportWindowSize)
     },
     openModal(){
       // let mas = JSON.parse(JSON.stringify(this.myJson.myBindings));
@@ -312,10 +331,15 @@ export default {
       } else {
         this.windowpath = this.namewindow
       }
-    } else { 
+    } else {
       this.mas = this.myJson.myBindings.map((element) =>  element);
       this.mas.shift()
     }
+  },
+  updated() {
+    // Этот метод вызывается после перерендера компонента
+    this.reportWindowSize()
+    console.log('Компонент Main был перерендерен');
   },
 };
 </script>

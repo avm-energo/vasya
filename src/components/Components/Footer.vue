@@ -230,7 +230,7 @@ export default {
   updated() {
     // Этот метод вызывается после перерендера компонента
     // this.isLoading = false;
-    console.log('Компонент был перерендерен');
+    // console.log('Компонент Footer был перерендерен');
   },
   computed: {
     multiplier(){

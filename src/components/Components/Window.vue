@@ -170,41 +170,32 @@ export default {
   watch: {
     myJson(){
       this.updateJson()
-    }
-    // mainmultiplier(newVal, oldVal) {
-    //   console.log(`mainmultiplier changed from ${oldVal[1]} to ${newVal[1]}`);
-    // },
+    },
+    mainmultiplier(newVal, oldVal) {
+      this.multiplier = this.multiplierwindow * (this.mainmultiplier[1]/this.multiplierwindowww)
+    },
   },
 
   methods: {
     reportWindowSize(){
-
-      // console.log(this.multiplierwindow, " this.multiplierwindow")
-      // console.log(this.mainmultiplier[1], " this.mainmultiplier[1]")
-      // console.log(this.multiplierwindowww, " this.multiplierwindowww")
       this.multiplier = window.innerWidth * window.innerHeight * this.multiplier / (this.width * this.height);
       this.width = window.innerWidth
       this.height = window.innerHeight
-      // console.log('Изначальный maultiplier в Window ', this.multiplier);
       this.multiplier = this.multiplierwindow * (this.mainmultiplier[1]/this.multiplierwindowww)
       if (this.typewindow == "modalwindow") {
-        // console.log("Сработал первый if");
         if (this.myJson.canvas.width * this.multiplier + 30 > window.innerWidth) {
-          // console.log("Сработал вторый if");
           this.multiplier = this.multiplier / ((this.myJson.canvas.width * this.multiplier)/window.innerWidth)
         }
       }
-      // console.log('Назначенный maultiplier в Window ', this.multiplier);
 
-      // console.log(this.multiplier, " this.multiplier при срабатывании reportWindowSize");
     },
     closejson(){
       this.$store.dispatch('closewindow', this.windowname)
       window.removeEventListener('resize', this.reportWindowSize)
     },
     updateJson(){
-      ["lines", "tiless", "tooltipers", "subscreens", "imagestrans", 
-      "imageslogo", "charts", "helper", "duval", "commandss", 
+      ["lines", "tiless", "tooltipers", "subscreens", "imagestrans",
+      "imageslogo", "charts", "helper", "duval", "commandss",
       "meter", "horizontal"].forEach(key => this[key] = []);
       this.infoFromTooltiper = this.myJson.infoFromTooltiper?.properties
       // console.log(this.myJson)
@@ -259,7 +250,6 @@ export default {
         if (res.type.startsWith("scales/Horizontal")) {
           this.horizontal.push(res)
         }
-        // console.log('this.multiplier in start = ', this.multiplier);
       });
       this.multiplierwindow = 1
       this.multiplierwindoww = 1
@@ -272,40 +262,25 @@ export default {
       } else {
         this.windowpath = this.namewindow
       }
-      //скалирование модального окна из переданного параметра scrennPercentage
       if (this.myJson.screenPercentage){
         let ss = ((window.innerHeight - 100) * (this.myJson.screenPercentage/100))/this.myJson.canvas.height
-        // console.log('Скалирование без переданного параметра')
         this.multiplierwindow = this.multiplierwindow * ss
       }
 
       this.width = window.innerWidth;
       this.height = window.innerHeight;
-      // console.log("WINDOW this.myJson.canvas.width * this.multiplierwindow = ", this.myJson.canvas.width * this.multiplierwindow);
-      // console.log("WINDOW window.innerWidth = ", window.innerWidth);
-      //
-      // console.log("WINDOW this.myJson.canvas.height * this.multiplierwindow = ", this.myJson.canvas.height * this.multiplierwindow);
-      // console.log("WINDOW window.innerHeight = ", window.innerHeight);
-      //если модальнгое окно превышает размер рабочего окна, то оно уменьшается
+
       if (this.myJson.canvas.width * this.multiplierwindow > window.innerWidth) {
         this.multiplierwindow = window.innerWidth / (this.myJson.canvas.width + 100)
       }
-      if (this.myJson.canvas.height * this.multiplierwindow > window.innerHeight) {
-        console.log("WINDOW Окно явно больше чем место для него")
-        // this.multiplierwindow = window.innerWidth / (this.myJson.canvas.width + 100)
-      }
+
       this.multiplier = this.multiplierwindow
       this.multiplierwindoww = this.multiplier
       this.multiplierwindowww = this.mainmultiplier[1]
     }
   },
-  updated() {
-    // console.log("Сейчас будет принудительный ресайз")
-    // window.dispatchEvent(new Event('resize'));
-  },
   created() {
     this.updateJson()
-    // console.log("this.mainmultiplier во время создания Window ", this.mainmultiplier);
     if (this.myJson.title) {
       if (this.myJson.title.bool) {
         this.titletext = this.myJson.title.text
@@ -317,8 +292,11 @@ export default {
     }
     window.addEventListener('resize', this.reportWindowSize)
     
-    //console.log("Multiolier при создании Window", this.multiplier)
-    // this.reportWindowSize();
+
+  },
+  updated() {
+    // Этот метод вызывается после перерендера компонента
+    console.log('Компонент Window был перерендерен');
   },
 };
 </script>
