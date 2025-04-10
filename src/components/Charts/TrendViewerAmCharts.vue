@@ -182,6 +182,10 @@ export default {
 
     setTimeFrame(value) {
       this.timeFrame = value;
+      this.xAxis.set("baseInterval", {
+        timeUnit: "minute",
+        count: value
+      });
     },
 
     changeTimeframe(e) {
@@ -276,48 +280,6 @@ export default {
           .catch(function (error) {
             console.log(error)
           });
-    },
-
-    createWorkers(count) {
-
-      const results = [];
-      // Создаем массив веб-воркеров
-      const workers = [];
-
-      const diff = this.endtime.getTime() - this.starttime.getTime(); // Разница между датами в миллисекундах
-      const intervalLength = diff / count; // Длина каждого промежутка
-      const intervals = []; // Массив для хранения промежутков
-
-      // Создаем веб-воркеры и отправляем им данные для обработки
-      for (let i = 0; i < count; i++) {
-        const worker = new FetchChunkWorker();
-
-        // Слушаем сообщения от веб-воркера
-        worker.onmessage = (event) => {
-          results.push(event.data);
-
-          // Если получили результаты от всех веб-воркеров, обрабатываем результаты
-          if (results.length === count) {
-            console.log(results, ' - Результаты выполнения воркера');
-          }
-        };
-
-        const startOfInterval = new Date(this.starttime.getTime() + i * intervalLength); // Начало промежутка
-        const endOfInterval = new Date(this.starttime.getTime() + (i + 1) * intervalLength); // Конец промежутка
-
-        // Отправляем данные для обработки в веб-воркер
-        worker.postMessage(
-            {
-              index: i,
-              startOfInterval: startOfInterval,
-              endOfInterval: endOfInterval,
-              query: `http://${this.ip}/api/nodes/${this.encript((new TextEncoder()).encode(this.$parent.$parent.windowpath))}/widget/${this.encript((new TextEncoder()).encode(this.name))}/query/trend-history`,
-            });
-
-        workers.push(worker);
-      }
-      //   Конец цикла с воркером
-
     },
 
     divideTimeInterval(startDate, endDate) {
@@ -419,29 +381,17 @@ export default {
           }
         } else break;
 
-
-        // if (this.chartDataArr.resultData[0].points.length < 1450) {
-        //   this.setTimeFrame(1);
-        // } else if (this.chartDataArr.resultData[0].points.length < 2900) {
-        //   this.setTimeFrame(10);
-        // } else if (this.chartDataArr.resultData[0].points.length < 20200) {
-        //   this.setTimeFrame(30);
-        // } else if (this.chartDataArr.resultData[0].points.length >= 20200) {
-        //   this.setTimeFrame(60);
-        // }
-        this.setTimeFrame(10);
+        this.setTimeFrame(1);
         this.updateChart()
       }
       this.loading_per = 100;
 
-      // Сколько точек пришло
-      // console.log("Число точек", this.chartDataArr.resultData[0].points.length)
+
 
       // Если нам их хватает, то просто computed свойство само ограничит таймлайн
       console.log("Готово")
       this.gettingdata()
-      // Перерисовка граифика с computed свойства
-      // this.updateChart()
+
     },
     //
     gettingdata() {
@@ -480,20 +430,9 @@ export default {
 
     this.chart = chart
 
-    var xAxis = chart.xAxes.push(am5xy.DateAxis.new(root, {
-      // maxDeviation: 0.2,
+    let xAxis = chart.xAxes.push(am5xy.DateAxis.new(root, {
       minZoomCount: 3,
-      // groupData: true,
-      baseInterval: {timeUnit: "second", count: this.interval / 1000},
-      // groupIntervals: [
-      //   { timeUnit: "second", count: 60 },
-      //   { timeUnit: "minute", count: 10 },
-      //   { timeUnit: "hour", count: 1 },
-      //   { timeUnit: "day", count: 1 },
-      //   { timeUnit: "week", count: 1 },
-      //   { timeUnit: "month", count: 1 },
-      //   { timeUnit: "year", count: 1 }
-      // ],
+      baseInterval: {timeUnit: "minute", count: 1},
       renderer: am5xy.AxisRendererX.new(root, {}),
       tooltip: am5.Tooltip.new(root, {}),
       tooltipDateFormat: "dd MMM yyyy, HH:mm",
@@ -502,21 +441,19 @@ export default {
       categoryField: "category",
     }));
 
-    // xAxis.combineFields = "category";
-
-
     this.xAxis = xAxis
 
-    // let yAxis = null;
-    // chart.yAxes.push(am5xy.ValueAxis.new(root, {
-    //   // numberFormat: "#.0a",
-    //   // numberFormat: "#.##e",
-    //   renderer: am5xy.AxisRendererY.new(root, {
-    //     opposite: true
-    //   })
-    // }));
-    // this.yAxis = yAxis
-
+    // УСТАНАВЛИВАЕМ РУЧНОЙ ДИАПАЗОН ОСИ X:
+    // const buffer = (this.endtime - this.starttime) * 0.05; // небольшой отступ по краям
+    // xAxis.setAll({
+    //   min: this.starttime.getTime() - buffer,
+    //   max: this.endtime.getTime() + buffer,
+    //   strictMinMax: true,
+    //   startLocation: 0.5,
+    //   endLocation: 0.5
+    // });
+    // this.xAxis = xAxis
+    //
 
     const diff = this.endtime.getTime() - this.starttime.getTime()
     if (diff <= 86400000 * 2) this.intervals_count = 1;
@@ -533,35 +470,18 @@ export default {
 
     this.chartDataArr = await this.getChartData(intervals[0].start, intervals[0].end, 0);
 
-
     this.seriesArr = []
-
 
     console.log(this.chartDataArr, " ChartDataArr")
 
     // НАЧАЛО ЦИКЛА SERIES ------------------------------------------------------
     for (let i = 0; i < this.chartDataArr.resultData.length; i++) {
 
-
-      // var yRenderer = am5xy.AxisRendererY.new(root, {
-      //   opposite: true,
-      // });
-      // var yAxis = chart.yAxes.push(
-      //   am5xy.ValueAxis.new(root, {
-      //     // numberFormat: "#.0a",
-      //     // numberFormat: "#.##e",
-      //     maxDeviation: 1,
-      //     renderer: yRenderer
-      //   })
-      // );
-
       var linecolor = am5.color("#" + this.chartInfo[i].sColor.slice(0, 6))
 
       console.log(this.params, "this.params");
       const parentID = this.params.strends[i]["parentID"];
       const saxes = this.params.saxes.filter(item => item.id === parentID);
-      // console.log(saxes, " saxes");
-
 
       if (this.saxes.filter(item => item.id === saxes[0].id).length === 0) {
         this.saxes.push(saxes[0]);
@@ -570,15 +490,9 @@ export default {
 
         var yRenderer = am5xy.AxisRendererY.new(root, {
           opposite: true,
-          // maxGridDistance: 10,
-          // minGridDistance: 30,
         });
         var yAxis = chart.yAxes.push(
             am5xy.ValueAxis.new(root, {
-              // numberFormat: "#.0a",
-              // numberFormat: "#.##e",
-              // maxDeviation: 1,
-              // strictMinMax: true,
               min: saxes[0].yLowerLimit,
               max: saxes[0].yUpperLimit,
               renderer: yRenderer,
@@ -590,7 +504,6 @@ export default {
             am5.Label.new(root, {
               text: saxes[0].uom ?? "",
               textAlign: 'center',
-              // fill: linecolor,
               y: -40,
               x: 0,
               fontWeight: 'bold',
@@ -598,16 +511,8 @@ export default {
         );
 
         yAxis.set("customLabel", label);
-
         //
       }
-
-
-      // if (chart.yAxes.indexOf(yAxis) > 0)   {
-      //   yAxis.set("syncWithAxis", chart.yAxes.getIndex(0));
-      // }
-      // Set up data processor to parse string dates
-      // https://www.amcharts.com/docs/v5/concepts/data/#Pre_processing_data
 
       console.log(yAxis, " YAxis")
       var series = chart.series.push(
@@ -619,10 +524,6 @@ export default {
             valueXField: "argument",
             categoryXField: "category",
             categoryField: "category",
-            // dataFields: {
-            //   valueY: "value1",
-            //   categoryX: "category",
-            // },
             connect: false,
             fill: linecolor,
             stroke: linecolor,
@@ -661,32 +562,14 @@ export default {
       });
 
       series.strokes.template.setAll({strokeWidth: 1});
-      // series.strokes.template.setAll({
-      //   tooltipText: "{categoryX}: {valueY}",
-      //   tooltip: am5.Tooltip.new(root, {
-      //     labelText: "{categoryX}: {valueY}",
-      //     getFillFromSprite: false,   // Отключаем получение цвета из колонки
-      //     getStrokeFromSprite: false, // Отключаем получение цвета границы
-      //     background: am5.Rectangle.new(root, {
-      //       fill: am5.color("#333"), // Цвет фона тултипа
-      //       fillOpacity: 0.8,
-      //     }),
-      //     label: am5.Label.new(root, {
-      //       fill: am5.color("#ffffff"),  // Цвет текста тултипа
-      //       fontSize: 16,               // Размер текста
-      //       fontWeight: "bold"          // Жирный текст
-      //     })
-      //   })
-      // });
 
       yRenderer.grid.template.set("strokeOpacity", 0.05);
-      // yRenderer.labels.template.set("fill", series.get("fill"));
       yRenderer.setAll({
         stroke: 'white',
         strokeOpacity: 1,
         opacity: 1
       });
-      // console.log(this.yAxisVisibleSeriesCount.get(yAxis.uid), "is NAn")
+
       if (!this.yAxisVisibleSeriesCount.get(yAxis.uid)) this.yAxisVisibleSeriesCount.set(yAxis.uid, 1);
       else this.yAxisVisibleSeriesCount.set(yAxis.uid, this.yAxisVisibleSeriesCount.get(yAxis.uid) + 1);
       this.seriesArr.push(series)
@@ -697,7 +580,9 @@ export default {
 
     // КУРСОР
     let cursor = chart.set("cursor", am5xy.XYCursor.new(root, {
-      behavior: "none",
+      behavior: "zoomX",
+      snapToSeries: [],
+      xAxis: xAxis
     }));
     cursor.lineY.set("visible", false);
     cursor.lineX.setAll({
@@ -753,7 +638,6 @@ export default {
       renderer.set("visible", true);
     }
 
-    console.log(this.yAxisVisibleSeriesCount, " map");
     this.seriesArr.forEach(series => {
       series.on("visible", (visible, target) => {
         var yAxises = series.get("yAxis");
