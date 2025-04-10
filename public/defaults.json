@@ -1,5 +1,5 @@
 {
-  "ip" : "localhost:5201",
+  "ip" : "172.16.30.16:5201",
   "Caption" : "Vasya",
-  "version" : "0.9.15"
+  "version" : "0.9.15.1"
 }

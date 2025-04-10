@@ -89,12 +89,14 @@ export default {
             'Content-Type': 'application/json',
             'Authorization': `${localStorage.getItem('token')}`
           };
-          axios.get(`http://${this.ip}/api/nodes/${this.encript((new TextEncoder()).encode(this.$parent.windowpath))}/widget/${this.encript((new TextEncoder()).encode(this.duval.Name))}/query/triangle-history/15`, { headers })
+          axios.get(`http://${this.ip}/api/nodes/${this.encript((new TextEncoder()).encode(this.$parent.windowpath))}/widget/${this.encript((new TextEncoder()).encode(this.duval.Name))}/query/triangle-history/10`, { headers })
               .then((result)=>{
-                if (result.data.resultData.length !== 0) {
-                  ctx.putImageData(imageData, 0, 0);
-                  this.drawArray(result.data.resultData);
-                  console.log(result.data.resultData);
+                console.log(result);
+                if (result.data !== "" && result.data.resultData.length !== 0) {
+                    ctx.putImageData(imageData, 0, 0);
+                    this.drawArray(result.data.resultData);
+                    console.log(result.data.resultData);
+
                 } else {
                   store.dispatch('AddNotification_action', { text: `Ошибка: Остутствуют данные для формирования истории Треугольника Дюваль`, type: 'Error', time: 2000 });
                 }
