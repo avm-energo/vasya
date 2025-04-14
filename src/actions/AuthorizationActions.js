@@ -65,7 +65,6 @@ export const login = async (login, password, callback) => {
 
 export const auth = async () => {
     try {
-        console.log('dsds')
         if (!localStorage.getItem('token')) {
             route.push('/authorization');
             return

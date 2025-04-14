@@ -84,8 +84,8 @@ export default {
   computed: {
     cssProps() {
       return {
-        "--x": this.params.x  * this.$parent.multiplier + (this.params.width*this.params.scale - this.params.width)/2*this.$parent.multiplier + "px",
-        "--y": this.params.y  * this.$parent.multiplier + (this.params.height*this.params.scale - this.params.height)/2*this.$parent.multiplier + "px",
+        "--x": this.params.x  * this.$parent.multiplier + (this.params.width - this.params.width)/2*this.$parent.multiplier + "px",
+        "--y": this.params.y  * this.$parent.multiplier + (this.params.height - this.params.height)/2*this.$parent.multiplier + "px",
         // при 1 X вылезает поверх всех окон
         "--z": [this.params.text == 'X' ? 0 : ''],
         "--width": this.params.width  * this.$parent.multiplier * this.params.scale + "px",

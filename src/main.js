@@ -1,44 +1,38 @@
-import { createApp } from 'vue'
-import App from './App.vue'
-// import './registerServiceWorker'
-import router from './router'
-import store from './store'
-// import {VueLogger, vlOptions} from './actions/Logger'
-import { onUnmounted } from '@vue/runtime-core'
+import { createApp } from 'vue';
+import App from './App.vue';
+import router from './router';
+import store from './store';
+import { library } from '@fortawesome/fontawesome-svg-core';
+import { fas } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 
-onUnmounted(() => {
-  App.unmount()
-  App.config.globalProperties.$cache = null;
-})
+library.add(fas);
 
-if ('serviceWorker' in navigator) {
-  if (!navigator.serviceWorker?.controller) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('sw.js')
-        .then(registration => {
-          console.log('Service Worker registered:', registration);
-        })
-        .catch(error => {
-          console.error('Service Worker registration failed:', error);
-        });
-    });
-  }  
+const app = createApp(App);
+
+// Очистка кэша перед закрытием вкладки
+if (typeof window !== 'undefined') {
+  window.addEventListener('beforeunload', () => {
+    if (app.config.globalProperties.$cache) {
+      app.config.globalProperties.$cache = null;
+    }
+  });
 }
 
-import { library } from '@fortawesome/fontawesome-svg-core'
+// Регистрация Service Worker
+if ('serviceWorker' in navigator && !navigator.serviceWorker.controller) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js')
+      .then(registration => {
+        console.log('Service Worker registered:', registration);
+      })
+      .catch(error => {
+        console.error('Service Worker registration failed:', error);
+      });
+  });
+}
 
-/* import specific icons */
-import { fas } from '@fortawesome/free-solid-svg-icons'
-
-/* import font awesome icon component */
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
-
-library.add(fas)
-
-createApp(App).component('v-icon', FontAwesomeIcon)
-              .use(store)
-              .use(router)
-              // .use(VueLogger, vlOptions)
-              .mount('#app')
-
-
+app.component('v-icon', FontAwesomeIcon)
+   .use(store)
+   .use(router)
+   .mount('#app');

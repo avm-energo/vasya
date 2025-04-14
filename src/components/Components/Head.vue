@@ -94,7 +94,7 @@ export default {
         "--height": this.myJson.canvas.height * this.multiplier + "px",
         "--background": "#" + this.myJson.canvas.background,
         "--borderRadius": this.myJson.canvas.borderRadius + "px",
-        "--borderThickness": '1px',
+        "--borderThickness": this.myJson.canvas.borderThickness + "px",
         '--backgroundArea1': parseInt(this.myJson.canvas.backgroundArea.slice(0,2), 16),
         '--backgroundArea2': parseInt(this.myJson.canvas.backgroundArea.slice(2,4), 16),
         '--backgroundArea3': parseInt(this.myJson.canvas.backgroundArea.slice(4,6), 16),
