@@ -28,6 +28,9 @@ export default {
         "--height": this.params.height * this.$parent.multiplier * this.params.scale + "px",
       }
     }
+  },
+  created(){
+    console.log(this.params)
   }
 }
 </script>

@@ -121,3 +121,38 @@ export async function GetLogOutTime(callback) {
         callback(false)
     }
 }
+
+export async function GetImage(ninjaResourceId, callback) {
+    try {
+        const url = `http://${await getHost()}/api/resources/${ninjaResourceId}`;
+        const response = await fetch(url, {
+            method: 'GET',
+            headers: { 
+                Authorization: `${localStorage.getItem('token')}`,
+                'Accept': 'image/*' // Указываем, что ожидаем изображение
+            }
+        });
+
+        console.log(response);
+
+        if (response.status === 200) {
+            // Получаем данные как Blob
+            const imageBlob = await response.blob();
+            
+            // Создаем URL для изображения
+            const imageUrl = URL.createObjectURL(imageBlob);
+            
+            // Вызываем callback с URL изображения и blob
+            callback(null, {
+                url: imageUrl,
+                blob: imageBlob
+            });
+        } else {
+            const errorData = await response.json().catch(() => ({}));
+            callback(new Error(`Ошибка загрузки изображения: ${response.status} ${response.statusText}`), null);
+        }
+    } catch (error) {
+        console.error('Ошибка при загрузке изображения:', error);
+        callback(error, null);
+    }
+}
