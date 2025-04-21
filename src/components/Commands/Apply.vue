@@ -109,7 +109,7 @@ export default {
     } else {
       this.pathName = 'windowname'
     }
-    console.log(this.params)
+    // console.log(this.params)
   }
 };
 </script>

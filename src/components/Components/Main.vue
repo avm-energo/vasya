@@ -266,6 +266,15 @@ export default {
       this.multiplier = this.multiplierwindow
       this.$parent.multiplier = this.multiplier
       this.$store.dispatch('mainmultiplier', [true, this.multiplier])
+
+      this.namewindow = this.myJson.path
+      this.windowname = this.namewindow.split('\\').join('')
+      if (this.path){
+        this.windowpath = this.path
+      } else {
+        this.windowpath = this.namewindow
+      }
+
     },
     reportWindowSize(){
       let multiplierwindow;
@@ -324,13 +333,6 @@ export default {
       window.addEventListener('resize', this.reportWindowSize)
       this.width = window.innerWidth - 2
       this.height = window.innerHeight ;
-      this.namewindow = this.myJson.path
-      this.windowname = this.namewindow.split('\\').join('')
-      if (this.path){
-        this.windowpath = this.path
-      } else {
-        this.windowpath = this.namewindow
-      }
     } else {
       this.mas = this.myJson.myBindings.map((element) =>  element);
       this.mas.shift()
@@ -339,7 +341,7 @@ export default {
   updated() {
     // Этот метод вызывается после перерендера компонента
     this.reportWindowSize()
-    console.log('Компонент Main был перерендерен');
+    // console.log('Компонент Main был перерендерен');
   },
 };
 </script>

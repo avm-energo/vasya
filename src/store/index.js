@@ -247,6 +247,7 @@ export default createStore({
         var zyx = setTimeout(() => {
           // console.log("я запустил:" + name)
           var xyz = setInterval(async () => {
+            ticknumber = state.tickmas.findIndex((el => el.name == name.split('\\').join('')))
             state.tickmas[ticknumber].mas = []
             try {
               // console.log(state.tickmas[ticknumber].tick)
@@ -347,18 +348,6 @@ export default createStore({
         this.dispatch("updateElems", data.name);
     },
 
-    closewindow(state, name) {
-      state.commandwidgetmass.splice(state.commandwidgetmass.findIndex((t) => t.namewindow === name), 1)
-      const index = state.tickmas.findIndex((t) => t.name === name)
-      state.elems.pop();
-      clearInterval(state.tickmas[index].interval);
-      clearTimeout(state.tickmas[index].timeout)
-      state.tickmas.splice(index,1)
-      // var localArray = JSON.parse(sessionStorage.getItem("localArray"))
-      // localArray.pop()
-      // sessionStorage.setItem('localArray', JSON.stringify(localArray))
-    },
-
     changemainheight(state, h){
       state.mainheight = state.mainheight - h
     },
@@ -406,7 +395,21 @@ export default createStore({
       console.log(state.commandwidgetmass)
     },
 
+    closewindow(state, name) {
+      state.commandwidgetmass.splice(state.commandwidgetmass.findIndex((t) => t.namewindow === name), 1)
+      const index = state.tickmas.findIndex((t) => t.name === name)
+      state.elems.pop();
+      clearInterval(state.tickmas[index].interval);
+      clearTimeout(state.tickmas[index].timeout)
+      state.tickmas.splice(index,1)
+      // var localArray = JSON.parse(sessionStorage.getItem("localArray"))
+      // localArray.pop()
+      // sessionStorage.setItem('localArray', JSON.stringify(localArray))
+    },
+
     async changeMainWindow(state, data){
+      // console.log(state.tickmas)
+      // console.log(data)
       if (state.prevMainWindow != data.properties.path) {
         this.dispatch("closewindow", state.tickmas.find((el)=> el.name == state.prevMainWindow.split('\\').join('')).name);
         if (state.tickmas.find(res => res.name == data.properties.path.split('\\').join(''))) 
@@ -433,8 +436,8 @@ export default createStore({
               });
             }
           }
-      }
-      state.prevMainWindow = data.properties.path
+        }
+        state.prevMainWindow = data.properties.path
     },
     changeDefaultMainWindowName(state, name){
       state.prevMainWindow = name

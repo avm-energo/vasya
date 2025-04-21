@@ -55,12 +55,14 @@
         <div style="margin: 8px 0 0 8px">EVENTS HISTORY</div>
         <div id="closewindow" @click="clickhistory">x</div>
       </div>
+      <div></div>
+      <div></div>
       <div id="history_window_head">
         <div id="history_window_head_datefilter">
           <div id="history_window_head_datefilter_date">
-            &#160;&#160;From:&#160;&#160;
+            <p>&#160;&#160;From:&#160;&#160;</p>
             <div style="width: 40%"><datepicker v-model="starttime" :clearable="false" :style="cssPropsHistory" class="dattepicker" :dark="true"/></div>
-            &#160;&#160;To:&#160;&#160;
+            <p>&#160;&#160;To:&#160;&#160;</p>
             <div style="width: 40%"><datepicker v-model="endtime" :clearable="false" :style="cssPropsHistory" class="dattepicker" :dark="true"/></div>
             <a class="icons__item" @click="updatedata()">
               <svg
@@ -159,7 +161,6 @@ export default {
     EventsHistoryTable
   },
   created() {
-    
     this.$store.dispatch("changemainheight", 24);
     this.data = this.myJson.data;
     this.footertitle = this.myJson.data["footer-title"];
@@ -296,9 +297,9 @@ export default {
       data.push(this.endtime);
       data.push(this.starttime);
       await this.$store.dispatch("gethistorytime", data);
-      console.log(this.starttime, " - Начало");
-      console.log(this.endtime, " - Конец");
-      // this.isLoading = !this.isLoading;
+      // console.log(this.starttime, " - Начало");
+      // console.log(this.endtime, " - Конец");
+      this.isLoading = !this.isLoading;
     },
     // sortArrayAsync(array, currentSortDir, currentSort) {
     //   console.log(array, " - Array in Worker")
@@ -582,6 +583,7 @@ tbody{
   width: 50%;
   display: flex;
   flex-direction: row;
+  justify-content: center;
   align-items: center;
 }
 #datepicker{
@@ -593,7 +595,6 @@ tbody{
   flex-direction: row;
   align-items: center;
   justify-content: center;
-  padding-bottom: 20px;
 }
 #history_window_body {
   width: 100%;

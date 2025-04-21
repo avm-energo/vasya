@@ -78,6 +78,7 @@ export default {
         this.$store.dispatch('innactivereset')
         this.$store.dispatch('AddNotification_action', { text: `Время вашей сессии истекло!`, type: 'Error', time: 5000 })
         login('Guest', 'Guest', (e) =>{
+          // console.log(this.$store.state.tickmas)
           for (let i = 3; i <= this.$store.state.tickmas.length; i++) {
             clearInterval(this.$store.state.tickmas[i].interval)
             this.$store.state.tickmas.splice(i,1);
@@ -95,9 +96,9 @@ export default {
           this.worker.addEventListener('message', (e) => {
             if (!this.innactiveStatus && this.name != 'Guest' && localStorage.getItem('userName')) {
               this.innactiveTimer++
-              console.log(this.innactiveTimer)
+              // console.log(this.innactiveTimer)
               if (this.innactiveTimer >= newStatus){
-                console.log(this.innactiveTimer)
+                // console.log(this.innactiveTimer)
                 this.innactiveStatus = true
                 this.LogoutToGuest()
               }

@@ -107,7 +107,7 @@ export default {
     <thead class="sticky-header">
       <tr>
         <td class="history_window_body_table_columns"></td>
-        <td class="history_window_body_table_columns" style="width: 80%; overflow: hidden" @click="sortHistory('message')">Message</td>
+        <td class="history_window_body_table_columns" style="width: 80%; overflow: hidden;" @click="sortHistory('message')">Message</td>
         <td class="history_window_body_table_columns" style="width: 5%;" @click="sortHistory('type')">Type</td>
         <td class="history_window_body_table_columns" style="width: 15%;" @click="sortHistory('time')">Time</td>
   <!--      <td class="history_window_body_table_columns">Message</td>-->
@@ -117,7 +117,7 @@ export default {
     </thead>
     <tbody>
       <tr v-for="obj in filteredHistoryList.slice(0, historymasVisible)" :key="obj.id" class="hover">
-        <td style="display: flex; justify-content: center; align-items: center; height: 17px; margin-left: 5px;"><div style="width: 10px; height: 10px; border-radius: 50%;" :style="{background: obj.state == 4 ? 'red' : obj.state == 1 ? 'white' : 'yellow'}"></div></td>
+        <td style="display: flex; justify-content: center; align-items: center; height: 17px; margin-left: 5px; width: 10px;"><div style="width: 10px; height: 10px; border-radius: 50%;" :style="{background: obj.state == 4 ? 'red' : obj.state == 1 ? 'white' : 'yellow'}"></div></td>
         <td style="padding-right: 25px; padding-left: 10px;">{{ obj.message }}</td>
         <td style="width: 120px; padding-right: 25px;">{{ eventTypeName[obj.type]}}</td>
         <td>{{ DateTime(obj.time) }}</td> 

@@ -3,8 +3,8 @@
     <!-- <div v-clickoutside:[typewindow]="onClickOutside"> -->
     <div>
       <div id="head" v-show="infoFromTooltiper?.title">
-        <div id="headtext">{{ infoFromTooltiper?.title }}</div>
-        <div id="closewindow" @click.stop="closejson">x</div>
+        <div id="headtext"><p>{{ infoFromTooltiper?.title }}</p></div>
+        <div id="closewindow" @click.stop="closejson"><p>X</p></div>
       </div>
       <div id="mainBodyBackground" :style="cssProps">
         <div id="mainbody" :style="cssProps">
@@ -256,7 +256,11 @@ export default {
       this.multiplierwindowww = 1
       this.multiplier = 1
       this.multiplierwindow = this.multiplierwindow * this.subscreensize
-      this.windowname = this.infoFromTooltiper?.path.split('\\').join('')
+      if (this.infoFromTooltiper) {
+        this.windowname = this.infoFromTooltiper?.path.split('\\').join('')
+      } else {
+        this.windowname = this.namewindow.split('\\').join('')
+      }
       if (this.path){
         this.windowpath = this.path
       } else {
@@ -296,7 +300,7 @@ export default {
   },
   updated() {
     // Этот метод вызывается после перерендера компонента
-    console.log('Компонент Window был перерендерен');
+    // console.log('Компонент Window был перерендерен');
   },
 };
 </script>
@@ -343,15 +347,21 @@ export default {
   /* cursor: grab; */
 }
 #headtext{
-  padding: 3px;
+  height: 100%;
   font-size: rgb(var(--headerFontsize));
   /* vertical-align: text-bottom; */
   user-select: none;
 }
+#headtext p, #closewindow p{
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
 #closewindow{
   user-select: none;
   color:rgb(65, 65, 255);
-  font-size:20px;
+  font-size:18px;
   width: 25px;
   text-align:center;
   height: 100%;

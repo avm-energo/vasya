@@ -100,7 +100,6 @@ export default {
     //   console.log(this.params.properties.leftIcon)
     // }
     if (this.params.properties.text == 'Главный экран' && this.tooltiperFromHeader) this.$store.dispatch("changeDefaultMainWindowName", this.params.properties.path);
-    this.button.Name = this.params.name
     if (this.$parent.subscreenname){ 
       this.button.Name += '/' + this.$parent.subscreenname
     }
@@ -118,6 +117,13 @@ export default {
     
   },
   methods: {
+    updateIndo(){
+      this.button.Name = this.params.name
+      this.button.value = this.params.properties.text
+      this.button.ForegroundColor = this.params.properties.foreground
+      this.button.BackgroundColor = this.params.properties.background
+      this.button.neightbourState = this.params.properties.neightbourState
+    },
     some() {
       let data = [];
       data.name = this.params.properties.path;
@@ -151,6 +157,7 @@ export default {
         "--width": (this.params.properties.width / 1) * this.$parent.multiplier * [this.params.properties.scale || 1]  + "px",
         "--height": (this.params.properties.height / 1) * this.$parent.multiplier * [this.params.properties.scale || 1]  + "px",
         "--backgroundColor": [this.button.neightbourState == "Red" ? "Red" : [ this.button.neightbourState == "Yellow" ? "Yellow" : "#" + this.button.BackgroundColor, ],],
+        "--backgroundColorHover": [this.button.neightbourState == "Red" ? "Red" : [ this.button.neightbourState == "Yellow" ? "Yellow" : '#16466C', ],],
         "--color": [this.button.neightbourState == "Yellow" ? "Black": this.button.ForegroundColor,],
         "--borderThickness": [this.params.properties.windowBorderBrush ? this.$parent.multiplier + 'px' : '0px'],
         "--borderBrush": this.params.properties.borderBrush ? this.params.properties.borderBrush : 'transparent',
@@ -177,6 +184,11 @@ export default {
       };
     },
   },
+  watch:{
+    params(){
+      this.updateIndo()
+    },
+  }
 };
 </script>
 
@@ -234,9 +246,9 @@ p {
 }
 
 .button:hover {
-  background-color: var(--backgroundColor);
-  filter: brightness(80%);
-  background-blend-mode: da;
+  background-color: var(--backgroundColorHover);
+  /* filter: brightness(80%); */
+  /* background-blend-mode: da; */
 }
 .button:active {
   background-color: var(--backgroundColor);
