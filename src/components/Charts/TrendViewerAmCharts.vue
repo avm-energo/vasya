@@ -189,7 +189,6 @@ export default {
     },
 
     changeTimeframe(e) {
-      console.log(e.target.id)
       switch (e.target.id) {
         case "timeframe_1":
           this.setTimeFrame(1);
@@ -211,32 +210,41 @@ export default {
     async some() {
       this.endtime = moment(this.seriesArr[0].data.values[this.seriesArr[0].data.values.length - 1].argument).toISOString()
     },
+
     showlegend() {
     },
+
     startlive() {
     },
+
     stoplive() {
     },
+
     print() {
     },
+
     downloadpng() {
     },
+
     async liveview() {
       this.viewlive = !this.viewlive
 
     },
+
     stopfetch() {
       this.viewlive = false
       // this.getdata = !this.getdata
       this.controller.abort()
       this.controller = new AbortController();
     },
+
     exporttoexcel() {
       if (this.datajson.length !== 0)
         console.log('Export To Excel is in Progress!');
       else
         store.dispatch('AddNotification_action', { text: `Ошибка: Остутствуют данные для формирования отчета Excel`, type: 'Error', time: 5000 });
     },
+
     encript(values) {
       const Alphabet = "12345678" + "9ABDEFGH" + "JKLMNPQR" + "STUVWXYZ";
       var bitsCount = 8 * values.length;
@@ -259,8 +267,6 @@ export default {
     async getChartData(startDate, endDate, iteration) {
       // Задаем парамтеры даты начала и даты окончания для запроса
       const article = this.updatedBody(startDate, endDate)
-      // console.log(this.divideTimeInterval(this.starttime, this.endtime), " - Разделение на 10 интервалов");
-      console.log('запросил')
       const headers = {
         'Content-Type': 'application/json',
         'Authorization': `${localStorage.getItem('token')}`,
@@ -271,10 +277,6 @@ export default {
             signal: this.controller.signal
           },)
           .then(response => {
-            // console.log(this.controller)
-            console.log(response.data)
-            // this.gettingdata()
-            console.log('получил')
             return response.data
           })
           .catch(function (error) {
@@ -301,22 +303,19 @@ export default {
     getChartsInfo() {
       this.chartInfo = this.params.strends
     },
+
     updatedBody(start, end) {
       var body = `{
           "lowerTime": "${moment(new Date(start).getTime()).format("YYYY-MM-DDTHH:mm:ss")}",
           "upperTime": "${moment(new Date(end).getTime()).format("YYYY-MM-DDTHH:mm:ss")}"
       }`;
-      // console.log((moment(new Date(this.endtime)) - moment(new Date(this.starttime)))/60000*60)
-      console.log('new body created');
       return body
     },
-
 
     updateChart() {
       if (this.chartDataArr !== undefined) {
         for (let i = 0; i < this.chart.series.values.length; i++) {
           var data = this.generateDatas(i);
-          console.log('asd')
           this.seriesArr[i].data.setAll(data)
         }
       }
@@ -325,7 +324,6 @@ export default {
     clearChart() {
       if (this.chartDataArr !== undefined) {
         for (let i = 0; i < this.chart.series.values.length; i++) {
-          console.log('clear')
           this.seriesArr[i].data.setAll([])
         }
       }
@@ -338,6 +336,7 @@ export default {
         value: point.value
       };
     },
+
     generateDatas(num) {
       let dataArr = [];
 
@@ -346,12 +345,10 @@ export default {
       }
       return dataArr
     },
+
     async updateChartSeries() {
       // Indicator
       this.gettingdata()
-      // на данном этапе нужно проверить сроки
-      console.log(this.starttime)
-      console.log(this.endtime)
 
       this.loading_per = 0;
 
@@ -362,9 +359,7 @@ export default {
       else if (diff <= 2678403559) this.intervals_count = 10;
       else this.intervals_count = 20;
 
-      console.log(this.endtime.getTime() - this.starttime.getTime(), " - Мс");
       const intervals = this.divideTimeInterval(this.starttime, this.endtime);
-      console.log(intervals, " Интервалы")
 
       // this.root.dispose()
       this.clearChart();
@@ -386,17 +381,25 @@ export default {
       }
       this.loading_per = 100;
 
-
-
-      // Если нам их хватает, то просто computed свойство само ограничит таймлайн
-      console.log("Готово")
       this.gettingdata()
 
     },
-    //
+
     gettingdata() {
       this.getdata = !this.getdata
     },
+
+    handleKeyDown(e) {
+      if (e.ctrlKey) {
+        this.chart.set("wheelY", "zoomY");
+      } else if (e.shiftKey) {
+        this.chart.set("wheelY", "panY");
+      }
+    },
+
+    handleKeyUp(e) {
+      this.chart.set("wheelY", "zoomX"); // сброс к дефолту
+    }
   },
 
   async mounted() {
@@ -443,27 +446,13 @@ export default {
 
     this.xAxis = xAxis
 
-    // УСТАНАВЛИВАЕМ РУЧНОЙ ДИАПАЗОН ОСИ X:
-    // const buffer = (this.endtime - this.starttime) * 0.05; // небольшой отступ по краям
-    // xAxis.setAll({
-    //   min: this.starttime.getTime() - buffer,
-    //   max: this.endtime.getTime() + buffer,
-    //   strictMinMax: true,
-    //   startLocation: 0.5,
-    //   endLocation: 0.5
-    // });
-    // this.xAxis = xAxis
-    //
-
     const diff = this.endtime.getTime() - this.starttime.getTime()
     if (diff <= 86400000 * 2) this.intervals_count = 1;
     else if (diff <= 345600000) this.intervals_count = 2;
     else if (diff <= 1209600000) this.intervals_count = 4;
     else this.intervals_count = 10;
 
-    console.log(this.endtime.getTime() - this.starttime.getTime(), " - Мс");
     const intervals = this.divideTimeInterval(this.starttime, this.endtime);
-    console.log(intervals, " Интервалы")
 
     this.getChartsInfo()
     this.setTimeFrame(1);
@@ -472,21 +461,16 @@ export default {
 
     this.seriesArr = []
 
-    console.log(this.chartDataArr, " ChartDataArr")
-
     // НАЧАЛО ЦИКЛА SERIES ------------------------------------------------------
     for (let i = 0; i < this.chartDataArr.resultData.length; i++) {
 
       var linecolor = am5.color("#" + this.chartInfo[i].sColor.slice(0, 6))
 
-      console.log(this.params, "this.params");
       const parentID = this.params.strends[i]["parentID"];
       const saxes = this.params.saxes.filter(item => item.id === parentID);
 
       if (this.saxes.filter(item => item.id === saxes[0].id).length === 0) {
         this.saxes.push(saxes[0]);
-        console.log(saxes[0], "saxes[0]")
-        //
 
         var yRenderer = am5xy.AxisRendererY.new(root, {
           opposite: true,
@@ -514,7 +498,6 @@ export default {
         //
       }
 
-      console.log(yAxis, " YAxis")
       var series = chart.series.push(
           am5xy.LineSeries.new(root, {
             name: this.chartInfo[i].name,
@@ -582,7 +565,8 @@ export default {
     let cursor = chart.set("cursor", am5xy.XYCursor.new(root, {
       behavior: "zoomX",
       snapToSeries: [],
-      xAxis: xAxis
+      xAxis: xAxis,
+      yAxis: yAxis
     }));
     cursor.lineY.set("visible", false);
     cursor.lineX.setAll({
@@ -590,7 +574,11 @@ export default {
       strokeWidth: 1,
       strokeDasharray: []
     });
-    //
+
+    // Обработчики при нажатии на кнопки для масштабирования трендов
+    window.addEventListener("keydown", this.handleKeyDown);
+    window.addEventListener("keyup", this.handleKeyUp);
+
     // ЛЕГЕНДА Сверху
     var legend = chart.topAxesContainer.children.push(am5.Legend.new(root, {
       centerX: am5.percent(50),
@@ -679,12 +667,10 @@ export default {
         signal: controller.signal
       })
           .then(response => {
-            // console.log(response)
             if (response.data.resultData) {
               if (response.data.resultData[0].points[0]) {
                 response.data.resultData.forEach(res => {
                   var seriesfind = series.find(s => s.uid === res.uid)
-                  // console.log(res)
                   for (let i = 0; i < res.points.length; i++) {
                     seriesfind.data.push({
                       argument: new Date(res.points[i].argument).getTime(),
@@ -698,7 +684,6 @@ export default {
           })
           .catch(function (error) {
           })
-      // console.log(series)
       if (!controller.signal.aborted) {
         timeoutId = setTimeout(() => {
           addData(series, ip, win, name);
@@ -719,10 +704,7 @@ export default {
     }
 
     async function addData(seriesArr, ip, win, name) {
-      // console.log(moment(seriesArr[0].data.values[seriesArr[0].data.values.length-1].argument).format('LLLL'))
-      // console.log(endtime)
-      // endtime = moment(seriesArr[0].data.values[seriesArr[0].data.values.length-1].argument).format('LLLL')
-      // console.log(endtime)
+
       function encript(values) {
         const Alphabet = "12345678" + "9ABDEFGH" + "JKLMNPQR" + "STUVWXYZ";
         var bitsCount = 8 * values.length;
@@ -751,13 +733,11 @@ export default {
           .then(response => {
             if (response.data.resultData) {
               if (response.data.resultData[0].points[0]) {
-                // console.log(response)
                 seriesArr.forEach(series => {
                   series.data.removeIndex(0)
                 })
                 response.data.resultData.forEach(res => {
                   var seriesfind = seriesArr.find(s => s.uid === res.uid)
-                  // console.log(res)
                   for (let i = 0; i < res.points.length; i++) {
                     seriesfind.data.push({
                       argument: new Date(res.points[i].argument).getTime(),
@@ -836,20 +816,15 @@ export default {
     }
   },
   beforeDestroy() {
+    window.removeEventListener("keydown", this.handleKeyDown);
+    window.removeEventListener("keyup", this.handleKeyUp);
     stoplive()
     if (this.root) {
       this.root.dispose();
     }
   },
   computed: {
-    currentChartDataArr() {
-      const arr = Object.assign(this.chartDataArr)
-      // for (let i = 0; i < arr.length; i++) {
-      //   arr.resultData[i].points.filter(item => item.argument.getTime() >= (new Date(this.starttime)).getTime() )
-      // }
-      return arr
-      // return this.chartDataArr
-    },
+
     cssProps() {
       return {
         "--x": this.params.x * this.$parent.$parent.multiplier + "px",
@@ -862,6 +837,7 @@ export default {
         "--fontSize": this.params.fontSize * this.$parent.$parent.multiplier + "px",
       };
     },
+
     cssPropsLoading() {
       return {
         "--x": this.params.x * this.$parent.$parent.multiplier + "px",
@@ -874,6 +850,7 @@ export default {
         "--fontSize": this.params.fontSize * this.$parent.$parent.multiplier + "px",
       };
     },
+
     datajson() {
       if (this.seriesArr) {
         var items = [];
@@ -899,6 +876,7 @@ export default {
         return null
       }
     },
+
     ip() {
       return this.$store.getters.ip;
     },
