@@ -22,4 +22,5 @@ pnpm-debug.log*
 /serv.bat 
 node_modules/
 dist/
+output/
 !public/*.json

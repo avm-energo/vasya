@@ -23,6 +23,7 @@ Name: Russian; MessagesFile: "compiler:Languages\Russian.isl"
 
 [Files]
 Source: "..\dist\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs
+Source: "..\conf\version"; DestDir: "{app}";
 Source: "preuninstall.bat"; DestDir: "{app}";
 Source: "nginx-1.24.0.zip"; DestDir: "{tmp}";
 Source: "install.bat"; DestDir: "{tmp}";
