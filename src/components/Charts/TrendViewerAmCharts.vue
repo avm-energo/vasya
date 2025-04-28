@@ -897,7 +897,7 @@ export default {
 }
 
 #box_loading {
-  //background: rgba(35, 35, 35, 0.8);
+  /* background: rgba(35, 35, 35, 0.8); */
   position: absolute;
   /* border: solid 1px green; */
   width: var(--width);
@@ -915,20 +915,20 @@ export default {
   align-items: center;
   top: calc(var(--y) + 60px);
   left: calc(var(--x) + 8px);
-  //bottom: 0;
-  //right: 0;
+  /* bottom: 0; */
+  /* right: 0; */
   padding: 10px;
   display: flex;
   justify-content: center;
-  //flex-direction: row;
+  /* flex-direction: row; */
 }
 
 #box_loading_center {
-  //border: solid 1px white;
-  //width: 30%;
-  //height: 30%;
+  /* border: solid 1px white; */
+  /* width: 30%; */
+  /* height: 30%; */
   padding: 10px;
-  //background-color: #232323;
+  /* background-color: #232323; */
   align-items: center;
   display: flex;
   justify-content: center;

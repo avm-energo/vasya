@@ -215,7 +215,7 @@ export default createStore({
         state.footer = data3;
         data3.ip = state.ip
       }
-
+      // console.log(data3)
       var mas = JSON.parse(sessionStorage.getItem("localArray"))
       if (mas) {
         mas.forEach((element,index) =>{
@@ -364,6 +364,7 @@ export default createStore({
       );
       // console.log(`http://${state.ip}/api/nodes/history/${moment(data[1]).format("YYYY-MM-DDTHH:mm:ss")}/${moment(data[0]).format("YYYY-MM-DDTHH:mm:ss")}`)
       const res = JSON.parse(await response.text());
+      // console.log(res)
       state.historymas = res
     },
 

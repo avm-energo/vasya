@@ -133,7 +133,7 @@ export async function GetImage(ninjaResourceId, callback) {
             }
         });
 
-        console.log(response);
+        // console.log(response);
 
         if (response.status === 200) {
             // Получаем данные как Blob

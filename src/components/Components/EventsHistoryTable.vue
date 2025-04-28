@@ -19,7 +19,11 @@ export default {
     filterButtons:{
       type: Object,
       required: true,
-    }
+    },
+    nameFromList: {
+      type: String,
+      required: String,
+    },
   },
   data () {
     return {
@@ -81,6 +85,13 @@ export default {
               return [...stateConditions, ...typeConditions].some(condition => condition);
             }
         })
+        .filter((sortByNameFromList)=>{
+          if (this.nameFromList == 'All') {
+            return sortByNameFromList
+          } else {
+            return sortByNameFromList.message == this.nameFromList
+          }
+        })
       return sortArr;
     },
   },
@@ -99,6 +110,11 @@ export default {
       // this.historymasVisible = 50;
     },
   },
+  watch:{
+    nameFromList(n){
+      console.log(n)
+    }
+  }
 }
 </script>
 
@@ -118,9 +134,9 @@ export default {
     <tbody>
       <tr v-for="obj in filteredHistoryList.slice(0, historymasVisible)" :key="obj.id" class="hover">
         <td style="display: flex; justify-content: center; align-items: center; height: 17px; margin-left: 5px; width: 10px;"><div style="width: 10px; height: 10px; border-radius: 50%;" :style="{background: obj.state == 4 ? 'red' : obj.state == 1 ? 'white' : 'yellow'}"></div></td>
-        <td style="padding-right: 25px; padding-left: 10px;">{{ obj.message }}</td>
-        <td style="width: 120px; padding-right: 25px;">{{ eventTypeName[obj.type]}}</td>
-        <td>{{ DateTime(obj.time) }}</td> 
+        <td class='history_window_body_table_columns_row' style="padding-right: 15px; padding-left: 10px; white-space: nowrap;">{{ obj.message }}</td>
+        <td class='history_window_body_table_columns_row' style="max-width: 135px; min-width: 60px;">{{ eventTypeName[obj.type]}}</td>
+        <td class='history_window_body_table_columns_row' style="width: 170px; display: flex; justify-content: center;"><p>{{ DateTime(obj.time) }}</p></td> 
       </tr>
     </tbody>
   </table>
@@ -142,8 +158,12 @@ export default {
   text-align: center;
   user-select: none;
   cursor: pointer;
+  
 }
-
+.history_window_body_table_columns_row{
+  padding-left: 8px;
+  padding-right: 8px;
+}
 .history_window_body_table_columns:hover {
   background: #373737;
 }

@@ -261,8 +261,8 @@ export default {
       } else {
         this.windowname = this.namewindow.split('\\').join('')
       }
-      if (this.path){
-        this.windowpath = this.path
+      if (this.myJson.path){
+        this.windowpath = this.myJson.path
       } else {
         this.windowpath = this.namewindow
       }
@@ -302,6 +302,9 @@ export default {
     // Этот метод вызывается после перерендера компонента
     // console.log('Компонент Window был перерендерен');
   },
+  mounted(){
+    
+  }
 };
 </script>
 
