@@ -32,6 +32,7 @@ export default {
         },
     },
     setup(props, {emit}) {
+        console.log(props.treeData.data.category.childModels)
         const selectedId = ref('all')
         // Преобразование данных в древовидную структуру
         const processedTreeData = computed(() => {
@@ -40,10 +41,19 @@ export default {
                 return categories.map((category, index) => ({
                     id: `category-${index}`,
                     name: category.title || 'Unnamed Category',
-                    children: category.eventMessages.map((subCategory, index) => ({
+                    children: (category.childModels.length > 0 ? 
+                    category.childModels.map((subCategory, index) => ({
+                        id: `${category.title}-${index}`,
+                        name: subCategory.title || 'Unnamed Subcategory',
+                        children: subCategory.eventMessages.map((message, index) => ({
+                            id: `${subCategory.title}-${index}`,
+                            name: message.message
+                        }))
+                    })) : 
+                    category.eventMessages.map((subCategory, index) => ({
                         id: `${category.title}-${index}`,
                         name: subCategory.message || 'Unnamed Subcategory',
-                    }))
+                    })))  
                 }))
             } else {
                 return []

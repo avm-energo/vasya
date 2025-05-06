@@ -74,10 +74,9 @@
         }
       },
       selectItem() {
-        if (this.isSelectable) {
+        // if (this.isSelectable) {
           this.$emit('item-selected', [this.node.id, this.node.name])
-
-        }
+        // }
       },
       handleItemSelected(id) {
         this.$emit('item-selected', id)

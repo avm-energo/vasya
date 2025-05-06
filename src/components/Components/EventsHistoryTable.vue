@@ -30,7 +30,7 @@ export default {
       isSorted: false,
       currentSort: "",
       currentSortDir: "",
-      eventTypeName:['Leave','Come','Acknowledgament'],
+      eventTypeName:['Come','Leave','Acknowledgament'],
       historyList: {
         currentSort: "time",
         currentSortDir: "desc",
@@ -69,8 +69,8 @@ export default {
                 case 'alarm': stateConditions.push(event.state === 4); break;
                 case 'warning': stateConditions.push(event.state === 2); break;
                 case 'normal': stateConditions.push(event.state === 1); break;
-                case 'come': typeConditions.push(event.type === 1); break;
-                case 'leave': typeConditions.push(event.type === 0); break;
+                case 'come': typeConditions.push(event.type === 0); break;
+                case 'leave': typeConditions.push(event.type === 1); break;
                 case 'acknowledged': typeConditions.push(event.type === 2); break;
               }
             });
@@ -89,7 +89,7 @@ export default {
           if (this.nameFromList == 'All') {
             return sortByNameFromList
           } else {
-            return sortByNameFromList.message == this.nameFromList
+            return this.translit(sortByNameFromList.message.replace(/\s+/g, ' ')).startsWith(this.translit(this.nameFromList.split(':').join('. ').replace(/\s+/g, ' ')))
           }
         })
       return sortArr;
@@ -109,11 +109,24 @@ export default {
       this.historyList.currentSort = s;
       // this.historymasVisible = 50;
     },
+    translit(text) {
+      const rusToLat = {
+        'а': 'a', 'б': 'b', 'в': 'v', 'г': 'g', 'д': 'd', 'е': 'e', 'ё': 'yo',
+        'ж': 'zh', 'з': 'z', 'и': 'i', 'й': 'y', 'к': 'k', 'л': 'l', 'м': 'm',
+        'н': 'n', 'о': 'o', 'п': 'p', 'р': 'r', 'с': 's', 'т': 't', 'у': 'u',
+        'ф': 'f', 'х': 'h', 'ц': 'ts', 'ч': 'ch', 'ш': 'sh', 'щ': 'sch', 'ъ': '',
+        'ы': 'y', 'ь': '', 'э': 'e', 'ю': 'yu', 'я': 'ya',
+        'А': 'A', 'Б': 'B', 'В': 'V', 'Г': 'G', 'Д': 'D', 'Е': 'E', 'Ё': 'Yo',
+        'Ж': 'Zh', 'З': 'Z', 'И': 'I', 'Й': 'Y', 'К': 'K', 'Л': 'L', 'М': 'M',
+        'Н': 'N', 'О': 'O', 'П': 'P', 'Р': 'R', 'С': 'S', 'Т': 'T', 'У': 'U',
+        'Ф': 'F', 'Х': 'H', 'Ц': 'Ts', 'Ч': 'Ch', 'Ш': 'Sh', 'Щ': 'Sch', 'Ъ': '',
+        'Ы': 'Y', 'Ь': '', 'Э': 'E', 'Ю': 'Yu', 'Я': 'Ya'
+      };
+
+      return text.split('').map(char => rusToLat[char] || char).join('');
+    },
   },
   watch:{
-    nameFromList(n){
-      console.log(n)
-    }
   }
 }
 </script>

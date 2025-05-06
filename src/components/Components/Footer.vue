@@ -284,7 +284,8 @@ export default {
     },
     cssPropsHistory(){
       return{
-        "--fontsize": 18 * this.multiplier + 'px'
+        "--fontsize": 14 + 'px'
+        // "--fontsize": 16 * this.multiplier + 'px'
       }
     },
     processedTreeData() {
@@ -335,7 +336,7 @@ export default {
       await this.$store.dispatch("gethistorytime", data);
       // console.log(this.starttime, " - Начало");
       // console.log(this.endtime, " - Конец");
-      this.isLoading = !this.isLoading;
+      // this.isLoading = !this.isLoading;
     },
     // sortArrayAsync(array, currentSortDir, currentSort) {
     //   console.log(array, " - Array in Worker")
@@ -701,7 +702,8 @@ tbody{
 }
 #history_window_body {
   width: 100%;
-  height: 91.9%; /* высота списка  */
+  height: calc(100% - 81px); /* высота списка  */
+  /* height: 91.9%; высота списка  */
   overflow-y: auto;
   position: relative;
 }
