@@ -279,7 +279,7 @@ export default createStore({
               });
               // console.log(" time:" + new Date().getHours() + ":"+ new Date().getMinutes() + ":"+ new Date().getSeconds() + ":" + asdasda.getMilliseconds() + ' name = ' + name + " tick:" + state.tickmas[ticknumber].tick) 
               // console.log(data)
-              // console.log(state.tickmas[ticknumber])
+              // console.log(state.tickmas[ticknumber].mas)
               state.warning[state.warning.findIndex(elem => elem.name == 'adminja')].state = false
             }
             catch {

@@ -32,7 +32,6 @@ export default {
         },
     },
     setup(props, {emit}) {
-        console.log(props.treeData.data.category.childModels)
         const selectedId = ref('all')
         // Преобразование данных в древовидную структуру
         const processedTreeData = computed(() => {

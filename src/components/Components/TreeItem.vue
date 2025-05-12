@@ -10,13 +10,14 @@
         @click.stop="selectItem"
         @dblclick.stop="toggle"
       >
-        <span 
-          v-if="hasChildren" 
-          class="toggle-icon"
-          @click.stop="toggle"
-        >
-          {{ isOpen ? '▼' : '▶' }}
-        </span>
+      <span 
+        v-if="hasChildren" 
+        class="toggle-icon"
+        @click.stop="toggle"
+        :class="{ 'is-open': isOpen }"
+      >
+        ▶
+      </span>
         <span class="tree-item-text">
           {{ node.name }}
         </span>
@@ -133,6 +134,10 @@
     color: #666;
     cursor: pointer;
     flex-shrink: 0;
+    transition: transform 0.1s;
+  }
+  .toggle-icon.is-open {
+    transform: rotate(90deg);
   }
   
   .toggle-icon:hover {

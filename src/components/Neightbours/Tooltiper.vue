@@ -1,5 +1,5 @@
 <template>
-  <div class="button" :style="cssProps" v-show="button.Visible" @click="some">
+  <div class="button" :style="cssProps" v-show="button.Visible" @click="some" :class="flashing ? 'flash' :''">
 
     <!-- TRENDS -->
     <div class="button_icon" v-if="this.params.properties.leftIcon != 'None'" :style="cssPropsIcon"> 
@@ -64,7 +64,8 @@
         </svg>
       </div>
     </div>
-    <p class="p" :style="cssProps" v-if="((this.params.properties.width!=this.params.properties.height & this.params.properties.text != 'Navigator') || this.params.properties.leftIcon == 'None') && (this.params.properties.text.toLowerCase() != 'tooltiper')">{{button.value}}</p>    
+    <p class="p" :style="cssProps" v-if="((this.params.properties.width!=this.params.properties.height & this.params.properties.text != 'Navigator') || this.params.properties.leftIcon == 'None')">{{button.value}}</p>    
+    <!-- <p class="p" :style="cssProps" v-if="((this.params.properties.width!=this.params.properties.height & this.params.properties.text != 'Navigator') || this.params.properties.leftIcon == 'None') && (this.params.properties.text.toLowerCase() != 'tooltiper')">{{button.value}}</p>     -->
     <!-- <p class="p" :style="cssProps" v-else-if="(this.params.properties.width > 60 && this.params.properties.width!=this.params.properties.height) || this.params.properties.angle != 0">{{button.value}}</p> -->
   </div>
 </template>
@@ -92,13 +93,16 @@ export default {
         Visible: true,
         Enabled: true,
       },
+      flashing: false,
+      flashingColor: ''
     };
   },
   created() {
     // console.log(this.params)
-    // if (this.params.properties.leftIcon == 'Info') {
-    //   console.log(this.params.properties.leftIcon)
+    // if (this.params.name == 'Navigator#5') {
+    //   console.log(this.params.properties)
     // }
+    this.updateIndo()
     if (this.params.properties.text == 'Главный экран' && this.tooltiperFromHeader) this.$store.dispatch("changeDefaultMainWindowName", this.params.properties.path);
     if (this.$parent.subscreenname){ 
       this.button.Name += '/' + this.$parent.subscreenname
@@ -108,9 +112,12 @@ export default {
     const res = {'namewidget': this.button.Name, 'namewindow': this.$parent.windowname}
     setTimeout(() => {
       setInterval(() => {
-        let changedelem= this.$store.getters.elemByName(res)?.properties
+        let changedelem = this.$store.getters.elemByName(res)?.properties
+        // console.log(this.$store.state.tickmas)
         if (changedelem) {
-          if (changedelem.neightbourState) this.button.neightbourState = changedelem.neightbourState
+          // console.log(changedelem)
+          this.UpdateFlahingState(changedelem.isButtonEnabled, changedelem.neightbourState, changedelem.sFlashBehaviour, changedelem.isAcknowledged, changedelem.stateChangingBehaviour)
+          // if (changedelem.neightbourState) this.button.neightbourState = changedelem.neightbourState
         }
       },1000)
     }, 1000 - currentDateMilliseconds);
@@ -120,9 +127,11 @@ export default {
     updateIndo(){
       this.button.Name = this.params.name
       this.button.value = this.params.properties.text
-      this.button.ForegroundColor = this.params.properties.foreground
-      this.button.BackgroundColor = this.params.properties.background
-      this.button.neightbourState = this.params.properties.neightbourState
+      // this.button.ForegroundColor = this.params.properties.foreground
+      // this.button.BackgroundColor = this.params.properties.background
+      // this.button.neightbourState = this.params.properties.neightbourState
+      this.flashingColor = /\d/.test(this.params.properties.background) ? '#' + this.params.properties.background : this.params.properties.background
+      this.UpdateFlahingState(this.params.properties.isButtonEnabled, this.params.properties.neightbourState, this.params.properties.sFlashBehaviour, this.params.properties.isAcknowledged, this.params.properties.stateChangingBehaviour)
     },
     some() {
       let data = [];
@@ -147,6 +156,38 @@ export default {
         }
       // }
     },
+    UpdateFlahingState(isButtonEnabled, neightbourState, sFlashBehaviour, isAcknowledged, stateChangingBehaviour){
+      let activeStateUpdated 
+      if (!isButtonEnabled || sFlashBehaviour == 0) {
+        this.flashing = false
+        return
+      }  
+      if (neightbourState == 'Red') {
+        this.button.BackgroundColor = 'Red'
+        this.button.ForegroundColor = 'White'
+        activeStateUpdated = true
+      } else if (neightbourState == 'Yellow') {
+        this.button.BackgroundColor = 'Yellow'
+        this.button.ForegroundColor = 'White'
+        activeStateUpdated = true
+      } else if (neightbourState == 'Blue' && stateChangingBehaviour == 1) {
+        this.button.BackgroundColor = '#257CF9'
+        this.button.ForegroundColor = 'White'
+        activeStateUpdated = true
+      } else {
+      //  this.button.BackgroundColor = /\d/.test(neightbourState) ?  '#' + neightbourState : neightbourState
+      //  this.button.ForegroundColor = /\d/.test(foreground) ?  '#' + foreground : foreground
+      }
+      if (activeStateUpdated) {
+        if (sFlashBehaviour == 2 && !isAcknowledged) {
+          this.flashing = true
+        } else {
+          this.flashing = false
+        }
+      } else {
+        this.flashing = false
+      }
+    }
   },
   computed: {
     cssProps() {
@@ -156,9 +197,12 @@ export default {
         "--z": this.params.properties.z,
         "--width": (this.params.properties.width / 1) * this.$parent.multiplier * [this.params.properties.scale || 1]  + "px",
         "--height": (this.params.properties.height / 1) * this.$parent.multiplier * [this.params.properties.scale || 1]  + "px",
-        "--backgroundColor": [this.button.neightbourState == "Red" ? "Red" : [ this.button.neightbourState == "Yellow" ? "Yellow" : "#" + this.button.BackgroundColor, ],],
-        "--backgroundColorHover": [this.button.neightbourState == "Red" ? "Red" : [ this.button.neightbourState == "Yellow" ? "Yellow" : '#16466C', ],],
-        "--color": [this.button.neightbourState == "Yellow" ? "Black": this.button.ForegroundColor,],
+        // "--backgroundColor": [this.button.neightbourState == "Red" ? "Red" : [ this.button.neightbourState == "Yellow" ? "Yellow" : "#" + this.button.BackgroundColor, ],],
+        "--backgroundColor": this.flashing ? this.button.BackgroundColor : this.flashingColor,
+        '--backgroundFlashingColor': this.flashingColor,
+        "--backgroundColorHover": '#16466C',
+        "--colorYellow": [this.button.neightbourState == "Yellow" ? "Black": this.button.ForegroundColor,],
+        "--color": this.button.ForegroundColor,
         "--borderThickness": [this.params.properties.windowBorderBrush ? this.$parent.multiplier + 'px' : '0px'],
         "--borderBrush": this.params.properties.borderBrush ? this.params.properties.borderBrush : 'transparent',
         "--flexdir":  [this.params.properties.angle != 0 ? 'column' : 'row'],
@@ -246,7 +290,7 @@ p {
 }
 
 .button:hover {
-  background-color: var(--backgroundColorHover);
+  background-color: var(--backgroundColorHover) !important;
   /* filter: brightness(80%); */
   /* background-blend-mode: da; */
 }
@@ -256,16 +300,13 @@ p {
 }
 
 @keyframes glowing {
-  from {
-    background-color: var(--backgroundColor);
+  0%,50% {
+    background-color: var(--backgroundFlashingColor);
+    color:var(--color);
   }
-  50% {
+  50.01%,100% {
     background-color: var(--backgroundColor);
-    filter: brightness(35%);
-    /* backdrop-filter: brightness(50%); */
-  }
-  to {
-    background-color: var(--backgroundColor);
+    color: var(--colorYellow);
   }
 }
 .flash {

@@ -194,7 +194,7 @@ export default {
         let obj = JSON.parse(await response.text())
         this.tick = obj.tick
         if (obj.data!=null){
-          console.log(obj)
+          // console.log(obj)
           // if (obj.data["footer-title"]!=null) {this.footertitle = obj.data["footer-title"]}
           if (obj.data["footer-title"]){
             // console.log('yest')
