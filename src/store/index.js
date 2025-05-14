@@ -2,6 +2,7 @@
 import { createStore } from "vuex";
 // import ip from '../assets/ip.json'
 import moment from "moment";
+import { getTime } from "date-fns";
 // import { log4js } from "log4js";
 
 function encript(values) {
@@ -83,7 +84,7 @@ export default createStore({
   mutations:{
     AddNotification(state, payload) {
       state.notification.push({
-        id: state.notification.length ? state.notification.reverse()[0].id + 1 : 0,
+        id: new Date().getTime(),
         text: payload.text,
         type: payload.type,
         time: payload.time

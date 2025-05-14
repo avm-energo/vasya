@@ -174,7 +174,7 @@ export default {
   position: absolute;
   bottom: 50%;
   left: 50%;
-  transform: translate(-50%, -50%);
+  transform: translate(-50%, -30px);
   bottom: 0;
   width: 45%;
   z-index: 4;
