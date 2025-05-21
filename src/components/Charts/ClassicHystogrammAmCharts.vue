@@ -75,6 +75,7 @@ export default {
     root.interfaceColors.set("text", am5.color(0xffffff));
     this.root = root
     let chart = root.container.children.push(am5xy.XYChart.new(root, {
+      paddingLeft: 60,
       panX: false,
       panY: false,
       wheelX: "panX",
@@ -88,8 +89,8 @@ export default {
     let xAxis = chart.xAxes.push(am5xy.CategoryAxis.new(root, {
       categoryField: "period",
       renderer: am5xy.AxisRendererX.new(root, {
-        cellStartLocation: 0.03,
-        cellEndLocation: 0.97,
+        cellStartLocation: 0,
+        cellEndLocation: 1,
         minGridDistance: 10,
         stroke: am5.color(0xFFFFFF),
         strokeOpacity: 1,
