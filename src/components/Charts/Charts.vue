@@ -7,7 +7,7 @@
 <script>
 
 import ClassicHystogramm from './ClassicHystogrammAmCharts.vue'
-import TrendViewer from './TrendViewerAmCharts.vue'
+import TrendViewer from './TrendViewerAmCharts/TrendViewerAmCharts.vue'
 import ChartChart from './RenterChartAmCharts.vue'
 
 export default {
