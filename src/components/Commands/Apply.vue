@@ -79,6 +79,7 @@ export default {
           text = 'Истекло время ожидания команды'
         }
         this.isEnabled = true
+        // console.log(json_obj)
         if (response.data.resultData.type) {
           this.$store.dispatch('AddNotification_action', { text: text, type: 'Warning', time: 5000 })
         } else {
@@ -111,7 +112,8 @@ export default {
     },
   },
   created(){
-    this.isEnabled = this.params.isEnabled
+    // this.isEnabled = this.params.isEnabled
+    this.isEnabled = true
     if (this.$store.getters.commandwidgets(this.$parent.$parent.windowpath)) {
       this.pathName = 'windowpath'
     } else {
