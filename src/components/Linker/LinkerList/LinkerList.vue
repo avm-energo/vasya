@@ -248,7 +248,7 @@ export default {
         const time = new Date(item.time)
         return {
           ...item,
-          time: `${time.getHours()}:${time.getMinutes()}:${time.getSeconds()},${time.getMilliseconds()} ${time.getDate()}-${time.getMonth()}-${time.getFullYear()}`,
+          time: `${time.getHours()}:${time.getMinutes()}:${time.getSeconds()},${time.getMilliseconds()} ${time.getDate()}-${time.getMonth() + 1}-${time.getFullYear()}`,
         }
       });
 
