@@ -1,17 +1,36 @@
-image: node:20
-
 stages:
   - install
+  - build
   - test
 
 cache:
   paths:
     - node_modules/
 
-before_script:
-  - yarn install
+install-deps:
+  stage: install
+  image: node:20
+  script:
+    - yarn install --frozen-lockfile
 
-test:
+build-app:
+  stage: build
+  image: node:20
+  script:
+    - yarn build
+  only:
+    - merge_requests
+    - branches
+  artifacts:
+    paths:
+      - dist/
+    expire_in: 1h
+
+test-app:
   stage: test
+  image: node:20
   script:
     - yarn test:unit
+  only:
+    - merge_requests
+    - branches
