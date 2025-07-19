@@ -1,0 +1,17 @@
+image: node:20
+
+stages:
+  - install
+  - test
+
+cache:
+  paths:
+    - node_modules/
+
+before_script:
+  - yarn install
+
+test:
+  stage: test
+  script:
+    - yarn test:unit
