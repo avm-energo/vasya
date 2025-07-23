@@ -106,8 +106,7 @@ export default {
   },
   created() {
     this.widgetType = this.params.type == 'neightbours/Navigator' ? 'navigator' : 'tooltiper'
-    // console.log(this.params)
-    // if (this.params.name == 'Navigator#5') {
+    // // if (this.params.name == 'Navigator#5') {
     //   console.log(this.params.properties)
     // }
     this.updateIndo()
@@ -138,7 +137,7 @@ export default {
       // this.button.ForegroundColor = this.params.properties.foreground
       // this.button.BackgroundColor = this.params.properties.background
       // this.button.neightbourState = this.params.properties.neightbourState
-      this.flashingColor = /\d/.test(this.params.properties.background) ? '#' + this.params.properties.background : this.params.properties.background
+      this.flashingColor = /\d/.test(this.params.properties.neightbourState) ? '#' + this.params.properties.neightbourState : this.params.properties.neightbourState
       this.UpdateFlahingState(this.params.properties.isButtonEnabled, this.params.properties.neightbourState, this.params.properties.sFlashBehaviour, this.params.properties.isAcknowledged, this.params.properties.stateChangingBehaviour)
     },
     async some() {
@@ -179,15 +178,15 @@ export default {
         return
       }  
       if (neightbourState == 'Red') {
-        this.button.BackgroundColor = 'Red'
+        this.flashingColor = 'Red'
         this.button.ForegroundColor = 'White'
         activeStateUpdated = true
       } else if (neightbourState == 'Yellow') {
-        this.button.BackgroundColor = 'Yellow'
+        this.flashingColor = 'Yellow'
         this.button.ForegroundColor = 'White'
         activeStateUpdated = true
       } else if (neightbourState == 'Blue' && stateChangingBehaviour == 1) {
-        this.button.BackgroundColor = '#257CF9'
+        this.flashingColor = '#257CF9'
         this.button.ForegroundColor = 'White'
         activeStateUpdated = true
       } else {
@@ -232,8 +231,9 @@ export default {
         "--width": (this.params.properties.width / 1) * this.$parent.multiplier * [this.params.properties.scale || 1]  + "px",
         "--height": (this.params.properties.height / 1) * this.$parent.multiplier * [this.params.properties.scale || 1]  + "px",
         // "--backgroundColor": [this.button.neightbourState == "Red" ? "Red" : [ this.button.neightbourState == "Yellow" ? "Yellow" : "#" + this.button.BackgroundColor, ],],
-        "--backgroundColor": this.flashing ? this.button.BackgroundColor : this.flashingColor,
-        '--backgroundFlashingColor': this.flashingColor,
+        "--backgroundColor": this.flashing ? 'red' : this.params.properties.neightbourState == 'Red' ? 'Red' : this.params.properties.neightbourState == 'Yellow' ? 'Yellow' : '#' + this.button.BackgroundColor,
+        '--backgroundFlashingColorFirst': '#' + this.params.properties.background,
+        '--backgroundFlashingColorSecond': this.flashingColor,
         "--backgroundColorHover": '#16466C',
         "--colorYellow": [this.button.neightbourState == "Yellow" ? "Black": this.button.ForegroundColor,],
         "--color": this.button.ForegroundColor,
@@ -335,11 +335,11 @@ p {
 
 @keyframes glowing {
   0%,50% {
-    background-color: var(--backgroundFlashingColor);
+    background-color: var(--backgroundFlashingColorFirst);
     color:var(--color);
   }
   50.01%,100% {
-    background-color: var(--backgroundColor);
+    background-color: var(--backgroundFlashingColorSecond);
     color: var(--colorYellow);
   }
 }
