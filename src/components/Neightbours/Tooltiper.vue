@@ -70,7 +70,11 @@
   </div>
 </template>
 
+
 <script>
+
+import axios from 'axios';
+
 export default {
   name: "app",
   props: {
@@ -79,7 +83,9 @@ export default {
     subscreensize:{},
     tooltiperFromHeader:{
       default: false
-    }
+    },
+    ip:{},
+    name:{}
   },
   data() {
     return {
@@ -94,10 +100,12 @@ export default {
         Enabled: true,
       },
       flashing: false,
-      flashingColor: ''
+      flashingColor: '',
+      widgetType: null,
     };
   },
   created() {
+    this.widgetType = this.params.type == 'neightbours/Navigator' ? 'navigator' : 'tooltiper'
     // console.log(this.params)
     // if (this.params.name == 'Navigator#5') {
     //   console.log(this.params.properties)
@@ -133,7 +141,7 @@ export default {
       this.flashingColor = /\d/.test(this.params.properties.background) ? '#' + this.params.properties.background : this.params.properties.background
       this.UpdateFlahingState(this.params.properties.isButtonEnabled, this.params.properties.neightbourState, this.params.properties.sFlashBehaviour, this.params.properties.isAcknowledged, this.params.properties.stateChangingBehaviour)
     },
-    some() {
+    async some() {
       let data = [];
       data.name = this.params.properties.path;
       data.title = [];
@@ -155,6 +163,14 @@ export default {
           this.$store.dispatch("addElems", this.params);
         }
       // }
+      const headers = {
+          'Content-Type': 'application/json',
+          'Authorization': `${localStorage.getItem('token')}`
+      };
+      await axios.post(`http://${this.ip}/api/nodes/${this.encript((new TextEncoder()).encode(this.$parent.windowpath))}/widget/${this.encript((new TextEncoder()).encode(this.name))}/query/${this.widgetType + '-acknowledge'}`,{}, { headers })
+      .then((result)=>{
+        // console.log(result)
+      })
     },
     UpdateFlahingState(isButtonEnabled, neightbourState, sFlashBehaviour, isAcknowledged, stateChangingBehaviour){
       let activeStateUpdated 
@@ -187,7 +203,25 @@ export default {
       } else {
         this.flashing = false
       }
-    }
+    },
+    encript(values) {
+      const Alphabet = "12345678" + "9ABDEFGH" + "JKLMNPQR" + "STUVWXYZ";
+      var bitsCount = 8 * values.length;
+      var ans = new Array(Math.trunc(bitsCount / 5) + (bitsCount % 5 == 0 ? 0 : 1));
+      for (let i = 0; i < ans.length; i++) {
+          var bitNum = i * 5;
+          var byteNum = Math.trunc(bitNum / 8);
+          var byteOffset = bitNum % 8;
+          var symbol = values[byteNum] >> byteOffset;
+          if (byteOffset > 3 && byteNum < (values.length - 1)) {
+              var symbolOffset = 8 - byteOffset;
+              symbol |= values[byteNum + 1] << symbolOffset;
+          }
+          symbol &= 0b11111;
+          ans[i] = Alphabet[symbol];
+      }
+      return ans.join("")
+    },
   },
   computed: {
     cssProps() {
