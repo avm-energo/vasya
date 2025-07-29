@@ -1,36 +1,46 @@
 stages:
-  - install
-  - build
   - test
+  - build
+
+image: node:22.17
+
+variables:
+  NODE_ENV: test
+  CI: 'true'
 
 cache:
+  key: ${CI_COMMIT_REF_SLUG}
   paths:
     - node_modules/
 
-install-deps:
-  stage: install
-  image: node:20
-  script:
-    - yarn install --frozen-lockfile
+before_script:
+  - npm ci
 
-build-app:
-  stage: build
-  image: node:20
+unit_test:
+  stage: test
   script:
-    - yarn build
+    - echo "Running unit tests..."
+    - npm run test:unit
+  artifacts:
+    when: always
+    paths:
+      - coverage/
+    reports:
+      junit: junit.xml
+  tags:
+    - vue3
   only:
-    - merge_requests
-    - branches
+    - test
+
+build:
+  stage: build
+  script:
+    - echo "Building Vue 3 app..."
+    - npm run build
   artifacts:
     paths:
       - dist/
-    expire_in: 1h
-
-test-app:
-  stage: test
-  image: node:20
-  script:
-    - yarn test:unit
+  tags:
+    - vue3
   only:
-    - merge_requests
-    - branches
+    - test
