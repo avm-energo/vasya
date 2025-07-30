@@ -6,4 +6,11 @@ export default {
     },
     moduleFileExtensions: ['js', 'json', 'vue'],
     testMatch: ['**/*.test.[jt]s?(x)'],
+    reporters: [
+        'default',
+        ['jest-junit', {
+            outputDirectory: './',
+            outputName: 'junit.xml'
+        }]
+    ]
 }

@@ -7,6 +7,7 @@ image: node:22.17
 variables:
   NODE_ENV: test
   CI: 'true'
+  JEST_JUNIT_OUTPUT: junit.xml
 
 cache:
   key: ${CI_COMMIT_REF_SLUG}
@@ -20,17 +21,18 @@ unit_test:
   stage: test
   script:
     - echo "Running unit tests..."
-    - npm run test:unit > /dev/null || true  # подавляем stdout
+    - npm run test:unit -- --ci --reporters=default --reporters=jest-junit
   artifacts:
     when: always
     paths:
       - coverage/
+      - junit.xml
     reports:
       junit: junit.xml
   tags:
     - vue3
   only:
-    - test
+    - branches
 
 build:
   stage: build
@@ -43,4 +45,4 @@ build:
   tags:
     - vue3
   only:
-    - test
+    - branches
