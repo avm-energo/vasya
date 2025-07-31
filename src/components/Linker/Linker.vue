@@ -89,10 +89,10 @@
 
 <script>
 
-import LinkerMenu from "@/components/Linker/LinkerMenu/LinkerMenu";
-import LinkerList from "@/components/Linker/LinkerList/LinkerList";
-import Tooltip from "@/components/Linker/Tooltip/Tooltip";
-import {fetchLinkerAtoms, fetchLinkerTable, fetchLinkerTree} from "../../actions/LinkerActions";
+import LinkerMenu from "@/components/Linker/LinkerMenu/LinkerMenu.vue";
+import LinkerList from "@/components/Linker/LinkerList/LinkerList.vue";
+import Tooltip from "@/components/Linker/Tooltip/Tooltip.vue";
+import {fetchLinkerAtoms, fetchLinkerTable, fetchLinkerTree} from "@/actions/LinkerActions.js";
 // import axios from 'axios';
 
 

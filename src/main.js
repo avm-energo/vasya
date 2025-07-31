@@ -5,6 +5,7 @@ import store from './store';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { fas } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+// import { registerSW } from 'virtual:pwa-register'
 
 library.add(fas);
 
@@ -20,17 +21,7 @@ if (typeof window !== 'undefined') {
 }
 
 // Регистрация Service Worker
-if ('serviceWorker' in navigator && !navigator.serviceWorker.controller) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('sw.js')
-      .then(registration => {
-        console.log('Service Worker registered:', registration);
-      })
-      .catch(error => {
-        console.error('Service Worker registration failed:', error);
-      });
-  });
-}
+// registerSW({ immediate: true })
 
 app.component('v-icon', FontAwesomeIcon)
    .use(store)

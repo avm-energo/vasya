@@ -1,6 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import Main from '../components/Main.vue'
-import Version from '../components/Version.vue'
+import Main from '@/components/Main.vue'
+import Version from '@/components/Version.vue'
 import Authorization from '@/pages/Authorization.vue'
 import {login} from "@/actions/AuthorizationActions";
 
@@ -32,7 +32,7 @@ const routes = [
 
 
 const router = createRouter({
-  history: createWebHistory(process.env.BASE_URL),
+  history: createWebHistory(import.meta.env.BASE_URL),
   routes
 })
 

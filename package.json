@@ -4,36 +4,36 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "serve": "vue-cli-service serve",
-    "build": "vue-cli-service build"
+    "serve": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
   },
   "dependencies": {
-    "@amcharts/amcharts5": "^5.2.19",
+    "@amcharts/amcharts5": "^5.13.4",
     "@amcharts/amcharts5-fonts": "^5.0.1",
-    "@amcharts/amcharts5-geodata": "^5.0.3",
-    "@fortawesome/fontawesome-svg-core": "^6.5.2",
-    "@fortawesome/free-solid-svg-icons": "^6.5.2",
-    "@fortawesome/vue-fontawesome": "^3.0.8",
-    "@vuepic/vue-datepicker": "^3.4.7",
-    "apexcharts": "^4.7.0",
-    "axios": "^1.2.0",
-    "date-fns": "^3.3.1",
+    "@amcharts/amcharts5-geodata": "^5.1.5",
+    "@fortawesome/fontawesome-svg-core": "^7.0.0",
+    "@fortawesome/free-solid-svg-icons": "^7.0.0",
+    "@fortawesome/vue-fontawesome": "^3.1.1",
+    "@vuepic/vue-datepicker": "^11.0.2",
+    "apexcharts": "^5.3.2",
+    "axios": "^1.11.0",
+    "date-fns": "^4.1.0",
     "file-saver": "^2.0.5",
     "k-progress-v3": "^1.0.0",
-    "moment": "^2.29.4",
+    "moment": "^2.30.1",
     "v-click-outside": "^3.2.0",
-    "vue": "^3.2.13",
-    "vue-json-excel3": "^0.0.5",
-    "vue-router": "^4.0.3",
-    "vue3-apexcharts": "^1.4.1",
-    "vue3-slider": "^1.8.0",
+    "vue": "^3.5.18",
+    "vue-json-excel3": "^1.0.30",
+    "vue-router": "^4.5.1",
+    "vue3-apexcharts": "^1.8.0",
+    "vue3-slider": "^1.10.1",
     "vuejs3-logger": "^1.0.0",
-    "vuex": "^4.0.0"
+    "vuex": "^4.1.0"
   },
   "devDependencies": {
-    "@vue/cli-plugin-pwa": "~5.0.0",
-    "@vue/cli-plugin-router": "~5.0.0",
-    "@vue/cli-plugin-vuex": "~5.0.0",
-    "@vue/cli-service": "^5.0.8"
+    "@vitejs/plugin-vue": "^6.0.1",
+    "vite": "^7.0.6",
+    "vite-plugin-pwa": "^1.0.2"
   }
 }
