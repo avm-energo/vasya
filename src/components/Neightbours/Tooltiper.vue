@@ -70,7 +70,11 @@
   </div>
 </template>
 
+
 <script>
+
+import axios from 'axios';
+
 export default {
   name: "app",
   props: {
@@ -79,7 +83,9 @@ export default {
     subscreensize:{},
     tooltiperFromHeader:{
       default: false
-    }
+    },
+    ip:{},
+    name:{}
   },
   data() {
     return {
@@ -94,12 +100,13 @@ export default {
         Enabled: true,
       },
       flashing: false,
-      flashingColor: ''
+      flashingColor: '',
+      widgetType: null,
     };
   },
   created() {
-    // console.log(this.params)
-    // if (this.params.name == 'Navigator#5') {
+    this.widgetType = this.params.type == 'neightbours/Navigator' ? 'navigator' : 'tooltiper'
+    // // if (this.params.name == 'Navigator#5') {
     //   console.log(this.params.properties)
     // }
     this.updateIndo()
@@ -130,10 +137,10 @@ export default {
       // this.button.ForegroundColor = this.params.properties.foreground
       // this.button.BackgroundColor = this.params.properties.background
       // this.button.neightbourState = this.params.properties.neightbourState
-      this.flashingColor = /\d/.test(this.params.properties.background) ? '#' + this.params.properties.background : this.params.properties.background
+      this.flashingColor = /\d/.test(this.params.properties.neightbourState) ? '#' + this.params.properties.neightbourState : this.params.properties.neightbourState
       this.UpdateFlahingState(this.params.properties.isButtonEnabled, this.params.properties.neightbourState, this.params.properties.sFlashBehaviour, this.params.properties.isAcknowledged, this.params.properties.stateChangingBehaviour)
     },
-    some() {
+    async some() {
       let data = [];
       data.name = this.params.properties.path;
       data.title = [];
@@ -155,6 +162,14 @@ export default {
           this.$store.dispatch("addElems", this.params);
         }
       // }
+      const headers = {
+          'Content-Type': 'application/json',
+          'Authorization': `${localStorage.getItem('token')}`
+      };
+      await axios.post(`http://${this.ip}/api/nodes/${this.encript((new TextEncoder()).encode(this.$parent.windowpath))}/widget/${this.encript((new TextEncoder()).encode(this.name))}/query/${this.widgetType + '-acknowledge'}`,{}, { headers })
+      .then((result)=>{
+        // console.log(result)
+      })
     },
     UpdateFlahingState(isButtonEnabled, neightbourState, sFlashBehaviour, isAcknowledged, stateChangingBehaviour){
       let activeStateUpdated 
@@ -163,15 +178,15 @@ export default {
         return
       }  
       if (neightbourState == 'Red') {
-        this.button.BackgroundColor = 'Red'
+        this.flashingColor = 'Red'
         this.button.ForegroundColor = 'White'
         activeStateUpdated = true
       } else if (neightbourState == 'Yellow') {
-        this.button.BackgroundColor = 'Yellow'
+        this.flashingColor = 'Yellow'
         this.button.ForegroundColor = 'White'
         activeStateUpdated = true
       } else if (neightbourState == 'Blue' && stateChangingBehaviour == 1) {
-        this.button.BackgroundColor = '#257CF9'
+        this.flashingColor = '#257CF9'
         this.button.ForegroundColor = 'White'
         activeStateUpdated = true
       } else {
@@ -187,7 +202,25 @@ export default {
       } else {
         this.flashing = false
       }
-    }
+    },
+    encript(values) {
+      const Alphabet = "12345678" + "9ABDEFGH" + "JKLMNPQR" + "STUVWXYZ";
+      var bitsCount = 8 * values.length;
+      var ans = new Array(Math.trunc(bitsCount / 5) + (bitsCount % 5 == 0 ? 0 : 1));
+      for (let i = 0; i < ans.length; i++) {
+          var bitNum = i * 5;
+          var byteNum = Math.trunc(bitNum / 8);
+          var byteOffset = bitNum % 8;
+          var symbol = values[byteNum] >> byteOffset;
+          if (byteOffset > 3 && byteNum < (values.length - 1)) {
+              var symbolOffset = 8 - byteOffset;
+              symbol |= values[byteNum + 1] << symbolOffset;
+          }
+          symbol &= 0b11111;
+          ans[i] = Alphabet[symbol];
+      }
+      return ans.join("")
+    },
   },
   computed: {
     cssProps() {
@@ -198,8 +231,9 @@ export default {
         "--width": (this.params.properties.width / 1) * this.$parent.multiplier * [this.params.properties.scale || 1]  + "px",
         "--height": (this.params.properties.height / 1) * this.$parent.multiplier * [this.params.properties.scale || 1]  + "px",
         // "--backgroundColor": [this.button.neightbourState == "Red" ? "Red" : [ this.button.neightbourState == "Yellow" ? "Yellow" : "#" + this.button.BackgroundColor, ],],
-        "--backgroundColor": this.flashing ? this.button.BackgroundColor : this.flashingColor,
-        '--backgroundFlashingColor': this.flashingColor,
+        "--backgroundColor": this.flashing ? 'red' : this.params.properties.neightbourState == 'Red' ? 'Red' : this.params.properties.neightbourState == 'Yellow' ? 'Yellow' : '#' + this.button.BackgroundColor,
+        '--backgroundFlashingColorFirst': '#' + this.params.properties.background,
+        '--backgroundFlashingColorSecond': this.flashingColor,
         "--backgroundColorHover": '#16466C',
         "--colorYellow": [this.button.neightbourState == "Yellow" ? "Black": this.button.ForegroundColor,],
         "--color": this.button.ForegroundColor,
@@ -301,11 +335,11 @@ p {
 
 @keyframes glowing {
   0%,50% {
-    background-color: var(--backgroundFlashingColor);
+    background-color: var(--backgroundFlashingColorFirst);
     color:var(--color);
   }
   50.01%,100% {
-    background-color: var(--backgroundColor);
+    background-color: var(--backgroundFlashingColorSecond);
     color: var(--colorYellow);
   }
 }

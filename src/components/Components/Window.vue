@@ -18,7 +18,7 @@
           <commands v-for="elem in commandss" :key="elem.name" :params="elem"/>
           <!-- было windowname -->
           <subscreen v-for="elem in subscreens" :key="elem.name" :params="elem" :name="elem.type" :namewindow="this.namewindow"/>
-          <tooltiper v-for="elem in tooltipers" :key="elem.name" :params="elem"/>
+          <tooltiper v-for="elem in tooltipers" :key="elem.name" :params="elem" :name="elem.name" :ip="this.ip"/>
           <chart v-for="elem in charts" :key="elem.name" :params="elem"/>
           <helper v-for="elem in helper" :key="elem.name" :params="elem.properties"/>
           <duval v-for="elem in duval" :key="elem.name" :params="elem.properties" :name="elem.name" :ip="this.ip"/>

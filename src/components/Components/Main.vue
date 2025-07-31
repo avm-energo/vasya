@@ -10,7 +10,7 @@
         <tiles v-for="elem  in tiless" :key="elem.name" :params="elem.properties" :name="elem.name" :screenPercentage="this.myJson.screenPercentage" :windowWidth="this.myJson.canvas.width" :windowHeight="this.myJson.canvas.height" :type="elem.type"/>
         <subscreen v-for="elem in subscreens" :key="elem.name" :params="elem" :name="elem.type" :namewindow="this.namewindow"/>
         <commands v-for="elem in commandss" :key="elem.name" :params="elem"/>
-        <tooltiper v-for="elem in tooltipers" :key="elem.name" :params="elem"/>
+        <tooltiper v-for="elem in tooltipers" :key="elem.name" :params="elem" :name="elem.name" :ip="this.ip"/>
         <imagelogo v-for="elem in imageslogo" :key="elem.name" :params="elem.properties"/>
         <chart v-for="elem in charts" :key="elem.name" :params="elem"/>
         <helper v-for="elem in helper" :key="elem.name" :params="elem.properties"/>
