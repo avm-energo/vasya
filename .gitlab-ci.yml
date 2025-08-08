@@ -41,3 +41,4 @@ build:
   tags:
     - vue3
   only:
+    - test
