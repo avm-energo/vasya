@@ -2,7 +2,7 @@ stages:
   - test
   - build
 
-image: node:22.17-alpine # <= Легковесный и быстрый Docker-образ
+image: node:22.17
 
 variables:
   NODE_ENV: test
