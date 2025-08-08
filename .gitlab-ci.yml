@@ -1,0 +1,43 @@
+stages:
+  - test
+  - build
+
+image: node:22.17
+
+variables:
+  NODE_ENV: test
+  CI: 'true'
+
+cache:
+  key: ${CI_COMMIT_REF_SLUG}
+  paths:
+    - node_modules/
+
+before_script:
+  - npm ci
+
+unit_test:
+  stage: test
+  script:
+    - echo "Running unit tests..."
+    - npm run test
+  artifacts:
+    when: always
+    paths:
+      - coverage/
+  tags:
+    - vue3
+  only:
+    - test
+
+build:
+  stage: build
+  script:
+    - echo "Building Vue 3 app..."
+    - npm run build
+  artifacts:
+    paths:
+      - dist/
+  tags:
+    - vue3
+  only:
