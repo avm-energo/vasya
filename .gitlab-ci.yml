@@ -2,7 +2,7 @@ stages:
   - test
   - build
 
-image: node:22.17
+image: node:22.17-alpine # <= Легковесный и быстрый Docker-образ
 
 variables:
   NODE_ENV: test
@@ -11,6 +11,7 @@ variables:
 cache:
   key: ${CI_COMMIT_REF_SLUG}
   paths:
+    - .npm # <= Кешируем npm/pnpm/yarn
     - node_modules/
 
 before_script:
@@ -28,7 +29,10 @@ unit_test:
   tags:
     - vue3
   only:
-    - test
+    refs:
+      - test
+      - merge_requests
+      - main
 
 build:
   stage: build
@@ -41,4 +45,6 @@ build:
   tags:
     - vue3
   only:
-    - test
+    refs:
+      - main
+      - release
