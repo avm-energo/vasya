@@ -64,7 +64,8 @@
         </svg>
       </div>
     </div>
-    <p class="p" :style="cssProps" v-if="((this.params.properties.width!=this.params.properties.height & this.params.properties.text != 'Navigator') || this.params.properties.leftIcon == 'None')">{{button.value}}</p>    
+    <!-- <p class="p" :style="cssProps" v-if="((this.params.properties.width!=this.params.properties.height & this.params.properties.text != 'Navigator') && this.params.properties.leftIcon == 'None')">{{button.value}}</p>     -->
+    <p class="p" :style="cssProps" v-if="(this.params.properties.leftIcon == 'None')">{{button.value}}</p>    
     <!-- <p class="p" :style="cssProps" v-if="((this.params.properties.width!=this.params.properties.height & this.params.properties.text != 'Navigator') || this.params.properties.leftIcon == 'None') && (this.params.properties.text.toLowerCase() != 'tooltiper')">{{button.value}}</p>     -->
     <!-- <p class="p" :style="cssProps" v-else-if="(this.params.properties.width > 60 && this.params.properties.width!=this.params.properties.height) || this.params.properties.angle != 0">{{button.value}}</p> -->
   </div>
@@ -105,6 +106,7 @@ export default {
     };
   },
   created() {
+    console.log(this.params.properties.leftIcon=='Info')
     this.widgetType = this.params.type == 'neightbours/Navigator' ? 'navigator' : 'tooltiper'
     // // if (this.params.name == 'Navigator#5') {
     //   console.log(this.params.properties)
