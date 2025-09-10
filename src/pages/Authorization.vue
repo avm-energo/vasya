@@ -32,9 +32,13 @@
         <icon-adm nameSvg="eyeslashlog"  colorSvg="#aaa" widthSvg='22px' heightSvg="22px" marginSvg="10px 5px 10px 5px"
           v-if="visible_pass === 'password'" @clickOnSvg="visible_pass = 'text'" />
       </label>
-      <ButtonComponent class="authorization_button" label="Войти" icon="logiot"
-        :iconStyle="{ color: 'white', width: '30px' }" @onClick="Authorization" marginL="5px"/>
+      <div class="authorization_buttons">
+        <ButtonComponent class="authorization_button_main" label="Войти" icon="logiot"
+                         :iconStyle="{ color: 'white', width: '30px' }" @onClick="Authorization" marginL="5px"/>
 
+        <ButtonComponent class="authorization_button_extra" label="Войти как Гость" icon="logiot"
+                         :iconStyle="{ color: 'white', width: '30px' }" @onClick="GuestAuthorization" marginL="5px"/>
+      </div>
       <div class="Error" v-if="!!error">
         <icon-adm nameSvg="triangleerror" widthSvg="20px" heightSvg="20px" colorSvg="rgb(163, 0, 0)"/>
         <!-- <v-icon :style="{ color: 'rgb(163, 0, 0)', width: '20px', height: '20px' }" icon="triangle-exclamation" /> -->
@@ -66,6 +70,23 @@ export default {
     };
   },
   methods: {
+    GuestAuthorization() {
+      const guestLogin = 'Guest';
+      const guestPassword = 'Guest';
+
+      this.LoadingModalActive(true);
+      login(guestLogin, guestPassword, (e) => {
+        console.log(e)
+        this.LoadingModalActive(false);
+        if (e.successful) {
+          /*переход на другую страницу */
+          this.$router.push("/sonica");
+        } else {
+          this.errors.get(e.message) ? this.error = this.errors.get(e.message) : this.error = e.message
+        }
+      });
+    },
+    //
     Authorization() {
       if (!(!!this.auth_login && !!this.auth_pass)) {
         this.error = "Заполните все поля!";
@@ -85,7 +106,7 @@ export default {
         }
       });
     },
-    
+
     LoadingModalActive(value) {
       this.$store.dispatch("setIsLoading_action", value);
     },
@@ -188,8 +209,12 @@ label input {
   padding: 5px 0 0 5px;
 }
 
+.authorization_buttons {
+  display: flex;
+}
+
 button,
-.authorization_button {
+.authorization_button_main {
   display: flex;
   color: white;
   padding: 10px 20px;
@@ -199,8 +224,21 @@ button,
   font-size: 16px;
   font-weight: 700;
   cursor: pointer;
-  margin-top: 10px;
-  margin-bottom: 15px;
+  margin: 10px;
+  width: auto;
+}
+
+.authorization_button_extra {
+  display: flex;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  background: #181818;
+  border-radius: 7px;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  margin: 10px;
   width: auto;
 }
 </style>
