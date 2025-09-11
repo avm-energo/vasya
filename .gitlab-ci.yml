@@ -2,7 +2,7 @@ stages:
   - test
   - build
 
-image: node:22.17-alpine # <= Легковесный и быстрый Docker-образ
+image: node:22.17-alpine
 
 variables:
   NODE_ENV: test
@@ -11,7 +11,7 @@ variables:
 cache:
   key: ${CI_COMMIT_REF_SLUG}
   paths:
-    - .npm # <= Кешируем npm/pnpm/yarn
+    - .npm
     - node_modules/
 
 before_script:
@@ -21,11 +21,14 @@ unit_test:
   stage: test
   script:
     - echo "Running unit tests..."
-    - npm run test
+    - npm run test:junit
   artifacts:
     when: always
     paths:
       - coverage/
+      - junit.xml
+    reports:
+      junit: junit.xml
   tags:
     - vue3
   only:
@@ -33,18 +36,3 @@ unit_test:
       - test
       - merge_requests
       - main
-
-build:
-  stage: build
-  script:
-    - echo "Building Vue 3 app..."
-    - npm run build
-  artifacts:
-    paths:
-      - dist/
-  tags:
-    - vue3
-  only:
-    refs:
-      - main
-      - release

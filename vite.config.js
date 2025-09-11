@@ -44,6 +44,11 @@ export default defineConfig({
         globals: true,
         environment: 'happy-dom',
         setupFiles: './vitest.setup.js',
+
+        reporters: [
+            'default',
+            ['junit', { outputFile: 'junit.xml' }] // файл появится в корне проекта
+        ],
     },
 
 })
