@@ -3,27 +3,8 @@ import { createStore } from "vuex";
 // import ip from '../assets/ip.json'
 import moment from "moment";
 import { getTime } from "date-fns";
+import {encript} from "@/mixins/encript.js";
 // import { log4js } from "log4js";
-
-function encript(values) {
-  const  Alphabet = "12345678" + "9ABDEFGH" + "JKLMNPQR" + "STUVWXYZ";
-  var bitsCount = 8 * values.length;
-  var ans = new Array(Math.trunc(bitsCount / 5) + (bitsCount%5==0?0:1));
-  for (let i = 0; i < ans.length; i++) {
-      var bitNum = i * 5;
-      var byteNum = Math.trunc(bitNum / 8);
-      var byteOffset = bitNum % 8;  
-      var symbol = values[byteNum] >> byteOffset;
-      if (byteOffset > 3 && byteNum<(values.length-1))
-      {
-          var symbolOffset = 8 - byteOffset;
-          symbol |= values[byteNum+1]<<symbolOffset;
-      }
-      symbol &= 0b11111; // cut a tail
-      ans[i] = Alphabet[symbol];
-  }
-  return ans.join("")
-}
 
 export default createStore({
   state: {
@@ -452,9 +433,6 @@ export default createStore({
     },
     changeMainWindow({ commit }, elems) {
       commit("changeMainWindow", elems);
-    },
-    encript({ commit }, elems) {
-      commit("encript", elems);
     },
     fetchElems({ commit }, elems) {
       commit("fetchElems", elems);

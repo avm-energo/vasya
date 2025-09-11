@@ -1,4 +1,4 @@
-import { encript } from './encript'
+import { encript } from './encript.js'
 
 describe('encript', () => {
     it('should return correct encoded string for known input', () => {

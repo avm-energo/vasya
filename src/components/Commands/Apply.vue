@@ -7,6 +7,7 @@
 <script>
 
 import axios from 'axios';
+import {encript} from "@/mixins/encript.js";
 
 export default {
   name: "app",
@@ -54,7 +55,7 @@ export default {
           'Content-Type': 'application/json',
           'Authorization': `${localStorage.getItem('token')}`
         };
-        await axios.post(`http://${this.ip}/api/nodes/${this.encript((new TextEncoder()).encode(this.$parent.$parent.windowpath))}/widget/${this.encript((new TextEncoder()).encode(this.name))}/query/apply-form`, json_obj, { headers })
+        await axios.post(`http://${this.ip}/api/nodes/${encript((new TextEncoder()).encode(this.$parent.$parent.windowpath))}/widget/${encript((new TextEncoder()).encode(this.name))}/query/apply-form`, json_obj, { headers })
         .then((result)=>{
           // console.log(result)
         })
@@ -66,7 +67,7 @@ export default {
         };
       json_obj = {}
       if (this.params.awaitTime) this.isEnabled = false
-      await axios.post(`http://${this.ip}/api/nodes/${this.encript((new TextEncoder()).encode(this.$parent.$parent.windowpath))}/widget/${this.encript((new TextEncoder()).encode(this.name))}/query/apply-command`, json_obj, { headers }).
+      await axios.post(`http://${this.ip}/api/nodes/${encript((new TextEncoder()).encode(this.$parent.$parent.windowpath))}/widget/${encript((new TextEncoder()).encode(this.name))}/query/apply-command`, json_obj, { headers }).
       then(response =>{
         // console.log(response)
         if (response.status == 200) {
@@ -91,24 +92,6 @@ export default {
       // } else {
         // if (text) this.$store.dispatch('AddNotification_action', { text: text, type: 'Warning', time: 5000 })
       // }
-    },
-    encript(values) {
-      const Alphabet = "12345678" + "9ABDEFGH" + "JKLMNPQR" + "STUVWXYZ";
-      var bitsCount = 8 * values.length;
-      var ans = new Array(Math.trunc(bitsCount / 5) + (bitsCount % 5 == 0 ? 0 : 1));
-      for (let i = 0; i < ans.length; i++) {
-          var bitNum = i * 5;
-          var byteNum = Math.trunc(bitNum / 8);
-          var byteOffset = bitNum % 8;
-          var symbol = values[byteNum] >> byteOffset;
-          if (byteOffset > 3 && byteNum < (values.length - 1)) {
-              var symbolOffset = 8 - byteOffset;
-              symbol |= values[byteNum + 1] << symbolOffset;
-          }
-          symbol &= 0b11111;
-          ans[i] = Alphabet[symbol];
-      }
-      return ans.join("")
     },
   },
   created(){

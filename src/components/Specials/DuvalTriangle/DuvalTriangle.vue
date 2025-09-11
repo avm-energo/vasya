@@ -42,8 +42,8 @@
 </template>
 
 <script>
-import axios from "axios";
-import store from "@/store";
+import store from "@/store/index.js";
+import {getTriangleHistory} from "@/components/Specials/DuvalTriangle/api/getTriangleHistory.js";
 
 export default {
   data() {
@@ -85,45 +85,17 @@ export default {
             this.drawFirstDot(changedelem.CH4, changedelem.C2H2, changedelem.C2H4, "yellow");
           }
         } else {
-          const headers = {
-            'Content-Type': 'application/json',
-            'Authorization': `${localStorage.getItem('token')}`
-          };
-          axios.get(`http://${this.ip}/api/nodes/${this.encript((new TextEncoder()).encode(this.$parent.windowpath))}/widget/${this.encript((new TextEncoder()).encode(this.duval.Name))}/query/triangle-history/10`, { headers })
-              .then((result)=>{
-                console.log(result);
-                if (result.data !== "" && result.data.resultData.length !== 0) {
-                    ctx.putImageData(imageData, 0, 0);
-                    this.drawArray(result.data.resultData);
-                    console.log(result.data.resultData);
-
-                } else {
-                  store.dispatch('AddNotification_action', { text: `Ошибка: Остутствуют данные для формирования истории Треугольника Дюваль`, type: 'Error', time: 2000 });
-                }
-              })
+          const history = getTriangleHistory(this.$parent.windowpath, this.duval.Name, 5);
+          if (history) {
+            ctx.putImageData(imageData, 0, 0);
+            this.drawArray(history);
+            console.log(history);
+          }
         }
       }, 1000)
     }, 1000 - currentDateMilliseconds);
   },
   methods: {
-    encript(values) {
-      const Alphabet = "12345678" + "9ABDEFGH" + "JKLMNPQR" + "STUVWXYZ";
-      var bitsCount = 8 * values.length;
-      var ans = new Array(Math.trunc(bitsCount / 5) + (bitsCount % 5 == 0 ? 0 : 1));
-      for (let i = 0; i < ans.length; i++) {
-        var bitNum = i * 5;
-        var byteNum = Math.trunc(bitNum / 8);
-        var byteOffset = bitNum % 8;
-        var symbol = values[byteNum] >> byteOffset;
-        if (byteOffset > 3 && byteNum < (values.length - 1)) {
-          var symbolOffset = 8 - byteOffset;
-          symbol |= values[byteNum + 1] << symbolOffset;
-        }
-        symbol &= 0b11111;
-        ans[i] = Alphabet[symbol];
-      }
-      return ans.join("")
-    },
     drawDuval() {
       const {ctx} = this;
       var {imageData} = this;
@@ -534,7 +506,7 @@ export default {
       return {
         "--x": (this.params.width / 2 + this.params.x) * this.$parent.multiplier - 205 + "px",
         "--y": (this.params.height / 2 + this.params.y) * this.$parent.multiplier - 200 + "px",
-        "scale": this.$parent.multiplier * 0.9,
+        "--scale": this.$parent.multiplier * 0.9,
         "--CH4X": 20 + 'px',
         "--CH4Y": 160 + 'px',
         "--C2H4X": 280 + 'px',

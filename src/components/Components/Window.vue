@@ -41,8 +41,8 @@ import Imagetrans from '../Primitives/Image.vue';
 import Imagelogo from '../Primitives/Logo.vue';
 import Chart from '../Charts/Charts.vue';
 import Helper from '../Primitives/Helper.vue'
-import Duval from '../Specials/DuvalTriangle.vue'
-import Vector from '../Specials/VectorDiagram.vue'
+import Duval from '../Specials/DuvalTriangle/DuvalTriangle.vue'
+import Vector from '../Specials/VectorDiagram/VectorDiagram.vue'
 import Commands from "../Commands/Commands.vue";
 import Meters from "../Scales/Meter.vue"
 import Horizontals from "../Scales/Horizontal.vue";

@@ -44,7 +44,7 @@ const globalMountOptions = {
 }
 
 // Проверка на отображение и правильный рендеринг
-describe('Linker.vue', () => {
+describe('Components -> Linker: Linker.vue', () => {
     describe('1. Проверка рендеринга', () => {
         it('1.1. Рендерится без ошибок и содержит основные элементы', () => {
             const wrapper = mount(Linker, globalMountOptions)
