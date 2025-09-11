@@ -22,8 +22,11 @@ unit_test:
   script:
     - echo "Running unit tests..."
     - mkdir -p reports coverage
-    - npm run test:junit
+    - npm run test:ci
+    - echo "== ls reports =="
     - ls -la reports || true
+    - echo "== head junit.xml =="
+    - head -n 5 reports/junit.xml || true
   artifacts:
     when: always
     paths:

@@ -8,7 +8,7 @@
     "build": "vite build",
     "preview": "vite preview",
     "test": "vitest run",
-    "test:junit": "vitest run --reporter=default --reporter=junit"
+    "test:ci": "vitest run"
   },
   "dependencies": {
     "@amcharts/amcharts5": "^5.13.4",
