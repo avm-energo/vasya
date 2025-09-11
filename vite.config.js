@@ -47,7 +47,7 @@ export default defineConfig({
 
         reporters: [
             'default',
-            ['junit', { outputFile: 'junit.xml' }] // файл появится в корне проекта
+            ['junit', { outputFile: 'reports/junit.xml' }]
         ],
     },
 

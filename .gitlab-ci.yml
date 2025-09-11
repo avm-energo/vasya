@@ -21,14 +21,16 @@ unit_test:
   stage: test
   script:
     - echo "Running unit tests..."
+    - mkdir -p reports coverage
     - npm run test:junit
+    - ls -la reports || true
   artifacts:
     when: always
     paths:
       - coverage/
-      - junit.xml
+      - reports/junit.xml
     reports:
-      junit: junit.xml
+      junit: reports/junit.xml
   tags:
     - vue3
   only:
