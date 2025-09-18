@@ -247,10 +247,11 @@ export default {
       };
     },
   },
-  watch:{
-    params(){
-      this.updateIndo()
-    },
+  watch: {
+    params: {
+      handler() { this.updateIndo() },
+      deep: true
+    }
   }
 };
 </script>

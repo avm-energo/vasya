@@ -1,7 +1,6 @@
-// tests/components/Notification.test.js
 import { mount } from '@vue/test-utils'
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
-import Notification from '@/components/Modals/Notification.vue' // поправь путь при необходимости
+import Notification from '@/components/Modals/Notification.vue'
 
 describe('Modals: Notification.vue', () => {
     let dispatchMock
