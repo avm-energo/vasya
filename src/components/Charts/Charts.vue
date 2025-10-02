@@ -6,7 +6,7 @@
 
 <script>
 
-import ClassicHystogramm from './ClassicHystogrammAmCharts.vue'
+import ClassicHystogramm from './ClassicHystogramm/ClassicHystogrammAmCharts.vue'
 import TrendViewer from './TrendViewerAmCharts/TrendViewerAmCharts.vue'
 import ChartChart from './RenterChartAmCharts.vue'
 
