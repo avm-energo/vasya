@@ -40,26 +40,26 @@ router.beforeEach(async function (to, from, next) {
   let isAuth = !!localStorage.getItem('token');
   // console.log("isAuth = ", isAuth)
   // console.log("to = ", to)
-  let name = 'АСУ-ВЭИ'
+  let name = 'Vasya'
   if (to.meta.title) {
-    document.title = name + ' | ' + to.meta.title;
+    document.title = to.meta.title;
   } else {
     document.title = name;
   }
-  if (to.name === 'Authorization' && !isAuth && from.path == '/') {
-    await login('Guest', 'Guest', (e) =>{
-      isAuth = true
-      next()
-    })
-  }
+  // if (to.name === 'Authorization' && !isAuth && from.path == '/') {
+  //   await login('Guest', 'Guest', (e) =>{
+  //     isAuth = true
+  //     next()
+  //   })
+  // }
   if (to.name === 'Authorization' && isAuth) {
-    router.push('/sonica');
+    await router.push('/sonica');
     return;
   }
   if (to.name !== 'Authorization') {
     if (!isAuth) {
       console.log("Переходим на страницу авторизации")
-      router.push('/authorization');
+      await router.push('/authorization');
       return;
     }
   }
