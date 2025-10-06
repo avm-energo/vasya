@@ -65,7 +65,9 @@
       </div>
     </div>
     <!-- <p class="p" :style="cssProps" v-if="((this.params.properties.width!=this.params.properties.height & this.params.properties.text != 'Navigator') && this.params.properties.leftIcon == 'None')">{{button.value}}</p>     -->
-    <p class="p" :style="cssProps" v-if="(this.params.properties.leftIcon == 'None')">{{button.value}}</p>    
+    <div class="button_text">
+      <p class="p" :style="cssProps">{{button.value}}</p>
+    </div>
     <!-- <p class="p" :style="cssProps" v-if="((this.params.properties.width!=this.params.properties.height & this.params.properties.text != 'Navigator') || this.params.properties.leftIcon == 'None') && (this.params.properties.text.toLowerCase() != 'tooltiper')">{{button.value}}</p>     -->
     <!-- <p class="p" :style="cssProps" v-else-if="(this.params.properties.width > 60 && this.params.properties.width!=this.params.properties.height) || this.params.properties.angle != 0">{{button.value}}</p> -->
   </div>
@@ -75,6 +77,7 @@
 <script>
 
 import axios from 'axios';
+import {encript} from "@/mixins/encript.js";
 
 export default {
   name: "app",
@@ -167,7 +170,7 @@ export default {
           'Content-Type': 'application/json',
           'Authorization': `${localStorage.getItem('token')}`
       };
-      await axios.post(`http://${this.ip}/api/nodes/${this.encript((new TextEncoder()).encode(this.$parent.windowpath))}/widget/${this.encript((new TextEncoder()).encode(this.name))}/query/${this.widgetType + '-acknowledge'}`,{}, { headers })
+      await axios.post(`http://${this.ip}/api/nodes/${encript((new TextEncoder()).encode(this.$parent.windowpath))}/widget/${encript((new TextEncoder()).encode(this.name))}/query/${this.widgetType + '-acknowledge'}`,{}, { headers })
       .then((result)=>{
         // console.log(result)
       })
@@ -203,24 +206,6 @@ export default {
       } else {
         this.flashing = false
       }
-    },
-    encript(values) {
-      const Alphabet = "12345678" + "9ABDEFGH" + "JKLMNPQR" + "STUVWXYZ";
-      var bitsCount = 8 * values.length;
-      var ans = new Array(Math.trunc(bitsCount / 5) + (bitsCount % 5 == 0 ? 0 : 1));
-      for (let i = 0; i < ans.length; i++) {
-          var bitNum = i * 5;
-          var byteNum = Math.trunc(bitNum / 8);
-          var byteOffset = bitNum % 8;
-          var symbol = values[byteNum] >> byteOffset;
-          if (byteOffset > 3 && byteNum < (values.length - 1)) {
-              var symbolOffset = 8 - byteOffset;
-              symbol |= values[byteNum + 1] << symbolOffset;
-          }
-          symbol &= 0b11111;
-          ans[i] = Alphabet[symbol];
-      }
-      return ans.join("")
     },
   },
   computed: {
@@ -264,10 +249,11 @@ export default {
       };
     },
   },
-  watch:{
-    params(){
-      this.updateIndo()
-    },
+  watch: {
+    params: {
+      handler() { this.updateIndo() },
+      deep: true
+    }
   }
 };
 </script>
@@ -286,6 +272,7 @@ export default {
   background-color: var(--backgroundColor);
   color: var(--color);
   display: flex;
+  gap: 10px;
   justify-content: center;
   flex-direction: var(--flexdir);
   border-radius: var(--borderRadius);
@@ -309,12 +296,17 @@ img {
 }
 .button_icon{
   width: var(--widthbutton);
-  height: var(--widthbutton);
+  height: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
   margin-right: var(--marginsideicon);
   margin-left: var(--marginsideicon);
+}
+
+.button_text {
+  display: flex;
+  align-items: center;
 }
 
 p {

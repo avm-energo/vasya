@@ -2,7 +2,7 @@
 <template>
   <div class="container">
     <div class="header_logo">
-      <img src="../assets/logo6.png" />
+      <img src="../../assets/logo6.png" />
       <!-- <p>{{ $t('Sonica') }}</p> -->
       <p>Соника Клиент</p>
     </div>
@@ -50,7 +50,7 @@
   </div>
 </template>
 <script>
-import { login } from "../actions/AuthorizationActions";
+import { login } from "../../actions/AuthorizationActions.js";
 import ButtonComponent from "@/components/Button.vue";
 import IconAdm from '@/components/IconAdm.vue';
 

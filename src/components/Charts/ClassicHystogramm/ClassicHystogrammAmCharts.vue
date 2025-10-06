@@ -102,7 +102,7 @@ export default {
     let xRenderer = xAxis.get("renderer");
     xRenderer.labels.template.setAll({
       fill: am5.color(0xFFFFFF),
-      fontSize: this.params.fontSize * this.$parent.$parent.multiplier * 1.5 + "px"
+      fontSize: this.params.fontSize * this.multiplier * 1.5 + "px"
     });
 
     this.xAxis = xAxis
@@ -123,7 +123,7 @@ export default {
     let yRenderer = yAxis.get("renderer");
     yRenderer.labels.template.setAll({
       fill: am5.color(0xFFFFFF),
-      fontSize: this.params.fontSize * this.$parent.$parent.multiplier * 1.5 + "px"
+      fontSize: this.params.fontSize * this.multiplier * 1.5 + "px"
     });
     yRenderer.grid.template.setAll({
       stroke: am5.color(0xFFFFFF),
@@ -209,16 +209,19 @@ export default {
     }
   },
   computed: {
+    multiplier() {
+      return this.$parent?.$parent?.multiplier || 1
+    },
     cssProps() {
       return {
-        "--x": this.params.x * this.$parent.$parent.multiplier + "px",
-        "--y": this.params.y * this.$parent.$parent.multiplier + "px",
-        "--width": this.params.width * this.$parent.$parent.multiplier * this.params.scale + "px",
-        "--height": this.params.height * this.$parent.$parent.multiplier * this.params.scale + "px",
-        "--borderRadius": this.params.borderRadius * this.$parent.$parent.multiplier + "px",
-        "--borderThick": this.params.borderThick * this.$parent.$parent.multiplier + "px",
+        "--x": this.params.x * this.multiplier + "px",
+        "--y": this.params.y * this.multiplier + "px",
+        "--width": this.params.width * this.multiplier * this.params.scale + "px",
+        "--height": this.params.height * this.multiplier * this.params.scale + "px",
+        "--borderRadius": this.params.borderRadius * this.multiplier + "px",
+        "--borderThick": this.params.borderThick * this.multiplier + "px",
         "--back": "#" + this.params.back,
-        "--fontSize": this.params.fontSize * this.$parent.$parent.multiplier + "px",
+        "--fontSize": this.params.fontSize * this.multiplier + "px",
       };
     },
   },

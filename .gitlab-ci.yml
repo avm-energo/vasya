@@ -1,0 +1,43 @@
+stages:
+  - test
+  - build
+
+image: node:22.17-alpine
+
+variables:
+  NODE_ENV: test
+  CI: 'true'
+
+cache:
+  key: ${CI_COMMIT_REF_SLUG}
+  paths:
+    - .npm
+    - node_modules/
+
+before_script:
+  - npm ci
+
+unit_test:
+  stage: test
+  script:
+    - echo "Running unit tests..."
+    - mkdir -p reports coverage
+    - npm run test:ci
+    - echo "== ls reports =="
+    - ls -la reports || true
+    - echo "== head junit.xml =="
+    - head -n 5 reports/junit.xml || true
+  artifacts:
+    when: always
+    paths:
+      - coverage/
+      - reports/junit.xml
+    reports:
+      junit: reports/junit.xml
+  tags:
+    - vue3
+  only:
+    refs:
+      - test
+      - merge_requests
+      - main

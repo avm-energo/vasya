@@ -50,7 +50,7 @@ import Imagetrans from '../Primitives/Image.vue';
 import Imagelogo from '../Primitives/Logo.vue';
 import Chart from '../Charts/Charts.vue';
 import Helper from '../Primitives/Helper.vue'
-import Duval from '../Specials/DuvalTriangle.vue'
+import Duval from '../Specials/DuvalTriangle/DuvalTriangle.vue'
 import Charttest from '../Charts/Test.vue'
 import Commands from "../Commands/Commands.vue";
 import Meters from "../Scales/Meter.vue"

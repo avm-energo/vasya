@@ -134,6 +134,7 @@ import exportexcel from "vue-json-excel3"
 
 import axios from 'axios'
 import store from "@/store";
+import {encript} from "@/mixins/encript.js";
 
 export default {
   name: "Histogram",
@@ -612,7 +613,7 @@ export default {
         'Authorization': `${localStorage.getItem('token')}`,
       };
       var article = `"${moment(series[0].data.values[series[0].data.values.length - 1].argument + 1000).format("YYYY-MM-DDTHH:mm:ss")}"`;
-      await axios.post(`http://${ip}/api/nodes/${this.encript((new TextEncoder()).encode(win))}/widget/${this.encript((new TextEncoder()).encode(name))}/query/trend-increment`, article, {
+      await axios.post(`http://${ip}/api/nodes/${encript((new TextEncoder()).encode(win))}/widget/${encript((new TextEncoder()).encode(name))}/query/trend-increment`, article, {
         headers,
         signal: controller.signal
       })
@@ -655,24 +656,6 @@ export default {
 
     async function addData(seriesArr, ip, win, name) {
 
-      function encript(values) {
-        const Alphabet = "12345678" + "9ABDEFGH" + "JKLMNPQR" + "STUVWXYZ";
-        var bitsCount = 8 * values.length;
-        var ans = new Array(Math.trunc(bitsCount / 5) + (bitsCount % 5 == 0 ? 0 : 1));
-        for (let i = 0; i < ans.length; i++) {
-          var bitNum = i * 5;
-          var byteNum = Math.trunc(bitNum / 8);
-          var byteOffset = bitNum % 8;
-          var symbol = values[byteNum] >> byteOffset;
-          if (byteOffset > 3 && byteNum < (values.length - 1)) {
-            var symbolOffset = 8 - byteOffset;
-            symbol |= values[byteNum + 1] << symbolOffset;
-          }
-          symbol &= 0b11111;
-          ans[i] = Alphabet[symbol];
-        }
-        return ans.join("")
-      }
 
       const headers = {
         'Content-Type': 'application/json',

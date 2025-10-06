@@ -1,7 +1,7 @@
 import axios from "axios";
 import moment from "moment/moment";
 import store from "@/store";
-import {encript} from "@/components/Charts/TrendViewerAmCharts/utils/encript";
+import {encript} from "@/mixins/encript.js";
 
 export const getTrendsData = async (startDate, endDate, windowPath, name, controller) => {
 

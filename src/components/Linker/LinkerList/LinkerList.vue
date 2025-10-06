@@ -29,7 +29,7 @@
 
 <script>
 
-import LinkerListItem from "@/components/Linker/LinkerList/LinkerListItem/LinkerListItem";
+import LinkerListItem from "@/components/Linker/LinkerList/LinkerListItem/LinkerListItem.vue";
 
 export default {
   name: "DebugTable",

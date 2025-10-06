@@ -24,3 +24,6 @@ node_modules/
 dist/
 output/
 !public/*.json
+
+junit.xml
+reports/
