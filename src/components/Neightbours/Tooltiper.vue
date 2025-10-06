@@ -106,7 +106,6 @@ export default {
     };
   },
   created() {
-    console.log(this.params.properties.leftIcon=='Info')
     this.widgetType = this.params.type == 'neightbours/Navigator' ? 'navigator' : 'tooltiper'
     // // if (this.params.name == 'Navigator#5') {
     //   console.log(this.params.properties)
@@ -139,7 +138,7 @@ export default {
       // this.button.ForegroundColor = this.params.properties.foreground
       // this.button.BackgroundColor = this.params.properties.background
       // this.button.neightbourState = this.params.properties.neightbourState
-      this.flashingColor = /\d/.test(this.params.properties.neightbourState) ? '#' + this.params.properties.neightbourState : this.params.properties.neightbourState
+      // this.flashingColor = /\d/.test(this.params.properties.neightbourState) ? '#' + this.params.properties.neightbourState : this.params.properties.neightbourState
       this.UpdateFlahingState(this.params.properties.isButtonEnabled, this.params.properties.neightbourState, this.params.properties.sFlashBehaviour, this.params.properties.isAcknowledged, this.params.properties.stateChangingBehaviour)
     },
     async some() {
@@ -233,7 +232,8 @@ export default {
         "--width": (this.params.properties.width / 1) * this.$parent.multiplier * [this.params.properties.scale || 1]  + "px",
         "--height": (this.params.properties.height / 1) * this.$parent.multiplier * [this.params.properties.scale || 1]  + "px",
         // "--backgroundColor": [this.button.neightbourState == "Red" ? "Red" : [ this.button.neightbourState == "Yellow" ? "Yellow" : "#" + this.button.BackgroundColor, ],],
-        "--backgroundColor": this.flashing ? 'red' : this.params.properties.neightbourState == 'Red' ? 'Red' : this.params.properties.neightbourState == 'Yellow' ? 'Yellow' : '#' + this.button.BackgroundColor,
+        // "--backgroundColor": this.flashing ? 'red' : this.params.properties.neightbourState == 'Red' ? 'Red' : this.params.properties.neightbourState == 'Yellow' ? 'Yellow' : '#' + this.button.BackgroundColor,
+        "--backgroundColor": this.flashing ? 'red' : this.flashingColor == 'Red' ? 'Red' : this.flashingColor == 'Yellow' ? 'Yellow' : '#' + this.button.BackgroundColor,
         '--backgroundFlashingColorFirst': '#' + this.params.properties.background,
         '--backgroundFlashingColorSecond': this.flashingColor,
         "--backgroundColorHover": '#16466C',
