@@ -274,7 +274,6 @@ export default {
       } else {
         this.windowpath = this.namewindow
       }
-
     },
     reportWindowSize(){
       let multiplierwindow;

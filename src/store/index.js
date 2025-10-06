@@ -137,7 +137,7 @@ export default createStore({
       
       let config = await fetch('defaults.json')
       const a = JSON.parse(await config.text())
-      state.ip = a.ip
+      state.ip = JSON.parse(JSON.stringify(a.ip))
       document.title = a.Caption
       console.log(state.ip)
       console.log("версия: " + a.version)
@@ -391,36 +391,30 @@ export default createStore({
     },
 
     async changeMainWindow(state, data){
-      // console.log(state.tickmas)
-      // console.log(data)
-      if (state.prevMainWindow != data.properties.path) {
-        this.dispatch("closewindow", state.tickmas.find((el)=> el.name == state.prevMainWindow.split('\\').join('')).name);
-        if (state.tickmas.find(res => res.name == data.properties.path.split('\\').join(''))) 
-          {
-            this.dispatch("closewindow", state.tickmas[state.tickmas.length-1].name);
-          } else {
-            let response = await fetch(
-              `http://${state.ip}/api/nodes/${encript((new TextEncoder()).encode(data.properties.path))}/current`,{
-                headers: { Authorization: `${localStorage.getItem('token')}` },
-              }
-            );
-            if (response.ok){
-              // console.log(`http://${state.ip}/api/nodes/${encript((new TextEncoder()).encode(data.name))}/current`)
-              const res = JSON.parse(await response.text());
-              res.infoFromTooltiper = data
-              state.main = res;
-              this.dispatch("updateElems", data.properties.path);
-            } else {
-              state.notification.push({
-                id: state.notification.length ? state.notification.reverse()[0].id + 1 : 0,
-                text:'Ваш уровень доступа недостаточен для выполнения данной операции',
-                type: 'Warning',
-                time: 5000
-              });
-            }
-          }
+      console.log(state.tickmas)
+      let response = await fetch(
+        `http://${state.ip}/api/nodes/${encript((new TextEncoder()).encode(data.properties.path))}/current`,{
+          headers: { Authorization: `${localStorage.getItem('token')}` },
+        }
+      );
+      if (response.ok){
+        if (state.prevMainWindow != data.properties.path) {
+          this.dispatch("closewindow", state.tickmas.find((el)=> el.name == state.prevMainWindow.split('\\').join('')).name);
+          // if (state.tickmas.find(res => res.name == data.properties.path.split('\\').join(''))) this.dispatch("closewindow", state.tickmas[state.tickmas.length-1].name); 
         }
         state.prevMainWindow = data.properties.path
+        const res = JSON.parse(await response.text());
+        res.infoFromTooltiper = data
+        state.main = res;
+        this.dispatch("updateElems", data.properties.path);
+      } else {
+        state.notification.push({
+          id: state.notification.length ? state.notification.reverse()[0].id + 1 : 0,
+          text:'Ваш уровень доступа недостаточен для выполнения данной операции',
+          type: 'Warning',
+          time: 5000
+        });
+      }
     },
     changeDefaultMainWindowName(state, name){
       state.prevMainWindow = name

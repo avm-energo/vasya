@@ -26,7 +26,8 @@
           <sline v-for="line in lines" :key="line.name" :params="line.properties" />
         </svg>
         <tiles v-for="elem  in tiless" :key="elem.name" :params="elem.properties" :name="elem.name" :screenPercentage="this.myJson.screenPercentage" :windowWidth="this.myJson.canvas.width" :windowHeight="this.myJson.canvas.height" :type="elem.type"/>
-        <tooltiper v-for="elem in tooltipers" :key="elem.name" :params="elem" tooltiperFromHeader='true'/>
+        <!-- <tooltiper v-for="elem in tooltipers" :key="elem.name" :params="elem" tooltiperFromHeader='true'/> -->
+        <tooltiper v-for="elem in tooltipers" :key="elem.name" :params="elem" tooltiperFromHeader='true' :ip="this.ip"/>
         <helper v-for="elem in helper" :key="elem.name" :params="elem.properties"/>
         <!-- <div class="Login"  :style="cssProps"><p @click="[outSide($event), openButtons()]" ref="headerrightuser">{{ userName }}</p></div>
         <div v-if="showButtons" class="userButtons" ref="userButtons" :style="{height:35 * this.multiplier + 'px', width: 110 * this.multiplier + 'px', top: 25 * this.multiplier + 'px', right: 25 * this.multiplier + 'px'}">
@@ -87,6 +88,9 @@ export default {
   },
 
   computed: {
+    ip() {
+      return this.$store.getters.ip;
+    },
     cssProps() {
       return {
         "--margin": 'auto',
@@ -194,6 +198,7 @@ export default {
     this.width = window.innerWidth-2;
     this.height = window.innerHeight ;
     this.windowname = '>:Header'
+    this.windowpath = this.myJson.path
     this.multiplierwindow = (this.width) / this.myJson.canvas.width
     window.addEventListener('resize', this.reportWindowSize)
     this.$store.dispatch("changemainheight", this.myJson.canvas.height * this.multiplierwindow)
