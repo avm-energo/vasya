@@ -65,7 +65,9 @@
       </div>
     </div>
     <!-- <p class="p" :style="cssProps" v-if="((this.params.properties.width!=this.params.properties.height & this.params.properties.text != 'Navigator') && this.params.properties.leftIcon == 'None')">{{button.value}}</p>     -->
-    <p class="p" :style="cssProps" v-if="(this.params.properties.leftIcon == 'None')">{{button.value}}</p>    
+    <div class="button_text">
+      <p class="p" :style="cssProps">{{button.value}}</p>
+    </div>
     <!-- <p class="p" :style="cssProps" v-if="((this.params.properties.width!=this.params.properties.height & this.params.properties.text != 'Navigator') || this.params.properties.leftIcon == 'None') && (this.params.properties.text.toLowerCase() != 'tooltiper')">{{button.value}}</p>     -->
     <!-- <p class="p" :style="cssProps" v-else-if="(this.params.properties.width > 60 && this.params.properties.width!=this.params.properties.height) || this.params.properties.angle != 0">{{button.value}}</p> -->
   </div>
@@ -270,6 +272,7 @@ export default {
   background-color: var(--backgroundColor);
   color: var(--color);
   display: flex;
+  gap: 10px;
   justify-content: center;
   flex-direction: var(--flexdir);
   border-radius: var(--borderRadius);
@@ -293,12 +296,17 @@ img {
 }
 .button_icon{
   width: var(--widthbutton);
-  height: var(--widthbutton);
+  height: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
   margin-right: var(--marginsideicon);
   margin-left: var(--marginsideicon);
+}
+
+.button_text {
+  display: flex;
+  align-items: center;
 }
 
 p {
