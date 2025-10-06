@@ -39,5 +39,6 @@ unit_test:
   only:
     refs:
       - test
+      - develop
       - merge_requests
       - main
