@@ -1,5 +1,5 @@
 <template>
-  <div class="button" :style="cssProps" v-show="button.Visible" @click="some" :class="flashing ? 'flash' :''">
+  <div class="button" :style="cssProps" v-show="button.Visible" @click="some" :class="[ flashing ? 'flash' : '', isSmall ? 'button_small' : '' ]">
 
     <!-- TRENDS -->
     <div class="button_icon" v-if="this.params.properties.leftIcon != 'None'" :style="cssPropsIcon"> 
@@ -65,7 +65,7 @@
       </div>
     </div>
     <!-- <p class="p" :style="cssProps" v-if="((this.params.properties.width!=this.params.properties.height & this.params.properties.text != 'Navigator') && this.params.properties.leftIcon == 'None')">{{button.value}}</p>     -->
-    <div class="button_text">
+    <div v-if="isSmall === false" class="button_text">
       <p class="p" :style="cssProps">{{button.value}}</p>
     </div>
     <!-- <p class="p" :style="cssProps" v-if="((this.params.properties.width!=this.params.properties.height & this.params.properties.text != 'Navigator') || this.params.properties.leftIcon == 'None') && (this.params.properties.text.toLowerCase() != 'tooltiper')">{{button.value}}</p>     -->
@@ -103,6 +103,7 @@ export default {
         Visible: true,
         Enabled: true,
       },
+      isSmall: false,
       flashing: false,
       flashingColor: '',
       widgetType: null,
@@ -253,6 +254,14 @@ export default {
     params: {
       handler() { this.updateIndo() },
       deep: true
+    },
+    cssProps: {
+      handler(newVal) {
+        const width = parseFloat(newVal["--width"])
+        this.isSmall = width < 155
+      },
+      immediate: true,
+      deep: true
     }
   }
 };
@@ -273,7 +282,7 @@ export default {
   color: var(--color);
   display: flex;
   gap: 10px;
-  justify-content: center;
+  padding-left: 5px;
   flex-direction: var(--flexdir);
   border-radius: var(--borderRadius);
   border-color: var(--borderBrush);
@@ -283,6 +292,12 @@ export default {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   
 }
+
+.button_small {
+  padding-left: 0;
+  justify-content: center;
+}
+
 img {
   position: absolute;
   width: var(--widthimg);
