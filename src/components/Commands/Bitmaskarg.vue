@@ -6,21 +6,23 @@
     </div>
     <div class="bitmaskarg_table"  v-show="bitmaskarg.window" v-click-outside="onClickOutside" :style="cssProps1">
       <table class="bitmaskarg_table_style"  ref="bit" :style="cssProps">
-        <tr>
-          <td colspan="3" style="text-align: left; padding:5px" >Bit field</td>
-        </tr>
-        <tr>
-          <td style="padding:5px">Position</td>
-          <td style="padding:5px">Description</td>
-          <td style="padding:5px">Value</td>
-        </tr>
-        <tr v-for="elem in bitmaskarg.masvalue" :key="elem.id">
-          <td>{{ elem.position }}</td>
-          <td style="padding:0 5px 0 5px;">{{ elem.description }}</td>
-          <td>
-            <input type="checkbox" v-model="elem.value" @change="[elem.value ? BigInt(bitmaskarg.value += Math.pow(2, elem.position)) : BigInt(bitmaskarg.value -= Math.pow(2, elem.position)),], some()"/>
-          </td>
-        </tr>
+        <tbody>
+          <tr>
+            <td colspan="3" style="text-align: left; padding:5px" >Bit field</td>
+          </tr>
+          <tr>
+            <td style="padding:5px">Position</td>
+            <td style="padding:5px">Description</td>
+            <td style="padding:5px">Value</td>
+          </tr>
+          <tr v-for="elem in bitmaskarg.masvalue" :key="elem.id">
+            <td>{{ elem.position }}</td>
+            <td style="padding:0 5px 0 5px;">{{ elem.description }}</td>
+            <td>
+              <input type="checkbox" v-model="elem.value" @change="[elem.value ? BigInt(bitmaskarg.value += Math.pow(2, elem.position)) : BigInt(bitmaskarg.value -= Math.pow(2, elem.position)),], some()"/>
+            </td>
+          </tr>
+        </tbody>
       </table>
     </div>
   </div>
@@ -28,9 +30,8 @@
 
 <script>
 
-import axios from "axios";
 import vClickOutside from "v-click-outside";
-import {encript} from "@/mixins/encript.js";
+import { PostWriteArg } from "@/actions/SonicaActions";
 
 export default {
   name: "app",
@@ -57,17 +58,9 @@ export default {
     },
     async some(){
       if (this.params.personalSend) {
-        const article =`
-          ${this.bitmaskarg.value}
-        `;
-        const headers = { 
-            'Content-Type': 'application/json',
-            'Authorization': `${localStorage.getItem('token')}`,
-        };
-        await axios.post(`http://${this.ip}/api/nodes/${encript((new TextEncoder()).encode(this.$parent.$parent.windowpath))}/widget/${encript((new TextEncoder()).encode(this.bitmaskarg.Name))}/query/write-arg`, article, { headers }).
-        then(response =>{
-          
-        }) 
+        PostWriteArg(this.$parent.$parent.windowpath, this.bitmaskarg.Name, `${this.bitmaskarg.value}`, ()=>{
+
+        })
       } 
     },
   },

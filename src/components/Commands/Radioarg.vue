@@ -9,8 +9,7 @@
 
 <script>
 
-import axios from 'axios';
-import {encript} from "@/mixins/encript.js";
+import { PostWriteArg } from "@/actions/SonicaActions";
 
 export default {  
   name: "app",
@@ -30,14 +29,9 @@ export default {
     async some(){
       console.log(this.radioarg.masvalue)
       if (this.params.setOnCheck) {
-        const article =`
-          ${this.radioarg.value}
-        `;
-        const headers = { 
-            'Content-Type': 'application/json',
-            'Authorization': `${localStorage.getItem('token')}`,
-        };
-        await axios.post(`http://${this.ip}/api/nodes/${encript((new TextEncoder()).encode(this.$parent.$parent.windowpath))}/widget/${encript((new TextEncoder()).encode(this.radioarg.Name))}/query/write-arg`, article, { headers })
+        PostWriteArg(this.$parent.$parent.windowpath, this.radioarg.Name, `${this.radioarg.value}`, ()=>{
+          
+        })
       }
     },
     

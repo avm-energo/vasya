@@ -2,7 +2,10 @@
 import { createStore } from "vuex";
 // import ip from '../assets/ip.json'
 import moment from "moment";
-import { getTime } from "date-fns";
+// import { getTime } from "date-fns";
+import { 
+  GetBaseComponentsCurrent
+ } from "@/actions/SonicaActions";
 import {encript} from "@/mixins/encript.js";
 // import { log4js } from "log4js";
 
@@ -41,11 +44,11 @@ export default createStore({
   getters: {
     ip: (state) => state.ip,
     IsLoading: (state) => state.isLoading,
-    GetAfkTimer(state) {return state.afkTimer},
-    GetUserName (state) {return state.userName},
-    GetNotification(state) { return state.notification },
-    GetError(state) { return state.error },
-    GetWarning(state) {return state.warning},
+    GetAfkTimer: (state) => state.afkTimer,
+    GetUserName: (state) => state.userName,
+    GetNotification: (state) => state.notification,
+    GetError: (state) => state.error,
+    GetWarning: (state) => state.warning,
     main: (state) => state.main,
     mainstate: (state) => state.mainstate,
     mainheight: (state) => state.mainheight,
@@ -61,6 +64,7 @@ export default createStore({
     mainmultiplier: (state) => state.mainmultiplier,
     commandwidgets: (state) => (res) =>
       state.commandwidgetmass.find((s)=> s.namewindow === res)?.widgets,
+    GetDefaultIp: (state) => state.ip,
   },
   mutations:{
     AddNotification(state, payload) {
@@ -134,42 +138,48 @@ export default createStore({
     async fetchElems(state) {
       
       state.mainheight = window.innerHeight
-      
       let config = await fetch('defaults.json')
       const a = JSON.parse(await config.text())
       state.ip = JSON.parse(JSON.stringify(a.ip))
+
+      GetBaseComponentsCurrent('main', (stateBool, data)=>{
+        if (stateBool){
+          state.tick = data.tick;
+          state.main = data;
+          this.dispatch("updateElems", data.path);
+        }
+      })
+
       document.title = a.Caption
       console.log(state.ip)
       console.log("версия: " + a.version)
-      // var log4js = require("log4js");
-      // var loggerr = log4js.getLogger();
-      // loggerr.level = "debug";
-      // loggerr.debug("Some debug messages");
-      let response = await fetch(
-        `http://${state.ip}/api/nodes/main/current`,{
-          method: "GET",
-          headers: { Authorization: `${localStorage.getItem('token')}` },
-        }
-      );
-      const data = JSON.parse(await response.text());
-      // console.log(data)
-      state.tick = data.tick;
-      state.main = (data);
-      this.dispatch("updateElems", data.path);
 
-      let response2 = await fetch(
-        `http://${state.ip}/api/nodes/header/current`,{
-          headers: { Authorization: `${localStorage.getItem('token')}` },
+      GetBaseComponentsCurrent('header',(stateBool, data)=>{
+        if (!stateBool || data.widgets==[]){ 
+          // state.head = null 
+        } else {
+          state.head = data;
+          this.dispatch("updateElems", data.path);
         }
-      );
+      })
       setTimeout(() => { state.isLoading = false }, 200);
-      const data2 = JSON.parse(await response2.text());
-      if (data2.widgets==[] || data2.status=="404") {
-        state.head = null 
-      } else {
-        state.head = data2;
-        this.dispatch("updateElems", data2.path);
-      }
+
+      GetBaseComponentsCurrent('footer',(stateBool, data)=>{
+
+        if (stateBool){ 
+          state.footer = data;
+        } else {
+          // state.footer = null 
+        }
+      })
+      setTimeout(() => { state.isLoading = false }, 200);
+      // const data2 = JSON.parse(await response2.text());
+      // if (data2.widgets==[] || data2.status=="404") {
+      //   state.head = null 
+      // } else {
+      //   state.head = data2;
+      //   this.dispatch("updateElems", data2.path);
+      // }
 
       // data2.widgets.forEach(async (elem) =>{
       //   if (elem.type.startsWith('neightbours/Navigator')){
@@ -184,29 +194,31 @@ export default createStore({
       //   }
       // })
 
-      let response3 = await fetch(
-        `http://${state.ip}/api/nodes/footer/current`,{
-          headers: { Authorization: `${localStorage.getItem('token')}` },
-        }
-      );
-      setTimeout(() => { state.isLoading = false }, 200);
-      const data3 = JSON.parse(await response3.text());
-      if (data3.status=='404') {
-        state.data3 = null 
-      } else {
-        state.footer = data3;
-        data3.ip = state.ip
-      }
-      // console.log(data3)
-      var mas = JSON.parse(sessionStorage.getItem("localArray"))
-      if (mas) {
-        mas.forEach((element,index) =>{
-          // console.log(index)
-          setTimeout(() => {
-            this.dispatch('addElemsfromStorage', JSON.parse(element))
-          }, 50*index);
-        })
-      }
+      // let response3 = await fetch(
+      //   `http://${state.ip}/api/nodes/footer/current`,{
+      //     headers: { Authorization: `${localStorage.getItem('token')}` },
+      //   }
+      // );
+      
+      // const data3 = JSON.parse(await response3.text());
+      // if (data3.status=='404') {
+      //   state.data3 = null 
+      // } else {
+      //   state.footer = data3;
+      //   data3.ip = state.ip
+      //   console.log(data3)
+      // }
+
+      // Восстановление открытых вкладок после обновления страницы
+      // var mas = JSON.parse(sessionStorage.getItem("localArray"))
+      // if (mas) {
+      //   mas.forEach((element,index) =>{
+      //     // console.log(index)
+      //     setTimeout(() => {
+      //       this.dispatch('addElemsfromStorage', JSON.parse(element))
+      //     }, 50*index);
+      //   })
+      // }
 
       // setInterval(() => {console.log(state.tickmas)},1000)
     },

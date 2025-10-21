@@ -10,8 +10,7 @@
 
 <script>
 
-import Axios from 'axios';
-import {encript} from "@/mixins/encript.js";
+import { PostWriteArg } from "@/actions/SonicaActions";
 
 export default {
   name: "app",
@@ -30,15 +29,9 @@ export default {
   methods:{
     async some(){
       if (this.params.trigger == "ChangeOnEnd") {
-        const article =`
-          ${this.comboarg.value}
-        `;
-        const headers = { 
-            'Content-Type': 'application/json',
-            'Authorization': `${localStorage.getItem('token')}`
+        PostWriteArg(this.$parent.$parent.windowpath, this.comboarg.Name, `${this.comboarg.value}`, ()=>{
 
-        };
-        await Axios.post(`http://${this.ip}/api/nodes/${encript((new TextEncoder()).encode(this.$parent.$parent.windowpath))}/widget/${encript((new TextEncoder()).encode(this.comboarg.Name))}/query/write-arg`, article, { headers })
+        })
       }
     },
   },

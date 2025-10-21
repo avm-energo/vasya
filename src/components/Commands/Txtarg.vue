@@ -16,9 +16,6 @@
 
 <script>
 
-import  Axios  from "axios";
-import {encript} from "@/mixins/encript.js";
-
 export default {
   name: "app",
   props:['params','name', 'ip', 'type'],
@@ -41,17 +38,9 @@ export default {
     async some(){
       // console.log(`http://${this.ip}/api/nodes/${encript((new TextEncoder()).encode(this.$parent.$parent.namewindow))}/widget/${encript((new TextEncoder()).encode(this.txtarg.Name))}/query/write-arg`)
       if (this.params.trigger != `ButtonApply` && this.validate) {
-        const article =`${this.txtarg.value}`;
-        const headers = { 
-            'Content-Type': 'application/json',
-            'Authorization': `${localStorage.getItem('token')}`,
-        };
-        await Axios.post(`http://${this.ip}/api/nodes/${encript((new TextEncoder()).encode(this.$parent.$parent.windowpath))}/widget/${encript((new TextEncoder()).encode(this.txtarg.Name))}/query/write-arg`, article, { headers }).
-        then(response =>{
-          console.log(response)
+        PostWriteArg(this.$parent.$parent.windowpath, this.txtarg.Name, `${this.txtarg.value}`, ()=>{
           this.txtarg.prevvalue = this.txtarg.value
         })
-        
       } else {
         // const res = {'namewidget': this.txtarg.Name, 'namewindow': this.$parent.$parent.windowname , 'value': this.txtarg.value}
         // this.$store.dispatch('addcommandwidgetmass', res)

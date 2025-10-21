@@ -11,8 +11,7 @@
 
 <script>
 
-import axios from 'axios';
-import {encript} from "@/mixins/encript.js";
+import { PostWriteArg } from "@/actions/SonicaActions";
 
 export default {
   name: "app",
@@ -32,16 +31,8 @@ export default {
   },
   methods: {
     async some(){
-
       if (this.params.setOnEnter) {
-        const article =`
-          ${this.ipadressarg.value}
-        `;
-        const headers = {
-            'Content-Type': 'application/json',
-            'Authorization': `${localStorage.getItem('token')}`,
-        };
-        await axios.post(`http://${this.ip}/api/nodes/${encript((new TextEncoder()).encode(this.$parent.$parent.windowpath))}/widget/${encript((new TextEncoder()).encode(this.ipadressarg.Name))}/query/write-arg`, article, { headers }).then(()=>{
+        PostWriteArg(this.$parent.$parent.windowpath, this.ipadressarg.Name, `${this.ipadressarg.value}`, ()=>{
           this.ipadressarg.prevvalue = this.ipadressarg.value
         })
       } else {
@@ -119,8 +110,8 @@ export default {
   width: var(--widthstar);
   font-size: var(--fontsize);
   height: 100%;
-  background-color: white;
-  color: black;
+  background-color: var(--background);
+  color: white;
   border-bottom: solid 1px black;
   /* border-top: solid 1px black; */
   

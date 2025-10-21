@@ -6,8 +6,10 @@
 
 <script>
 
-import axios from 'axios';
-import {encript} from "@/mixins/encript.js";
+import {
+  PostApplyForm,
+  PostApplyCommand,
+} from '../../actions/SonicaActions'
 
 export default {
   name: "app",
@@ -48,45 +50,23 @@ export default {
         json_obj = null
       }
       // const startTime = performance.now()
-      let text = null
       if (json_obj && this.params.writeParams) {
-        // console.log(json_obj)
-        const headers = {
-          'Content-Type': 'application/json',
-          'Authorization': `${localStorage.getItem('token')}`
-        };
-        await axios.post(`http://${this.ip}/api/nodes/${encript((new TextEncoder()).encode(this.$parent.$parent.windowpath))}/widget/${encript((new TextEncoder()).encode(this.name))}/query/apply-form`, json_obj, { headers })
-        .then((result)=>{
-          // console.log(result)
-        })
+        PostApplyForm(this.$parent.$parent.windowpath, this.name, json_obj, ()=>{})
         this.$store.dispatch('clearcommandwidgets', this.$parent.$parent.windowpath ? this.$parent.$parent.windowpath: this.$parent.$parent.windowname)
       } 
-      const headers = {
-          'Content-Type': 'application/json',
-          'Authorization': `${localStorage.getItem('token')}`
-        };
-      json_obj = {}
-      if (this.params.awaitTime) this.isEnabled = false
-      await axios.post(`http://${this.ip}/api/nodes/${encript((new TextEncoder()).encode(this.$parent.$parent.windowpath))}/widget/${encript((new TextEncoder()).encode(this.name))}/query/apply-command`, json_obj, { headers }).
-      then(response =>{
-        // console.log(response)
-        if (response.status == 200) {
-          response.data != '' ? text = response.data.resultData.description : text = null
-        } else if (response.status == 204) {
-          text = null
-        } else if (response.status == 400) {
-          text = response.data.errorDetails
-        } else {
-          text = 'Истекло время ожидания команды'
-        }
+      PostApplyCommand(this.$parent.$parent.windowpath, this.name, {}, (text)=>{
         this.isEnabled = true
         // console.log(json_obj)
-        if (response.data.resultData.type) {
-          this.$store.dispatch('AddNotification_action', { text: text, type: 'Warning', time: 5000 })
-        } else {
-          this.$store.dispatch('AddNotification_action', { text: text, type: 'Success', time: 5000 })
+        if (text != null) {
+          if (text.resultData?.type) {
+            this.$store.dispatch('AddNotification_action', { text: text, type: 'Warning', time: 5000 })
+          } else {
+            this.$store.dispatch('AddNotification_action', { text: text, type: 'Success', time: 5000 })
+          }
         }
       })
+        
+      // })
       // const endTime = performance.now()
       // if ((endTime - startTime) < this.params.awaitTime) {
       // } else {

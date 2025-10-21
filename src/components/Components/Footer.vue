@@ -1,6 +1,6 @@
 <template>
   <div id="footer">
-    <div id="footer_title" @click="clickfooter" :class="[!tablestate ? !upHere ? footerflashing ? 'flash' : 'footer_title_back' : 'footer_title_back' : 'footer_title_back', ]" @mouseover="upHere = true" @mouseleave="upHere = false" :style="cssProps">
+    <div id="footer_title" @click="clickfooter" :class="[!tablestate && !upHere && footerflashing ? 'flash' : 'footer_title_back']" @mouseover="upHere = true" @mouseleave="upHere = false" :style="cssProps">
       {{ footertitle }}
     </div>
     <div v-show="tablestate">
@@ -120,7 +120,10 @@ import Datepicker from "@vuepic/vue-datepicker";
 import "@vuepic/vue-datepicker/dist/main.css";
 import moment from "moment";
 import EventsHistoryTable from "./EventsHistoryTable.vue";
-import { PostAcknowledge } from "../../actions/SonicaActions"
+import { 
+  PostAcknowledge,
+  GetFooterDelta
+ } from "../../actions/SonicaActions"
 import TreeView from './TreeView.vue'
 
 
@@ -163,6 +166,9 @@ export default {
       isResizing: false,
       selectedId: 'All',
       nameFromList: 'All',
+      showPanel: 5,
+      footerFlash: 5,
+      previousEvents: [],
     };
   },
   props: {
@@ -177,63 +183,87 @@ export default {
   created() {
     this.$store.dispatch("changemainheight", 24);
     this.data = this.myJson.data;
+    this.previousEvents = this.data.events
+    this.showPanel = this.myJson.showPanel == 3 ? 5 : this.myJson.showPanel == 2 ? 4 : this.myJson.showPanel
+    this.footerFlash = this.myJson.footerFlash == 3 ? 5 : this.myJson.footerFlash == 2 ? 4 : this.myJson.footerFlash
     this.footertitle = this.myJson.data["footer-title"];
-    this.footercolor = this.myJson.data['footer-state'];
-    this.footerflashing = this.myJson.data['footer-flashing']
+    this.footercolor = this.myJson.data['footer-state'] == 'Red' ? 'Red' : this.myJson.data['footer-state'] == 'Yellow' ? 'Yellow' : '#252525ff';
+    this.footerflashing = (()=>{
+      let footercolor
+      switch (this.myJson.data['footer-flashing']){
+        case ('Red'):
+          footercolor = 4
+          break;
+        case ('Yellow'):
+          footercolor = 2
+          break;
+        case ('Gray'):
+          footercolor = 1
+          break;
+        case ('Green'):
+          footercolor = 0
+          break;
+      }
+      return this.myJson.data['footer-flashing'] && footercolor >= this.footerFlash
+    })(),
     this.tick = this.myJson.tick;
     if (this.data.events) this.events = (this.data.events.$id  == undefined ? this.data.events : this.data.events.$values)
     const today = new Date();
     var currentDateMilliseconds = today.getMilliseconds();
     setTimeout(() => {
-      var interval = setInterval(async () => {
-        let response = await fetch(
-          `http://${this.myJson.ip}/api/nodes/footer/delta/0/${
-            this.tick ? this.tick : -1
-          }`, { headers: { Authorization: `${localStorage.getItem('token')}` }, }
-        );
-        let obj = JSON.parse(await response.text())
-        this.tick = obj.tick
-        if (obj.data!=null){
-          // console.log(obj)
-          // if (obj.data["footer-title"]!=null) {this.footertitle = obj.data["footer-title"]}
-          if (obj.data["footer-title"]){
-            // console.log('yest')
-            this.footertitle = obj.data["footer-title"]
-          } else {
-            // console.log('net')
-          }
-          this.footercolor = obj.data['footer-state']
-          this.footerflashing = obj.data['footer-flashing']
-          if (obj.data.events){
-            (obj.data.events.$id  == undefined ? obj.data.events : obj.data.events.$values).forEach(elem =>{  
-              if (!this.events){
-                this.events = []
-                this.events.push(elem)
-              }
-              let eventid = this.events.findIndex((s) => s.id === elem.id)
-              let event = this.events[eventid]
-              if (event === undefined) {
-                elem.needAck = true
-                this.events.push(elem)
+      var interval = setInterval(() => {
+        GetFooterDelta(this.tick, (state, obj)=>{
+          if (this.tick != obj.tick) {
+            this.tick = obj.tick
+            this.CompareEvents(obj.data.events)
+            if (obj.data!=null){
+              // if (obj.data["footer-title"]!=null) {this.footertitle = obj.data["footer-title"]}
+              if (obj.data["footer-title"]){
+                // console.log('yest')
+                this.footertitle = obj.data["footer-title"]
               } else {
-                // console.log('было: ' + event.statusEventSignaling + 'стало: ' + elem.statusEventSignaling)
-                if (elem.comeTime != event.comeTime || elem.leaveTime != "0" || elem.statusEventSignaling != event.statusEventSignaling){
-                  elem.comeTime ? this.events[eventid].comeTime = elem.comeTime : null
-                  elem.leaveTime ? this.events[eventid].leaveTime = elem.leaveTime : null
-                  elem.statusEventSignaling != event.statusEventSignaling ? this.events[eventid].ackTime = null : ''
-                  this.events[eventid].statusEventSignaling = elem.statusEventSignaling
-                  elem.ackTime ? this.events[eventid].ackTime = elem.ackTime : null
-                  this.events[eventid].needAck = true
-                  // this.events[eventid].leaveTime = null
-                  // console.log(elem)
-                }
+                // console.log('net')
               }
-              if (elem.visible == false) {
-                this.events.splice(eventid, 1)
+              this.footercolor = obj.data['footer-state']
+              this.footerflashing = obj.data['footer-flashing']
+              if (obj.data.events){
+                (obj.data.events.$id  == undefined ? obj.data.events : obj.data.events.$values).forEach(elem =>{  
+                  if (!this.events){
+                    this.events = []
+                    this.events.push(elem)
+                  }
+                  let eventid = this.events.findIndex((s) => s.id === elem.id)
+                  let event = this.events[eventid]
+                  if (event === undefined) {
+                    elem.needAck = true
+                    this.events.push(elem)
+                  } else {
+                    // console.log('было: ' + event.statusEventSignaling + 'стало: ' + elem.statusEventSignaling)
+                    if (elem.comeTime != event.comeTime || elem.leaveTime != "0" || elem.statusEventSignaling != event.statusEventSignaling){
+                      elem.comeTime ? this.events[eventid].comeTime = elem.comeTime : null
+                      elem.leaveTime ? this.events[eventid].leaveTime = elem.leaveTime : null
+                      elem.statusEventSignaling != event.statusEventSignaling ? this.events[eventid].ackTime = null : ''
+                      this.events[eventid].statusEventSignaling = elem.statusEventSignaling
+                      elem.ackTime ? this.events[eventid].ackTime = elem.ackTime : null
+                      this.events[eventid].needAck = true
+                      // this.events[eventid].leaveTime = null
+                      // console.log(elem)
+                    }
+                  }
+                  if (elem.visible == false) {
+                    this.events.splice(eventid, 1)
+                  }
+                })
               }
-            })
+            }
           }
-        }
+        })
+        // let response = await fetch(
+        //   `http://${this.myJson.ip}/api/nodes/footer/delta/0/${
+        //     this.tick ? this.tick : -1
+        //   }`, { headers: { Authorization: `${localStorage.getItem('token')}` }, }
+        // );
+        
         this.data 
       }, 1000);
       this.$store.state.tickmas.push({name: 'footer', interval: interval})
@@ -279,7 +309,8 @@ export default {
     },
     cssProps() {
       return {
-        "--backgroundColor": this.footercolor
+        "--backgroundColor": !this.tablestate ? this.footercolor : '#252525ff',
+        "--colorText": this.tablestate ?  'White' : ['Yellow'].includes(this.footercolor) ? 'black' : 'white',
       }
     },
     cssPropsHistory(){
@@ -323,6 +354,74 @@ export default {
     window.removeEventListener('resize', this.updateContainerWidth);
   },
   methods: {
+    CompareEvents(currentEvents) {
+      const prevMap = new Map(this.previousEvents.map(e => [e.id, e]));
+      const currentMap = new Map(currentEvents.map(e => [e.id, e]));
+      const changes = [];
+
+      // Проверяем новые и измененные события
+      for (const currentEvent of currentEvents) {
+        const prevEvent = prevMap.get(currentEvent.id);
+        
+        if (!prevEvent) {
+          // Новое событие - только new
+          changes.push({
+            type: 'added',
+            id: currentEvent.id,
+            text: currentEvent.text,
+            new: {
+              statusEventSignaling: currentEvent.statusEventSignaling,
+              warnType: currentEvent.warnType
+            }
+          });
+        } else {
+          // Сравниваем statusEventSignaling и warnType
+          if (prevEvent.statusEventSignaling !== currentEvent.statusEventSignaling ||
+            prevEvent.warnType !== currentEvent.warnType) {
+            
+            changes.push({
+              type: 'changed',
+              id: currentEvent.id,
+              text: currentEvent.text,
+              old: {
+                statusEventSignaling: prevEvent.statusEventSignaling,
+                warnType: prevEvent.warnType
+              },
+              new: {
+                statusEventSignaling: currentEvent.statusEventSignaling,
+                warnType: currentEvent.warnType
+              }
+            });
+          }
+        }
+      }
+      // Выводим только изменённые события
+      for (const prevEvent of this.previousEvents) {
+        if (!currentMap.has(prevEvent.id)) {
+          changes.push({
+              type: 'removed',
+              id: prevEvent.id,
+              text: prevEvent.text,
+              old: {
+                statusEventSignaling: prevEvent.statusEventSignaling,
+                warnType: prevEvent.warnType
+              }
+          });
+        }
+      }
+      // Проверка изменённыз значений
+      for (const changeElem of changes) {
+        if (changeElem.new) {
+          if (changeElem.new.warnType >= this.showPanel) {
+            if (changeElem.new.statusEventSignaling == 5 || changeElem.new.statusEventSignaling == 7) {
+              this.tablestate = true
+            }
+          }
+        }
+      }
+      // Обновляем предыдущий массив
+      this.previousEvents = currentEvents;
+  },
     changeNameFromList(data){
       this.nameFromList= data
     },
@@ -511,9 +610,10 @@ tbody{
 #footer_title {
   font-size: 16px;
   user-select: none;
-  color: white;
+  color: var(--colorText);
   height: 24px;
-  background-color: #252525ff
+  background-color: var(--backgroundColor)
+  
 }
 #footer_title_back{
   background-color: #252525ff
@@ -535,7 +635,8 @@ tbody{
   padding-right: 10px;
 }
 #footer_title:hover {
-  filter: brightness(150%);
+  background-color: rgb(61, 61, 61);
+  color: white;
 }
 #footer_table {
   color: white;
@@ -548,7 +649,7 @@ tbody{
 @keyframes glowing {
   from {
     background-color: var(--backgroundColor);
-    color: black;
+    color: var(--colorText);
   }
   50% {
     background-color: #252525ff;
@@ -556,7 +657,7 @@ tbody{
   }
   to {
     background-color: var(--backgroundColor);
-    color: black;
+    color: var(--colorText);
   }
 }
 .flash {

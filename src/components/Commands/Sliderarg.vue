@@ -8,8 +8,6 @@
 
 <script>
 import slider from "vue3-slider"
-import axios from "axios";
-import {encript} from "@/mixins/encript.js";
 
 export default {
   name: "app",
@@ -54,16 +52,9 @@ export default {
   methods: {
     async some() {
       if ((this.sliderarg.value != this.sliderarg.lastvalue && this.sliderarg.trigger == "ChangeOnEnd") || this.sliderarg.trigger == 'ChangeRealtime'){
-        const article =`
-          ${this.sliderarg.value}
-        `;
-        const headers = { 
-            'Content-Type': 'application/json',
-            'Authorization': `${localStorage.getItem('token')}`,
-        };
-        await axios.post(`http://${this.ip}/api/nodes/${encript((new TextEncoder()).encode(this.$parent.$parent.windowpath))}/widget/${encript((new TextEncoder()).encode(this.sliderarg.Name))}/query/write-arg`, article, { headers })
-       
-        // this.chartDataArr = await axios.post(`http://localhost:5201/api/nodes/${encript((new TextEncoder()).encode(this.$parent.$parent.windowname.split(':').join(':\\')))}/widget/${encript((new TextEncoder()).encode(this.name))}/query/trend-history`, article, { headers })
+        PostWriteArg(this.$parent.$parent.windowpath, this.sliderarg.Name, `${this.sliderarg.value}`, ()=>{
+          
+        })
       }
       this.sliderarg.lastvalue = this.sliderarg.value
     },

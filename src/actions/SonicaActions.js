@@ -1,6 +1,5 @@
-// import axios from 'axios'
 import store from '../store/index';
-import route from '../router/index';
+import { encript } from '@/mixins/encript';
 // import { await getHost() } from './config';
 // import moment from 'moment/moment';
 // import download from 'downloadjs';
@@ -129,20 +128,12 @@ export async function GetImage(ninjaResourceId, callback) {
             method: 'GET',
             headers: { 
                 Authorization: `${localStorage.getItem('token')}`,
-                'Accept': 'image/*' // Указываем, что ожидаем изображение
+                'Accept': 'image/*'
             }
         });
-
-        // console.log(response);
-
         if (response.status === 200) {
-            // Получаем данные как Blob
             const imageBlob = await response.blob();
-            
-            // Создаем URL для изображения
             const imageUrl = URL.createObjectURL(imageBlob);
-            
-            // Вызываем callback с URL изображения и blob
             callback(null, {
                 url: imageUrl,
                 blob: imageBlob
@@ -154,5 +145,144 @@ export async function GetImage(ninjaResourceId, callback) {
     } catch (error) {
         console.error('Ошибка при загрузке изображения:', error);
         callback(error, null);
+    }
+}
+
+export async function PostApplyForm(windowPath, widgetName, body, callback) {
+    try {
+        const myHeaders = new Headers();
+        myHeaders.append("Content-Type", "application/json");
+        myHeaders.append("Authorization", `${localStorage.getItem('token')}`);
+        const response = await fetch(`http://${store.getters.GetDefaultIp}/api/nodes/${encript((new TextEncoder()).encode(windowPath))}/widget/${encript((new TextEncoder()).encode(widgetName))}/query/apply-form`,
+            {
+                headers: myHeaders,
+                method: "POST",
+                body: JSON.stringify(body),
+            })
+        console.log(response)
+        if (response.status == 200 || response.status == 204) {
+            callback(true)
+        } else if (response.status == 400) {
+            callback(false)
+        }
+    } catch (e) {
+
+    }
+}
+
+export async function PostApplyCommand(windowPath, widgetName, body, callback) {
+    try {
+        const myHeaders = new Headers();
+        myHeaders.append("Content-Type", "application/json");
+        myHeaders.append("Authorization", `${localStorage.getItem('token')}`);
+        console.log(`http://${store.getters.GetDefaultIp}/api/nodes/${encript((new TextEncoder()).encode(windowPath))}/widget/${encript((new TextEncoder()).encode(widgetName))}/query/apply-command`)
+        const response = await fetch(`http://${store.getters.GetDefaultIp}/api/nodes/${encript((new TextEncoder()).encode(windowPath))}/widget/${encript((new TextEncoder()).encode(widgetName))}/query/apply-command`,
+        {
+            headers: myHeaders,
+            method: "POST",
+            body: JSON.stringify(body),
+        })
+        let json = await response.json()
+        let text
+        if (json != null) {
+            if (response.status == 200) {
+                text = json.resultData.description
+            } else if (response.status == 204) {
+                text = null
+            } else if (response.status == 400) {
+                text = json.errorDetails
+            } else {
+                text = 'Истекло время ожидания команды'
+            }
+        } else {
+            text = null
+            console.lot('dssds')
+        }
+        callback (text)
+    } catch (e) {
+            
+    }
+}
+
+export async function PostWriteArg(windowPath, widgetName, body, callback) {
+    try {
+        const myHeaders = new Headers();
+        myHeaders.append("Content-Type", "application/json");
+        myHeaders.append("Authorization", `${localStorage.getItem('token')}`);
+        const response = await fetch(`http://${store.getters.GetDefaultIp}/api/nodes/${encript((new TextEncoder()).encode(windowPath))}/widget/${encript((new TextEncoder()).encode(widgetName))}/query/write-arg`,
+            {
+                headers: myHeaders,
+                method: "POST",
+                body: JSON.stringify(body),
+            })
+        console.log(response)
+        if (response.status == 200 || response.status == 204) {
+            callback(true)
+        } else if (response.status == 400) {
+            callback(false)
+        }
+    } catch (e) {
+
+    }
+}
+
+export async function GetBaseComponentsCurrent(componentName, callback) {
+    try {
+        const myHeaders = new Headers();
+        myHeaders.append("Authorization", `${localStorage.getItem('token')}`);
+        const response = await fetch(`http://${store.getters.GetDefaultIp}/api/nodes/${componentName}/current`,
+            {
+                headers: myHeaders,
+                method: "GET",
+            })
+        let json = await response.json()
+        if (response.status == 200 || response.status == 204) {
+            callback(true, json)
+        } else if (response.status == 400 || response.status == 404) {
+            callback(false)
+        }
+    } catch (e) {
+
+    }
+}
+
+
+export async function GetFooterDelta(tick, callback) {
+    try {
+        const myHeaders = new Headers();
+        myHeaders.append("Authorization", `${localStorage.getItem('token')}`);
+        const response = await fetch(`http://${store.getters.GetDefaultIp}/api/nodes/footer/delta/0/${tick ? tick : -1}`,
+            {
+                headers: myHeaders,
+                method: "GET",
+            })
+        let json = await response.json()
+        if (response.status == 200 || response.status == 204) {
+            callback(true, json)
+        } else if (response.status == 400 || response.status == 404) {
+            callback(false, '')
+        }
+    } catch (e) {
+
+    }
+}
+
+export async function PostTooltiperAck(windowPath, widgetName, widgetType, callback) {
+    try {
+        const myHeaders = new Headers();
+        myHeaders.append("Authorization", `${localStorage.getItem('token')}`);
+        const response = await fetch(`http://${store.getters.GetDefaultIp}/api/nodes/${encript((new TextEncoder()).encode(windowPath))}/widget/${encript((new TextEncoder()).encode(widgetName))}/query/${widgetType + '-acknowledge'}`,
+            {
+                headers: myHeaders,
+                method: "GET",
+            })
+        let json = await response.json()
+        if (response.status == 200 || response.status == 204) {
+            callback(true)
+        } else if (response.status == 400 || response.status == 404) {
+            callback(false)
+        }
+    } catch (e) {
+
     }
 }

@@ -6,8 +6,7 @@
 
 <script>
 
-import axios from 'axios';
-import {encript} from "@/mixins/encript.js";
+import { PostWriteArg } from "@/actions/SonicaActions";
 
 export default {
   name: "app",
@@ -26,14 +25,9 @@ export default {
     async some(){
       // console.log(this.boolarg.value)
       if (this.params.trigger == "ChangeOnEnd") {
-        const article =`
-          ${this.boolarg.value}
-        `;
-        const headers = { 
-            'Content-Type': 'application/json',
-            'Authorization': `${localStorage.getItem('token')}`,
-        };
-        await axios.post(`http://${this.ip}/api/nodes/${encript((new TextEncoder()).encode(this.$parent.$parent.windowpath))}/widget/${encript((new TextEncoder()).encode(this.boolarg.Name))}/query/write-arg`, article, { headers })
+        PostWriteArg(this.$parent.$parent.windowpath, this.boolarg.Name, `${this.boolarg.value}`, ()=>{
+
+        })
       }
     },
     

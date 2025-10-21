@@ -78,6 +78,7 @@
 
 import axios from 'axios';
 import {encript} from "@/mixins/encript.js";
+import { PostTooltiperAck } from '@/actions/SonicaActions';
 
 export default {
   name: "app",
@@ -166,13 +167,16 @@ export default {
           this.$store.dispatch("addElems", this.params);
         }
       // }
-      const headers = {
-          'Content-Type': 'application/json',
-          'Authorization': `${localStorage.getItem('token')}`
-      };
-      await axios.post(`http://${this.ip}/api/nodes/${encript((new TextEncoder()).encode(this.$parent.windowpath))}/widget/${encript((new TextEncoder()).encode(this.name))}/query/${this.widgetType + '-acknowledge'}`,{}, { headers })
-      .then((result)=>{
-        // console.log(result)
+      // const headers = {
+      //     'Content-Type': 'application/json',
+      //     'Authorization': `${localStorage.getItem('token')}`
+      // };
+      // await axios.post(`http://${this.ip}/api/nodes/${encript((new TextEncoder()).encode(this.$parent.windowpath))}/widget/${encript((new TextEncoder()).encode(this.name))}/query/${this.widgetType + '-acknowledge'}`,{}, { headers })
+      // .then((result)=>{
+      //   // console.log(result)
+      // })
+      PostTooltiperAck(this.$parent.$parent.windowpath, this.txtarg.Name, this.widgetType, ()=>{
+       
       })
     },
     UpdateFlahingState(isButtonEnabled, neightbourState, sFlashBehaviour, isAcknowledged, stateChangingBehaviour){
