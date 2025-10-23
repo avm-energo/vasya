@@ -4,7 +4,9 @@ import { createStore } from "vuex";
 import moment from "moment";
 // import { getTime } from "date-fns";
 import { 
-  GetBaseComponentsCurrent
+  GetComponentsCurrent,
+  GetComponentsDelta,
+  GetHistoryTime,
  } from "@/actions/SonicaActions";
 import {encript} from "@/mixins/encript.js";
 // import { log4js } from "log4js";
@@ -142,7 +144,7 @@ export default createStore({
       const a = JSON.parse(await config.text())
       state.ip = JSON.parse(JSON.stringify(a.ip))
 
-      GetBaseComponentsCurrent('main', (stateBool, data)=>{
+      GetComponentsCurrent('main', (stateBool, data)=>{
         if (stateBool){
           state.tick = data.tick;
           state.main = data;
@@ -154,7 +156,7 @@ export default createStore({
       console.log(state.ip)
       console.log("версия: " + a.version)
 
-      GetBaseComponentsCurrent('header',(stateBool, data)=>{
+      GetComponentsCurrent('header',(stateBool, data)=>{
         if (!stateBool || data.widgets==[]){ 
           // state.head = null 
         } else {
@@ -164,7 +166,7 @@ export default createStore({
       })
       setTimeout(() => { state.isLoading = false }, 200);
 
-      GetBaseComponentsCurrent('footer',(stateBool, data)=>{
+      GetComponentsCurrent('footer',(stateBool, data)=>{
 
         if (stateBool){ 
           state.footer = data;
@@ -228,67 +230,43 @@ export default createStore({
       var currentDateMilliseconds = today.getMilliseconds();
       let ticknumber = state.tickmas.length
       let con = {'tick': state.tick, 'name': name.split('\\').join(''), 'mas': [1]}
-      // console.log(name)
       state.tickmas.push(con)
-      let response = await fetch(
-        `http://${state.ip}/api/nodes/${encript(((new TextEncoder()).encode(name)))}/delta/0/${
-          state.tickmas[ticknumber].tick
-        }`,{
-          headers: { Authorization: `${localStorage.getItem('token')}` },
-        }
-      );
-      if (response.status == 200) {
-        var zyx = setTimeout(() => {
-          // console.log("я запустил:" + name)
-          var xyz = setInterval(async () => {
-            ticknumber = state.tickmas.findIndex((el => el.name == name.split('\\').join('')))
-            state.tickmas[ticknumber].mas = []
-            try {
-              // console.log(state.tickmas[ticknumber].tick)
-              let response = await fetch(
-                `http://${state.ip}/api/nodes/${encript(((new TextEncoder()).encode(name)))}/delta/0/${
-                  state.tickmas[ticknumber].tick ? state.tickmas[ticknumber].tick : -1
-                }`,{
-                  headers: { Authorization: `${localStorage.getItem('token')}` },
-                }
-              );
-              // console.log(state.tickmas[ticknumber].mas)
-              // console.log(`http://${state.ip}/api/nodes/${encript((new TextEncoder()).encode(name))}/delta/0/${
-              //   state.tickmas[ticknumber].tick
-              // }`)
-              const s = await response.text()
-              // console.log(s)
-              const data = JSON.parse(s);
-              state.tickmas[ticknumber].tick = data.tick
-              ;(data.widgets.$id  == undefined ? data.widgets : data.widgets.$values).forEach(element => {
-                if (element.name.startsWith("Sub") || element.name.startsWith("Ren")) {
-                  // element.properties.screen.widgets.forEach((elements) => {
-                    (element.properties.screen.widgets.$id  == undefined ? element.properties.screen.widgets : element.properties.screen.widgets.$values).forEach(elements => {
-                      elements.name += '/' + element.name
-                      state.tickmas[ticknumber].mas.push(elements)
+      GetComponentsDelta(name, state.tickmas[ticknumber].tick, (stateResponse, data)=>{
+        if (stateResponse) {
+          var zyx = setTimeout(() => {
+            var xyz = setInterval(async () => {
+              ticknumber = state.tickmas.findIndex((el => el.name == name.split('\\').join('')))
+              state.tickmas[ticknumber].mas = []
+              try {
+                // console.log(state.tickmas[ticknumber].tick)
+                GetComponentsDelta(name, state.tickmas[ticknumber].tick, (stateResponse, data)=>{
+                  state.tickmas[ticknumber].tick = data.tick
+                  ;(data.widgets.$id  == undefined ? data.widgets : data.widgets.$values).forEach(element => {
+                    if (element.name.startsWith("Sub") || element.name.startsWith("Ren")) {
+                      // element.properties.screen.widgets.forEach((elements) => {
+                        (element.properties.screen.widgets.$id  == undefined ? element.properties.screen.widgets : element.properties.screen.widgets.$values).forEach(elements => {
+                          elements.name += '/' + element.name
+                          state.tickmas[ticknumber].mas.push(elements)
+                      });
+                    } else {
+                      state.tickmas[ticknumber].mas.push(element)
+                    }
                   });
-                } else {
-                  state.tickmas[ticknumber].mas.push(element)
-                }
-              });
-              // console.log(" time:" + new Date().getHours() + ":"+ new Date().getMinutes() + ":"+ new Date().getSeconds() + ":" + asdasda.getMilliseconds() + ' name = ' + name + " tick:" + state.tickmas[ticknumber].tick) 
-              // console.log(data)
-              // console.log(state.tickmas[ticknumber].mas)
-              state.warning[state.warning.findIndex(elem => elem.name == 'adminja')].state = false
-            }
-            catch {
-              state.warning[state.warning.findIndex(elem => elem.name == 'adminja')].state = true
-            }
-          }, 1000);
-          state.tickmas[ticknumber].interval = xyz
-          
-        }, 1000 - Math.abs(500 - currentDateMilliseconds));
-        state.tickmas[ticknumber].timeout = zyx
-      } else if (response.status == 404) {
-        console.log('ошибка подключения к ' + name)
-      } else {
-        console.log(response)
-      }
+                })
+                state.warning[state.warning.findIndex(elem => elem.name == 'adminja')].state = false
+              }
+              catch {
+                state.warning[state.warning.findIndex(elem => elem.name == 'adminja')].state = true
+              }
+            }, 1000);
+            state.tickmas[ticknumber].interval = xyz
+            
+          }, 1000 - Math.abs(500 - currentDateMilliseconds));
+          state.tickmas[ticknumber].timeout = zyx
+        } else {
+          console.log('ошибка подключения к ' + name)
+        }
+      })
     },
 
     async addElems(state, data) {
@@ -297,49 +275,72 @@ export default createStore({
       {
         this.dispatch("closewindow", state.tickmas[state.tickmas.length-1].name);
       } else {
-        let response = await fetch(
-          `http://${state.ip}/api/nodes/${encript((new TextEncoder()).encode(data.properties.path))}/current`,{
-            headers: { Authorization: `${localStorage.getItem('token')}` },
+        GetComponentsCurrent(data.properties.path, (stateResponse, dataResponse)=>{
+          if (stateResponse) {
+            dataResponse.infoFromTooltiper = data
+            state.elems.push(dataResponse);
+            this.dispatch("updateElems", data.properties.path);
+          } else {
+            state.notification.push({
+              id: state.notification.length ? state.notification.reverse()[0].id + 1 : 0,
+              text:'Ваш уровень доступа недостаточен для выполнения данной операции',
+              type: 'Warning',
+              time: 5000
+            });
           }
-        );
-        if (response.ok){
-          // console.log(`http://${state.ip}/api/nodes/${encript((new TextEncoder()).encode(data.name))}/current`)
-          const res = JSON.parse(await response.text());
-          res.infoFromTooltiper = data
-          state.elems.push(res);
-          this.dispatch("updateElems", data.properties.path);
-          // var localArray = sessionStorage.getItem('localArray')
-          // if (localArray) {
-          //   var localArray = JSON.parse(sessionStorage.getItem("localArray"))
-          //   localArray.push(JSON.stringify({name: data.name, title: data.title, screenPercentage: data.screenPercentage}))
-          //   sessionStorage.setItem('localArray', JSON.stringify(localArray))
-          // } else {
-          //   var localArray = [JSON.stringify({name: data.name, title: data.title, screenPercentage: data.screenPercentage})]
-          //   sessionStorage.setItem('localArray', JSON.stringify(localArray))
-          // }  
-        } else {
-          state.notification.push({
-            id: state.notification.length ? state.notification.reverse()[0].id + 1 : 0,
-            text:'Ваш уровень доступа недостаточен для выполнения данной операции',
-            type: 'Warning',
-            time: 5000
-          });
-        }
+        })
+
+        // let response = await fetch(
+        //   `http://${state.ip}/api/nodes/${encript((new TextEncoder()).encode(data.properties.path))}/current`,{
+        //     headers: { Authorization: `${localStorage.getItem('token')}` },
+        //   }
+        // );
+        // if (response.ok){
+        //   // console.log(`http://${state.ip}/api/nodes/${encript((new TextEncoder()).encode(data.name))}/current`)
+        //   const res = JSON.parse(await response.text());
+        //   res.infoFromTooltiper = data
+        //   console.log(res)
+        //   state.elems.push(res);
+        //   this.dispatch("updateElems", data.properties.path);
+        //   // var localArray = sessionStorage.getItem('localArray')
+        //   // if (localArray) {
+        //   //   var localArray = JSON.parse(sessionStorage.getItem("localArray"))
+        //   //   localArray.push(JSON.stringify({name: data.name, title: data.title, screenPercentage: data.screenPercentage}))
+        //   //   sessionStorage.setItem('localArray', JSON.stringify(localArray))
+        //   // } else {
+        //   //   var localArray = [JSON.stringify({name: data.name, title: data.title, screenPercentage: data.screenPercentage})]
+        //   //   sessionStorage.setItem('localArray', JSON.stringify(localArray))
+        //   // }  
+        // } else {
+        //   state.notification.push({
+        //     id: state.notification.length ? state.notification.reverse()[0].id + 1 : 0,
+        //     text:'Ваш уровень доступа недостаточен для выполнения данной операции',
+        //     type: 'Warning',
+        //     time: 5000
+        //   });
+        // }
       }
     },
 
     async addElemsfromStorage(state, data){
-      let response = await fetch(
-        `http://${state.ip}/api/nodes/${encript((new TextEncoder()).encode(data.name))}/current`, {
-          headers: { Authorization: `${localStorage.getItem('token')}` },
-        }
-      );
-      const res = JSON.parse(await response.text());
-        res.title = data.title
-        res.screenPercentage = data.screenPercentage
-        res.typename = data.name
-        state.elems.push(res);
-        this.dispatch("updateElems", data.name);
+      GetComponentsCurrent(data.name, (stateResponse, dataResponse)=>{
+          dataResponse.title = data.title
+          dataResponse.screenPercentage = data.screenPercentage
+          dataResponse.typename = data.name
+          state.elems.push(res);
+          this.dispatch("updateElems", data.name);
+        })
+      // let response = await fetch(
+      //   `http://${state.ip}/api/nodes/${encript((new TextEncoder()).encode(data.name))}/current`, {
+      //     headers: { Authorization: `${localStorage.getItem('token')}` },
+      //   }
+      // );
+      //   const res = JSON.parse(await response.text());
+      //   res.title = data.title
+      //   res.screenPercentage = data.screenPercentage
+      //   res.typename = data.name
+      //   state.elems.push(res);
+      //   this.dispatch("updateElems", data.name);
     },
 
     changemainheight(state, h){
@@ -352,14 +353,17 @@ export default createStore({
       state.mainmultiplier = h
     },
     async gethistorytime(state, data){
-      let response = await fetch(
-        `http://${state.ip}/api/nodes/history/${moment(data[1]).format("YYYY-MM-DDTHH:mm:ss")}/${moment(data[0]).format("YYYY-MM-DDTHH:mm:ss")}`,
-          {headers: { Authorization: `${localStorage.getItem('token')}` },}
-      );
-      // console.log(`http://${state.ip}/api/nodes/history/${moment(data[1]).format("YYYY-MM-DDTHH:mm:ss")}/${moment(data[0]).format("YYYY-MM-DDTHH:mm:ss")}`)
-      const res = JSON.parse(await response.text());
-      // console.log(res)
-      state.historymas = res
+      GetHistoryTime(data,(stateResponse, data)=>{
+        state.historymas = data
+      })
+      // let response = await fetch(
+      //   `http://${state.ip}/api/nodes/history/${moment(data[1]).format("YYYY-MM-DDTHH:mm:ss")}/${moment(data[0]).format("YYYY-MM-DDTHH:mm:ss")}`,
+      //     {headers: { Authorization: `${localStorage.getItem('token')}` },}
+      // );
+      // // console.log(`http://${state.ip}/api/nodes/history/${moment(data[1]).format("YYYY-MM-DDTHH:mm:ss")}/${moment(data[0]).format("YYYY-MM-DDTHH:mm:ss")}`)
+      // const res = JSON.parse(await response.text());
+      // // console.log(res)
+      // state.historymas = res
     },
 
     innactivereset(state){
@@ -404,29 +408,25 @@ export default createStore({
 
     async changeMainWindow(state, data){
       console.log(state.tickmas)
-      let response = await fetch(
-        `http://${state.ip}/api/nodes/${encript((new TextEncoder()).encode(data.properties.path))}/current`,{
-          headers: { Authorization: `${localStorage.getItem('token')}` },
+      GetComponentsCurrent(data.properties.path, (stateResponse, dataResponse)=>{
+        if (stateResponse) {
+          if (state.prevMainWindow != data.properties.path) {
+            this.dispatch("closewindow", state.tickmas.find((el)=> el.name == state.prevMainWindow.split('\\').join('')).name);
+            // if (state.tickmas.find(res => res.name == data.properties.path.split('\\').join(''))) this.dispatch("closewindow", state.tickmas[state.tickmas.length-1].name); 
+          }
+          state.prevMainWindow = data.properties.path
+          dataResponse.infoFromTooltiper = data
+          state.main = dataResponse;
+          this.dispatch("updateElems", data.properties.path);
+        } else {
+          state.notification.push({
+            id: state.notification.length ? state.notification.reverse()[0].id + 1 : 0,
+            text:'Ваш уровень доступа недостаточен для выполнения данной операции',
+            type: 'Warning',
+            time: 5000
+          });
         }
-      );
-      if (response.ok){
-        if (state.prevMainWindow != data.properties.path) {
-          this.dispatch("closewindow", state.tickmas.find((el)=> el.name == state.prevMainWindow.split('\\').join('')).name);
-          // if (state.tickmas.find(res => res.name == data.properties.path.split('\\').join(''))) this.dispatch("closewindow", state.tickmas[state.tickmas.length-1].name); 
-        }
-        state.prevMainWindow = data.properties.path
-        const res = JSON.parse(await response.text());
-        res.infoFromTooltiper = data
-        state.main = res;
-        this.dispatch("updateElems", data.properties.path);
-      } else {
-        state.notification.push({
-          id: state.notification.length ? state.notification.reverse()[0].id + 1 : 0,
-          text:'Ваш уровень доступа недостаточен для выполнения данной операции',
-          type: 'Warning',
-          time: 5000
-        });
-      }
+      })
     },
     changeDefaultMainWindowName(state, name){
       state.prevMainWindow = name

@@ -76,8 +76,6 @@
 
 <script>
 
-import axios from 'axios';
-import {encript} from "@/mixins/encript.js";
 import { PostTooltiperAck } from '@/actions/SonicaActions';
 
 export default {
@@ -167,16 +165,7 @@ export default {
         } else {
           this.$store.dispatch("addElems", this.params);
         }
-      // }
-      // const headers = {
-      //     'Content-Type': 'application/json',
-      //     'Authorization': `${localStorage.getItem('token')}`
-      // };
-      // await axios.post(`http://${this.ip}/api/nodes/${encript((new TextEncoder()).encode(this.$parent.windowpath))}/widget/${encript((new TextEncoder()).encode(this.name))}/query/${this.widgetType + '-acknowledge'}`,{}, { headers })
-      // .then((result)=>{
-      //   // console.log(result)
-      // })
-      PostTooltiperAck(this.$parent.$parent.windowpath, this.txtarg.Name, this.widgetType, ()=>{
+      PostTooltiperAck(this.$parent.windowpath, this.button.Name, this.widgetType, ()=>{
        
       })
     },

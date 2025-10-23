@@ -36,7 +36,6 @@ export default {
   },
   methods:{
     async some(){
-      // console.log(`http://${this.ip}/api/nodes/${encript((new TextEncoder()).encode(this.$parent.$parent.namewindow))}/widget/${encript((new TextEncoder()).encode(this.txtarg.Name))}/query/write-arg`)
       if (this.params.trigger != `ButtonApply` && this.validate) {
         PostWriteArg(this.$parent.$parent.windowpath, this.txtarg.Name, `${this.txtarg.value}`, ()=>{
           this.txtarg.prevvalue = this.txtarg.value

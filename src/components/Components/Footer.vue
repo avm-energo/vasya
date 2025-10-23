@@ -122,7 +122,7 @@ import moment from "moment";
 import EventsHistoryTable from "./EventsHistoryTable.vue";
 import { 
   PostAcknowledge,
-  GetFooterDelta
+  GetComponentsDelta
  } from "../../actions/SonicaActions"
 import TreeView from './TreeView.vue'
 
@@ -212,7 +212,7 @@ export default {
     var currentDateMilliseconds = today.getMilliseconds();
     setTimeout(() => {
       var interval = setInterval(() => {
-        GetFooterDelta(this.tick, (state, obj)=>{
+        GetComponentsDelta('footer',this.tick, (state, obj)=>{
           if (this.tick != obj.tick) {
             this.tick = obj.tick
             this.CompareEvents(obj.data.events)

@@ -1,7 +1,7 @@
 import store from '../store/index';
 import { encript } from '@/mixins/encript';
 // import { await getHost() } from './config';
-// import moment from 'moment/moment';
+import moment from 'moment/moment';
 // import download from 'downloadjs';
 
 export const getHost = async () => {
@@ -226,10 +226,17 @@ export async function PostWriteArg(windowPath, widgetName, body, callback) {
     }
 }
 
-export async function GetBaseComponentsCurrent(componentName, callback) {
+export async function GetComponentsCurrent(name, callback) {
     try {
         const myHeaders = new Headers();
         myHeaders.append("Authorization", `${localStorage.getItem('token')}`);
+         let componentName = (()=>{
+            if (name.startsWith('>:\\')) { 
+                return encript((new TextEncoder()).encode(name)) 
+            } else { 
+                return name 
+            }
+        })()
         const response = await fetch(`http://${store.getters.GetDefaultIp}/api/nodes/${componentName}/current`,
             {
                 headers: myHeaders,
@@ -247,11 +254,18 @@ export async function GetBaseComponentsCurrent(componentName, callback) {
 }
 
 
-export async function GetFooterDelta(tick, callback) {
+export async function GetComponentsDelta(name, tick, callback) {
     try {
         const myHeaders = new Headers();
         myHeaders.append("Authorization", `${localStorage.getItem('token')}`);
-        const response = await fetch(`http://${store.getters.GetDefaultIp}/api/nodes/footer/delta/0/${tick ? tick : -1}`,
+        let componentName = (()=>{
+            if (name.startsWith('>:\\')) { 
+                return encript((new TextEncoder()).encode(name)) 
+            } else { 
+                return name 
+            }
+        })()
+        const response = await fetch(`http://${store.getters.GetDefaultIp}/api/nodes/${componentName}/delta/0/${tick ? tick : -1}`,
             {
                 headers: myHeaders,
                 method: "GET",
@@ -281,6 +295,26 @@ export async function PostTooltiperAck(windowPath, widgetName, widgetType, callb
             callback(true)
         } else if (response.status == 400 || response.status == 404) {
             callback(false)
+        }
+    } catch (e) {
+
+    }
+}
+
+export async function GetHistoryTime(data, callback) {
+    try {
+        const myHeaders = new Headers();
+        myHeaders.append("Authorization", `${localStorage.getItem('token')}`);
+        const response = await fetch(`http://${store.getters.GetDefaultIp}/api/nodes/history/${moment(data[1]).format("YYYY-MM-DDTHH:mm:ss")}/${moment(data[0]).format("YYYY-MM-DDTHH:mm:ss")}`,
+            {
+                headers: myHeaders,
+                method: "GET",
+            })
+        let json = await response.json()
+        if (response.status == 200 || response.status == 204) {
+            callback(true, json)
+        } else if (response.status == 400 || response.status == 404) {
+            callback(false, '')
         }
     } catch (e) {
 
