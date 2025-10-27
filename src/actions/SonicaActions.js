@@ -26,104 +26,133 @@ initializeIp();
 //     return stateCore || stateBooter
 // }
 export async function PutLogout(callback) {
-    const url = `http://${await getHost()}/api/table/out/${localStorage.getItem('userId')}`;
-    const response = await fetch(url,{
-        method: 'PUT',
-        headers: { Authorization: `${localStorage.getItem('token')}` },
-    })
-    console.log(response)
-    if (response.status === 200) {
-        callback()
-    } else {
-        callback()
-    }
+    try {
+        const url = `http://${store.getters.GetDefaultIp}/api/table/out/${localStorage.getItem('userId')}`;
+        const response = await fetch(url,{
+            method: 'PUT',
+            headers: { Authorization: `${localStorage.getItem('token')}` },
+        })
+        if (response.status === 200) {
+            callback()
+        } else {
+            callback()
+            store.dispatch('AddError_action', `${response.status} ${response.statusText}`)
+        }
+    } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+        store.dispatch('AddError_action', errorMessage);
+        callback();
+    } 
 }
 
 export async function PutAdminActive(callback) {
-    const response = await fetch(`http://${await getHost()}/api/table/active/${localStorage.getItem('userId')}`,
-    {
-        method: "PUT",
-        headers: { Authorization: `${localStorage.getItem('token')}` },
-    })
-    if (response.status === 200) {
-        let json = await response.json()
-        // console.log(json)
-        callback(true, json.status)
-    } else {
-        callback(false)
-        store.dispatch('AddError_action', `${response.status} ${response.statusText}`)
-    }
+    try {
+        const response = await fetch(`http://${store.getters.GetDefaultIp}/api/table/active/${localStorage.getItem('userId')}`,
+        {
+            method: "PUT",
+            headers: { Authorization: `${localStorage.getItem('token')}` },
+        })
+        if (response.status === 200) {
+            let json = await response.json()
+            callback(true, json.status)
+        } else {
+            callback(false)
+            store.dispatch('AddError_action', `${response.status} ${response.statusText}`)
+        }
+    } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+        store.dispatch('AddError_action', errorMessage);
+        callback(false);
+    } 
 } 
 
 export async function GetReportGenerator(mas, pathName, callback) {
-    let newMas = {}
-    mas.forEach(element => {
-        newMas[element.name] = element.value
-    });
-    const myHeaders = new Headers();
-    myHeaders.append("Content-Type", "application/json");
-    myHeaders.append("Authorization", `${localStorage.getItem('token')}`);
-    const response = await fetch(`http://${await getHost()}/api/report/pdf/${pathName}`,
-    {
-        method: "POST",
-        headers: myHeaders,
-        body: JSON.stringify(newMas)
-    })
-    if (response.status === 200) {
-        console.log(response)
-        let blob = await response.blob();
-        var url = window.URL.createObjectURL(blob);
-        var a = document.createElement('a');
-        a.href = url;
-        a.download = "ReportGenerator.pdf";
-        document.body.appendChild(a); // we need to append the element to the dom -> otherwise it will not work in firefox
-        a.click();    
-        a.remove();
-        callback(true)
-    } else {
-        callback(false)
-        store.dispatch('AddError_action', `${response.status} ${response.statusText}`)
-    }
+    try {
+        let newMas = {}
+        mas.forEach(element => {
+            newMas[element.name] = element.value
+        });
+        // const myHeaders = new Headers();
+        // myHeaders.append("Content-Type", "application/json");
+        // myHeaders.append("Authorization", `${localStorage.getItem('token')}`);
+        const response = await fetch(`http://${store.getters.GetDefaultIp}/api/report/pdf/${pathName}`,
+        {
+            method: "POST",
+            headers: { Authorization: `${localStorage.getItem('token')}` },
+            body: JSON.stringify(newMas)
+        })
+        if (response.status === 200) {
+            let blob = await response.blob();
+            var url = window.URL.createObjectURL(blob);
+            var a = document.createElement('a');
+            a.href = url;
+            a.download = "ReportGenerator.pdf";
+            document.body.appendChild(a); // we need to append the element to the dom -> otherwise it will not work in firefox
+            a.click();    
+            a.remove();
+            callback(true)
+        } else {
+            callback(false)
+            store.dispatch('AddError_action', `${response.status} ${response.statusText}`)
+        }
+    } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+        store.dispatch('AddError_action', errorMessage);
+        callback(false);
+    } 
 } 
 
 export async function PostAcknowledge(id, callback) {
-    const myHeaders = new Headers();
-    myHeaders.append("Content-Type", "application/json");
-    myHeaders.append("Authorization", `${localStorage.getItem('token')}`);
-    const response = await fetch(`http://${await getHost()}/api/nodes/footer/widget/6MXB7RKGFTT5RNKE/query/acknowledge`,
-    {
-        headers: myHeaders,
-        method: "POST",
-        body: `[${id}]`,
-    })
-    if (response.status === 200) {
-        let json = await response.json()
-        // console.log(json)
-        callback(true, json.status)
-    } else {
-        callback(false)
-    }
+    try {
+        // const myHeaders = new Headers();
+        // myHeaders.append("Content-Type", "application/json");
+        // myHeaders.append("Authorization", `${localStorage.getItem('token')}`);
+        const response = await fetch(`http://${store.getters.GetDefaultIp}/api/nodes/footer/widget/6MXB7RKGFTT5RNKE/query/acknowledge`,
+        {
+            headers: { Authorization: `${localStorage.getItem('token')}` },
+            method: "POST",
+            body: `[${id}]`,
+        })
+        if (response.status === 200) {
+            let json = await response.json()
+            callback(true, json.status)
+        } else {
+            callback(false)
+            store.dispatch('AddError_action', `${response.status} ${response.statusText}`)
+        }
+    } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+        store.dispatch('AddError_action', errorMessage);
+        callback(false);
+    } 
 }
 
 export async function GetLogOutTime(callback) {
-    const myHeaders = new Headers();
-    myHeaders.append("Content-Type", "application/json");
-    const response = await fetch(`http://${await getHost()}/api/table/time`,
-    {
-        headers: myHeaders,
-        method: "GET",
-    })
-    if (response.status === 200) {
-        let json = await response.json()
-        callback(true, json.userLogOutClient)
-    } else {
-        callback(false)
-    }
+    try {
+        const myHeaders = new Headers();
+        myHeaders.append("Content-Type", "application/json");
+        const response = await fetch(`http://${store.getters.GetDefaultIp}/api/table/time`,
+        {
+            headers: myHeaders,
+            method: "GET",
+        })
+        if (response.status === 200) {
+            let json = await response.json()
+            callback(true, json.userLogOutClient)
+        } else {
+            callback(false)
+            store.dispatch('AddError_action', `${response.status} ${response.statusText}`)
+        }
+    } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+        store.dispatch('AddError_action', errorMessage);
+        callback(false);
+    } 
 }
 
 export async function GetImage(ninjaResourceId, callback) {
     try {
-        const url = `http://${await getHost()}/api/resources/${ninjaResourceId}`;
+        const url = `http://${store.getters.GetDefaultIp}/api/resources/${ninjaResourceId}`;
         const response = await fetch(url, {
             method: 'GET',
             headers: { 
@@ -159,15 +188,17 @@ export async function PostApplyForm(windowPath, widgetName, body, callback) {
                 method: "POST",
                 body: JSON.stringify(body),
             })
-        console.log(response)
         if (response.status == 200 || response.status == 204) {
             callback(true)
-        } else if (response.status == 400) {
+        } else   {
             callback(false)
+            store.dispatch('AddError_action', `${response.status} ${response.statusText}`)
         }
-    } catch (e) {
-
-    }
+    } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+        store.dispatch('AddError_action', errorMessage);
+        callback(false);
+    } 
 }
 
 export async function PostApplyCommand(windowPath, widgetName, body, callback) {
@@ -175,7 +206,6 @@ export async function PostApplyCommand(windowPath, widgetName, body, callback) {
         const myHeaders = new Headers();
         myHeaders.append("Content-Type", "application/json");
         myHeaders.append("Authorization", `${localStorage.getItem('token')}`);
-        console.log(`http://${store.getters.GetDefaultIp}/api/nodes/${encript((new TextEncoder()).encode(windowPath))}/widget/${encript((new TextEncoder()).encode(widgetName))}/query/apply-command`)
         const response = await fetch(`http://${store.getters.GetDefaultIp}/api/nodes/${encript((new TextEncoder()).encode(windowPath))}/widget/${encript((new TextEncoder()).encode(widgetName))}/query/apply-command`,
         {
             headers: myHeaders,
@@ -196,12 +226,13 @@ export async function PostApplyCommand(windowPath, widgetName, body, callback) {
             }
         } else {
             text = null
-            console.lot('dssds')
         }
         callback (text)
-    } catch (e) {
-            
-    }
+    } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+        store.dispatch('AddError_action', errorMessage);
+        callback('Истекло время ожидания команды');
+    } 
 }
 
 export async function PostWriteArg(windowPath, widgetName, body, callback) {
@@ -215,21 +246,21 @@ export async function PostWriteArg(windowPath, widgetName, body, callback) {
                 method: "POST",
                 body: JSON.stringify(body),
             })
-        console.log(response)
         if (response.status == 200 || response.status == 204) {
             callback(true)
-        } else if (response.status == 400) {
+        } else {
             callback(false)
+            store.dispatch('AddError_action', `${response.status} ${response.statusText}`)
         }
-    } catch (e) {
-
-    }
+    } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+        store.dispatch('AddError_action', errorMessage);
+        callback('Истекло время ожидания команды');
+    } 
 }
 
 export async function GetComponentsCurrent(name, callback) {
     try {
-        const myHeaders = new Headers();
-        myHeaders.append("Authorization", `${localStorage.getItem('token')}`);
          let componentName = (()=>{
             if (name.startsWith('>:\\')) { 
                 return encript((new TextEncoder()).encode(name)) 
@@ -239,7 +270,7 @@ export async function GetComponentsCurrent(name, callback) {
         })()
         const response = await fetch(`http://${store.getters.GetDefaultIp}/api/nodes/${componentName}/current`,
             {
-                headers: myHeaders,
+                headers: { Authorization: `${localStorage.getItem('token')}` },
                 method: "GET",
             })
         let json = await response.json()
@@ -247,10 +278,16 @@ export async function GetComponentsCurrent(name, callback) {
             callback(true, json)
         } else if (response.status == 400 || response.status == 404) {
             callback(false)
+            store.dispatch('AddError_action', `${response.status} ${response.statusText}`)
+        } else {
+           callback(false)
+            store.dispatch('AddError_action', `${response.status} ${response.statusText}`)
         }
-    } catch (e) {
-
-    }
+    } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+        store.dispatch('AddError_action', errorMessage);
+        callback('Истекло время ожидания команды');
+    } 
 }
 
 
@@ -273,11 +310,14 @@ export async function GetComponentsDelta(name, tick, callback) {
         let json = await response.json()
         if (response.status == 200 || response.status == 204) {
             callback(true, json)
-        } else if (response.status == 400 || response.status == 404) {
+        } else  {
             callback(false, '')
+            store.dispatch('AddError_action', `${response.status} ${response.statusText}`)
         }
-    } catch (e) {
-
+    } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+        store.dispatch('AddError_action', errorMessage);
+        callback('Истекло время ожидания команды');
     }
 }
 
@@ -293,11 +333,14 @@ export async function PostTooltiperAck(windowPath, widgetName, widgetType, callb
         let json = await response.json()
         if (response.status == 200 || response.status == 204) {
             callback(true)
-        } else if (response.status == 400 || response.status == 404) {
+        } else {
             callback(false)
+            store.dispatch('AddError_action', `${response.status} ${response.statusText}`)
         }
-    } catch (e) {
-
+    } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+        store.dispatch('AddError_action', errorMessage);
+        callback('Истекло время ожидания команды');
     }
 }
 
@@ -313,10 +356,13 @@ export async function GetHistoryTime(data, callback) {
         let json = await response.json()
         if (response.status == 200 || response.status == 204) {
             callback(true, json)
-        } else if (response.status == 400 || response.status == 404) {
+        } else {
             callback(false, '')
+            store.dispatch('AddError_action', `${response.status} ${response.statusText}`)
         }
-    } catch (e) {
-
+    } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+        store.dispatch('AddError_action', errorMessage);
+        callback('Истекло время ожидания команды');
     }
 }

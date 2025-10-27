@@ -39,7 +39,19 @@ export default {
       innactiveStatus: false,
       // interval: null,
       worker: new Worker('sw.js'),
+      asyncReady: false,
     }
+  },
+  async beforeCreate() {
+    let config = await fetch('defaults.json');
+    const data = await config.json(); 
+    this.$store.dispatch('SetDefaultIp_action', data)
+     .then(() => {
+        this.$store.dispatch('fetchElems')
+        this.asyncReady = true;
+    });
+    // this.$store.dispatch("fetchTree");
+    // setInterval(() => this.$store.dispatch("fetchAtoms"), 1000);
   },
   created() {
     this.worker.postMessage({ interval: 1000 });
@@ -60,12 +72,21 @@ export default {
     }
   },
   mounted() {
-    document.addEventListener('mousemove', this.resetTimer);
-    GetLogOutTime((state,time)=>{
-      if (state) this.$store.state.afkTimer = time
-    })
+     if (this.asyncReady) {
+      this.SetTimerLogout();
+    } else {
+      this.$watch('asyncReady', (v) => {
+        if (v) this.SetTimerLogout();
+      });
+    }
   },
   methods:{
+    SetTimerLogout(){
+      document.addEventListener('mousemove', this.resetTimer);
+      GetLogOutTime((state,time)=>{
+        if (state) this.$store.state.afkTimer = time
+      })
+    },
     uploadData(){
       
     },

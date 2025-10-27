@@ -221,11 +221,14 @@ export default {
     //   },
   },
 
-  beforeCreate() {
-    this.$store.dispatch("fetchElems");
-    // this.$store.dispatch("fetchTree");
-    // setInterval(() => this.$store.dispatch("fetchAtoms"), 1000);
-  },
+  // async beforeCreate() {
+  //   let config = await fetch('defaults.json');
+  //   const data = await config.json(); 
+  //   this.$store.dispatch('SetDefaultIp_action', data.ip)
+  //    .then(() => this.$store.dispatch('fetchElems'));
+  //   // this.$store.dispatch("fetchTree");
+  //   // setInterval(() => this.$store.dispatch("fetchAtoms"), 1000);
+  // },
   unmounted(){
     this.worker.postMessage({ stop: true });
   }

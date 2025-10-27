@@ -42,9 +42,11 @@ export default createStore({
     mainmultiplier: true,
     afkTimer: null,
     prevMainWindow: null,
+    version: null,
   },
   getters: {
     ip: (state) => state.ip,
+    GetDefaultIp: (state) => state.ip,
     IsLoading: (state) => state.isLoading,
     GetAfkTimer: (state) => state.afkTimer,
     GetUserName: (state) => state.userName,
@@ -118,7 +120,10 @@ export default createStore({
     SetLinkerTree(state, payload) {
       state.tree.blocks = payload;
     },
-
+    SetDefaultIp(state,payload){
+      state.ip = payload.ip
+      state.version = payload.version
+    },
     updateLinkerAtoms(state, payload) {
 
       if (payload === undefined)
@@ -138,12 +143,7 @@ export default createStore({
     },
 
     async fetchElems(state) {
-      
       state.mainheight = window.innerHeight
-      let config = await fetch('defaults.json')
-      const a = JSON.parse(await config.text())
-      state.ip = JSON.parse(JSON.stringify(a.ip))
-
       GetComponentsCurrent('main', (stateBool, data)=>{
         if (stateBool){
           state.tick = data.tick;
@@ -152,9 +152,9 @@ export default createStore({
         }
       })
 
-      document.title = a.Caption
-      console.log(state.ip)
-      console.log("версия: " + a.version)
+      // document.title = a.Caption
+      console.log("Ninja ip: " + state.ip)
+      console.log("версия: " + state.version)
 
       GetComponentsCurrent('header',(stateBool, data)=>{
         if (!stateBool || data.widgets==[]){ 
@@ -490,6 +490,7 @@ export default createStore({
     fetchLinkerTable_action({ commit }, payload) { commit("SetLinkerTable", payload); },
     fetchLinkerTree_action({ commit }, payload) { commit("SetLinkerTree", payload); },
     fetchLinkerAtoms_action({ commit }, payload) { commit('updateLinkerAtoms', payload); },
+    SetDefaultIp_action({ commit }, payload) { commit("SetDefaultIp", payload); },
     // changemain({ commit }, elems) {
     //   commit("changemain", elems);
     // },

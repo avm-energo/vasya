@@ -2,7 +2,6 @@ import store from '../store/index';
 import route from '../router/index';
 // import { HOST } from './config'
 
-// Ваша функция, которая забирает значения из файла defaults.json
 export const getHost = async () => {
     let config = await fetch('defaults.json');
     const data = await config.json(); 
@@ -14,20 +13,14 @@ async function initializeIp() {
     ip = await getHost();
 }
 
-// Вызываем initializeIp(), чтобы получить значение ip один раз
 initializeIp();
-
 
 export const login = async (login, password, callback) => {
     try {
-        console.log('dsds')
-
         const url = `http://${await getHost()}/api/table/auth`;
 
-        const data = `{
-            "Login" : "${login}",
-            "Password" : "${password}"
-            }`;
+        const data = `{"Login":"${login}","Password":"${password}"}`;
+
         const response = await fetch(url, {
             method: 'POST',
             headers: {
@@ -36,7 +29,7 @@ export const login = async (login, password, callback) => {
             body: data,
         });
         const text = await response.json();
-        // console.log(response)
+        // console.log(text)
         if (response.status == 200){
             store.dispatch('setIsAuth_action', true)
             // localStorage.setItem('role', text.role)
@@ -51,7 +44,6 @@ export const login = async (login, password, callback) => {
             store.dispatch('setProjectId_action', text.client.projectId)
             callback({ successful: true })
         } else {
-            // console.log(response)
             callback({ successful: false, message: text.loginError.toString()})
         }
         // if (response.data.warning) {
@@ -78,7 +70,7 @@ export const auth = async () => {
             body: formdata
         })
         const text = await response.json();
-        // console.log(text)
+        // console.log(response)
         if (text.status == 200){
             // if (localStorage.getItem('userName') != 'Guest') {
                 store.dispatch('setIsAuth_action', true)
@@ -103,7 +95,7 @@ export const auth = async () => {
         //     store.dispatch('AddNotification_action', { text: response.data.warning, type: 'Warning', time: 10000 })
         // }
     } catch (e) {
-        console.log(e)
+        // console.log(e)
         localStorage.removeItem('token')
         localStorage.removeItem('userName')
         localStorage.removeItem('creatorId')
@@ -124,7 +116,6 @@ export const logout = async (callback) => {
             headers: { Authorization: `${localStorage.getItem('token')}` },
             body: formdata
         })
-        console.log('dsds')
         localStorage.removeItem('token')
         localStorage.removeItem('userName')
         localStorage.removeItem('creatorId')
