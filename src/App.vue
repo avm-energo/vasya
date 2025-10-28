@@ -47,7 +47,6 @@ export default {
     const data = await config.json(); 
     this.$store.dispatch('SetDefaultIp_action', data)
      .then(() => {
-        this.$store.dispatch('fetchElems')
         this.asyncReady = true;
     });
     // this.$store.dispatch("fetchTree");
@@ -128,7 +127,11 @@ export default {
         }
       }, immediate: true
     },
-
+   '$store.state.userName': function(newValue, oldValue){
+    if(newValue!= null) {
+      this.$store.dispatch('fetchElems')
+    }
+   } 
   }
 };
 </script>
@@ -186,7 +189,7 @@ export default {
 
 .errors_list {
   position: absolute;
-  top: 40зч;
+  top: 20px;
   right: 20px;
   z-index: 4;
 }

@@ -20,8 +20,8 @@ export default createStore({
     userId: null,
     projectId: null,
     userPermissions: null,
-    notification:[],
-    error: [],
+    notifications:[],
+    errors: [],
     warning:[{name: 'adminja', state: false}],
 
     head: null,
@@ -50,8 +50,8 @@ export default createStore({
     IsLoading: (state) => state.isLoading,
     GetAfkTimer: (state) => state.afkTimer,
     GetUserName: (state) => state.userName,
-    GetNotification: (state) => state.notification,
-    GetError: (state) => state.error,
+    GetNotification: (state) => state.notifications,
+    GetError: (state) => state.errors,
     GetWarning: (state) => state.warning,
     main: (state) => state.main,
     mainstate: (state) => state.mainstate,
@@ -72,7 +72,7 @@ export default createStore({
   },
   mutations:{
     AddNotification(state, payload) {
-      state.notification.push({
+      state.notifications.push({
         id: new Date().getTime(),
         text: payload.text,
         type: payload.type,
@@ -80,12 +80,16 @@ export default createStore({
       });
     },
     DeleteNotification(state, payload) { //payload = id
-      state.notification = state.notification.filter(element => element.id !== payload)
+      state.notifications = state.notifications.filter(element => element.id !== payload)
+    },
+    DeleteError(state, payload) { //payload = id
+
+      state.errors = state.errors.filter(element => element.id !== payload)
     },
     AddError(state, payload) {
-      if (state.error.findIndex(el => el.text == payload) < 0) {
-        state.error.push({
-          text: payload, id: state.error.length ? state.error.reverse()[0].id + 1 : 0
+      if (state.errors.findIndex(el => el.text == payload) < 0) {
+        state.errors.push({
+          text: payload, id: state.errors.length ? state.errors.reverse()[0].id + 1 : 0
         });
       }
     },
@@ -281,8 +285,8 @@ export default createStore({
             state.elems.push(dataResponse);
             this.dispatch("updateElems", data.properties.path);
           } else {
-            state.notification.push({
-              id: state.notification.length ? state.notification.reverse()[0].id + 1 : 0,
+            state.notifications.push({
+              id: state.notifications.length ? state.notifications.reverse()[0].id + 1 : 0,
               text:'Ваш уровень доступа недостаточен для выполнения данной операции',
               type: 'Warning',
               time: 5000
@@ -419,8 +423,8 @@ export default createStore({
           state.main = dataResponse;
           this.dispatch("updateElems", data.properties.path);
         } else {
-          state.notification.push({
-            id: state.notification.length ? state.notification.reverse()[0].id + 1 : 0,
+          state.notifications.push({
+            id: state.notifications.length ? state.notifications.reverse()[0].id + 1 : 0,
             text:'Ваш уровень доступа недостаточен для выполнения данной операции',
             type: 'Warning',
             time: 5000
@@ -486,6 +490,7 @@ export default createStore({
     AddNotification_action({ commit }, payload) { commit('AddNotification', payload) },
     AddError_action({ commit }, payload) { commit('AddError', payload) },
     DeleteNotification_action({ commit }, payload) { commit('DeleteNotification', payload) },
+    DeleteError_action({ commit }, payload) { commit('DeleteError', payload) },
     SetWarning_action({ commit }, payload) { commit('SetWarning', payload) },
     fetchLinkerTable_action({ commit }, payload) { commit("SetLinkerTable", payload); },
     fetchLinkerTree_action({ commit }, payload) { commit("SetLinkerTree", payload); },

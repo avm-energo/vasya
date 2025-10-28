@@ -278,7 +278,7 @@ export async function GetComponentsCurrent(name, callback) {
             callback(true, json)
         } else if (response.status == 400 || response.status == 404) {
             callback(false)
-            store.dispatch('AddError_action', `${response.status} ${response.statusText}`)
+            store.dispatch('AddError_action', `${response.status} ${name} ${response.statusText}`)
         } else {
            callback(false)
             store.dispatch('AddError_action', `${response.status} ${response.statusText}`)

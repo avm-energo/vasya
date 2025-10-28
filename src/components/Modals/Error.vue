@@ -1,9 +1,9 @@
 <template>
-  <div class="container" @mouseover="hover = true" @mouseout="hover = false">
-    <button @click="active = false">
+  <div class="container" @mouseover="hover = true" @mouseout="hover = false" @click="active = false">
+    <!-- <button @click="active = false" :style="{backgroundColor: 'black'}">
       <v-icon icon="xmark" :style="{ color: 'white', width: '30px', opacity: '0.7' }" />
-    </button>
-    <v-icon icon="circle-exclamation" :style="{ color: 'white', width: '20px' }" /><span>{{ error }}</span>
+    </button> -->
+    <v-icon icon="circle-exclamation" :style="{ color: 'white', width: '20px', paddingRight: '5px' }" /><span style="user-select: none;">{{ error }}</span>
   </div>
 </template>
 
@@ -54,7 +54,7 @@ export default {
   border-radius: 10px;
   background: rgb(194, 11, 11);
   color: white;
-  padding: 20px 20px;
+  padding: 15px 15px;
   margin-top: 5px;
 }
 
