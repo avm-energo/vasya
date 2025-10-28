@@ -38,6 +38,7 @@ unit_test:
     - vue3
   only:
     refs:
+      - beta
       - test
       - develop
       - merge_requests
