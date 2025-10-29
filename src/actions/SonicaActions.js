@@ -278,14 +278,14 @@ export async function GetComponentsCurrent(name, callback) {
             callback(true, json)
         } else if (response.status == 400 || response.status == 404) {
             callback(false)
-            store.dispatch('AddError_action', `${response.status} ${name} ${response.statusText}`)
+            // store.dispatch('AddError_action', `${response.status} ${name} ${response.statusText}`)
         } else {
            callback(false)
             store.dispatch('AddError_action', `${response.status} ${response.statusText}`)
         }
     } catch (error) {
-        const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-        store.dispatch('AddError_action', errorMessage);
+        // const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+        // store.dispatch('AddError_action', errorMessage);
         callback('Истекло время ожидания команды');
     } 
 }
