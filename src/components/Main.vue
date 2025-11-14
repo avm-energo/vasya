@@ -68,7 +68,6 @@ export default {
       height: null,
       multiplier: null,
       linkerShow: false,
-      worker: new Worker('sw.js'),
       showButtons: false,
       authLogin: null,
       authPass: null,
@@ -110,7 +109,7 @@ export default {
           self.changeUser = false
           self.authPass = ''
         }
-        console.log(self.authLogin, self.authPass)
+        // console.log(self.authLogin, self.authPass)
         if (!(!!self.authLogin && !!self.authPass)) {
           setGuest()
           return;
@@ -154,20 +153,6 @@ export default {
         // this.userName = newValue
       })
     this.height = window.innerHeight
-    this.worker.addEventListener('message', (e) => {
-      if (this.$store.getters.GetUserName != 'Guest') {
-        PutAdminActive((state, data) =>{
-          // console.log(data )
-          if (state && data === 'Logout') {
-            PutLogout(()=>{
-              this.$store.dispatch('AddNotification_action', { text: `Выход с пользователя!`, type: 'Error', time: 5000 })
-              login('Guest', 'Guest', (e) =>{})
-            })
-          }
-        })
-      }
-    });
-    this.worker.postMessage({ interval: 10000 });
   },
   watch: {
     '$store.getters.main': function() {
@@ -230,7 +215,7 @@ export default {
   //   // setInterval(() => this.$store.dispatch("fetchAtoms"), 1000);
   // },
   unmounted(){
-    this.worker.postMessage({ stop: true });
+    // this.worker.postMessage({ stop: true });
   }
 };
 </script>

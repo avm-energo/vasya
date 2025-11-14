@@ -70,7 +70,7 @@ export const auth = async () => {
             body: formdata
         })
         const text = await response.json();
-        // console.log(response)
+        // console.log(text)
         if (text.status == 200){
             // if (localStorage.getItem('userName') != 'Guest') {
                 store.dispatch('setIsAuth_action', true)

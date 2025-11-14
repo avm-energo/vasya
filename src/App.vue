@@ -38,7 +38,7 @@ export default {
       innactiveTimer: 0,
       innactiveStatus: false,
       // interval: null,
-      worker: new Worker('sw.js'),
+      worker: new Worker('worker.js'),
       asyncReady: false,
     }
   },
@@ -93,10 +93,10 @@ export default {
       this.innactiveTimer = 0
       this.innactiveStatus = false
     },
-    LogoutToGuest(){
+    LogoutToGuest(textNot){
       PutLogout(()=>{
         this.$store.dispatch('innactivereset')
-        this.$store.dispatch('AddNotification_action', { text: `Время вашей сессии истекло!`, type: 'Error', time: 5000 })
+        this.$store.dispatch('AddNotification_action', { text: textNot, type: 'Error', time: 5000 })
         login('Guest', 'Guest', (e) =>{
           // console.log(this.$store.state.tickmas)
           for (let i = 3; i <= this.$store.state.tickmas.length; i++) {
@@ -113,22 +113,34 @@ export default {
         // console.log(newStatus + '-' + oldStatus)
         if (newStatus != null && newStatus != oldStatus){
           // if (this.interval) clearInterval(this.interval)
-          this.worker.addEventListener('message', (e) => {
+          this.worker.onmessage = function(e) {
             if (!this.innactiveStatus && this.name != 'Guest' && localStorage.getItem('userName')) {
               this.innactiveTimer++
               // console.log(this.innactiveTimer)
               if (this.innactiveTimer >= newStatus){
                 // console.log(this.innactiveTimer)
                 this.innactiveStatus = true
-                this.LogoutToGuest()
+                this.LogoutToGuest(`Время вашей сессии истекло`)
               }
             }
-          });
+            if (this.$store.getters.GetUserName != 'Guest' && this.$store.getters.GetUserName != null) {
+              this.adminActiveTimer++
+              if (this.adminActiveTimer >= 10) {
+                this.adminActiveTimer = 0
+                PutAdminActive((state, data) =>{
+                  // console.log(data + " " + moment().format('hh:mm:ss'))
+                  if (state && data === 'Logout') {
+                    this.LogoutToGuest(`Выход с пользователя`)
+                  }
+                })
+              }
+            }
+          }.bind(this);
         }
       }, immediate: true
     },
    '$store.state.userName': function(newValue, oldValue){
-    if(newValue!= null) {
+    if(newValue!= null && oldValue == null) {
       this.$store.dispatch('fetchElems')
     }
    } 
