@@ -28,6 +28,7 @@ import { mapGetters } from "vuex";
 import { 
   PutLogout,
   GetLogOutTime,
+  PutAdminActive,
 } from "./actions/SonicaActions";
 
 
@@ -40,6 +41,7 @@ export default {
       // interval: null,
       worker: new Worker('worker.js'),
       asyncReady: false,
+      adminActiveTimer: 0,
     }
   },
   async beforeCreate() {
@@ -125,6 +127,7 @@ export default {
             }
             if (this.$store.getters.GetUserName != 'Guest' && this.$store.getters.GetUserName != null) {
               this.adminActiveTimer++
+              // console.log(this.adminActiveTimer)
               if (this.adminActiveTimer >= 10) {
                 this.adminActiveTimer = 0
                 PutAdminActive((state, data) =>{

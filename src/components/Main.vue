@@ -52,7 +52,7 @@ import SonicaHead from './Components/Head.vue'
 import SonicaMain from './Components/Main.vue'
 import SonicaLinker from './Linker/Linker.vue'
 import { login, logout } from "../actions/AuthorizationActions";
-import { PutLogout, PutAdminActive } from "../actions/SonicaActions";
+import { PutLogout} from "../actions/SonicaActions";
 import { mapGetters } from "vuex";
 import ButtonComponent from '../components/Button.vue'
 
