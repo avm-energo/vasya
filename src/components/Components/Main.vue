@@ -166,40 +166,41 @@ export default {
   watch:{
     myJson:{
       immediate: true,
-      handler(newVal){
-        // console.log(newVal)
-        this.updateJson()
+      handler(newVal, oldVal){
+        if (oldVal) this.updateJson()
       }
     },
-    mainheight(newMainHeight, oldMainHeight) {
-      let multiplierwindow;
-      multiplierwindow = ( newMainHeight - 10 ) / (this.myJson.canvas.height);
+    
+    // mainheight(newMainHeight, oldMainHeight) {
+    //   console.log('dsdsdsafg')
+    //   let multiplierwindow;
+    //   multiplierwindow = ( newMainHeight - 10 ) / (this.myJson.canvas.height);
 
-      if (multiplierwindow * this.myJson.canvas.width > window.innerWidth) {
-        multiplierwindow =  window.innerWidth / ( this.myJson.canvas.width) - 0.005;
-      }
+    //   if (multiplierwindow * this.myJson.canvas.width > window.innerWidth) {
+    //     multiplierwindow =  window.innerWidth / ( this.myJson.canvas.width) - 0.005;
+    //   }
 
-      this.multiplierwindow = multiplierwindow;
-      this.multiplier = this.multiplierwindow
-      this.$parent.multiplier = this.multiplier
-      this.$store.dispatch('mainmultiplier', [false, this.multiplier])
-    },
-    updatedmainheight(newUpdatedMainHeight, oldUpdatedMainHeight) {
-      let multiplierwindow;
+    //   this.multiplierwindow = multiplierwindow;
+    //   this.multiplier = this.multiplierwindow
+    //   this.$parent.multiplier = this.multiplier
+    //   this.$store.dispatch('mainmultiplier', [false, this.multiplier])
+    // },
+    // updatedmainheight(newUpdatedMainHeight, oldUpdatedMainHeight) {
+    //   let multiplierwindow;
 
-      multiplierwindow = (window.innerHeight - (newUpdatedMainHeight) - 24 - 10) / this.myJson.canvas.height
-      if (this.myJson.canvas.height * multiplierwindow > this.mainheight) {
-        multiplierwindow = ( this.mainheight ) / ( this.myJson.canvas.height );
+    //   multiplierwindow = (window.innerHeight - (newUpdatedMainHeight) - 24 - 10) / this.myJson.canvas.height
+    //   if (this.myJson.canvas.height * multiplierwindow > this.mainheight) {
+    //     multiplierwindow = ( this.mainheight ) / ( this.myJson.canvas.height );
 
-      } else if (multiplierwindow * this.myJson.canvas.width > window.innerWidth) {
-        multiplierwindow =  window.innerWidth / (  this.myJson.canvas.width) - 0.005;
-      }
+    //   } else if (multiplierwindow * this.myJson.canvas.width > window.innerWidth) {
+    //     multiplierwindow =  window.innerWidth / (  this.myJson.canvas.width) - 0.005;
+    //   }
 
-      this.multiplierwindow = multiplierwindow;
-      this.multiplier = this.multiplierwindow
-      this.$parent.multiplier = this.multiplier
-      this.$store.dispatch('mainmultiplier', [false, this.multiplier])
-    }
+    //   this.multiplierwindow = multiplierwindow;
+    //   this.multiplier = this.multiplierwindow
+    //   this.$parent.multiplier = this.multiplier
+    //   this.$store.dispatch('mainmultiplier', [false, this.multiplier])
+    // }
 
   },
 
@@ -257,15 +258,7 @@ export default {
         }
       });
 
-      this.multiplierwindow = (window.innerHeight) / this.myJson.canvas.height;
-
-      if (this.multiplierwindow * this.myJson.canvas.width > window.innerWidth) {
-        this.multiplierwindow = window.innerWidth / ( this.myJson.canvas.width) - 0.005
-      }
-
-      this.multiplier = this.multiplierwindow
-      this.$parent.multiplier = this.multiplier
-      this.$store.dispatch('mainmultiplier', [true, this.multiplier])
+      this.updateMultiplier(this.adjustMultiplierForWidth(this.calculateMultiplier()));
 
       this.namewindow = this.myJson.path
       this.windowname = this.namewindow.split('\\').join('')
@@ -275,24 +268,42 @@ export default {
         this.windowpath = this.namewindow
       }
     },
-    reportWindowSize(){
-      let multiplierwindow;
-      if (this.updatedmainheight !== null) {
-        multiplierwindow = (window.innerHeight - (this.updatedmainheight) - 24 - 10) / this.myJson.canvas.height
-      } else {
-        multiplierwindow = ( this.mainheight - 10 ) / ( this.myJson.canvas.height );
-      }
-      // if (this.myJson.canvas.height * multiplierwindow > this.mainheight) {
-      //   console.log(`${this.myJson.canvas.height * multiplierwindow} > ${this.mainheight}`);
-      // }
-      if (multiplierwindow * this.myJson.canvas.width > window.innerWidth) {
-        multiplierwindow = window.innerWidth / ( this.myJson.canvas.width) - 0.005;
-      }
-
-      this.$store.dispatch('mainmultiplier', [true, multiplierwindow])
-      this.multiplier =  multiplierwindow
-      this.$parent.multiplier = this.multiplier
+    reportWindowSize() {
+      // console.log(this.updatedmainheight)
+      this.updateMultiplier(this.adjustMultiplierForWidth(this.calculateMultiplier()));
     },
+
+    calculateMultiplier() {
+      if (this.updatedmainheight !== null) {
+        const availableHeight = window.innerHeight - this.updatedmainheight - 24 - 10;
+        return availableHeight / this.myJson.canvas.height;
+      } else {
+        const availableHeight = this.mainheight - 10;
+        return availableHeight / this.myJson.canvas.height;
+      }
+    },
+
+    adjustMultiplierForWidth(multiplier) {
+      const canvasWidth = this.myJson.canvas.width;
+      const maxWidth = window.innerWidth;
+      let multiplierwindow;
+      multiplierwindow = ( this.mainheight - 10 ) / (this.myJson.canvas.height);
+
+      if (multiplierwindow * this.myJson.canvas.width > window.innerWidth) {
+        multiplierwindow =  window.innerWidth / ( this.myJson.canvas.width) - 0.005;
+      }
+      if (multiplier * canvasWidth > maxWidth) {
+        return maxWidth / canvasWidth - 0.005;
+      }
+      return multiplier;
+    },
+
+    updateMultiplier(multiplier) {
+      this.$store.dispatch('mainmultiplier', [true, multiplier]);
+      this.multiplier = multiplier;
+      this.$parent.multiplier = multiplier;
+    },
+
     closejson(){
       this.$store.dispatch('closewindow', this.windowname)
       window.removeEventListener('resize', this.reportWindowSize)
@@ -325,9 +336,9 @@ export default {
   },
 
   created() {
-    // setTimeout(function(){
-    //   location.reload();
-    // }, 3000);
+    setTimeout(()=>{
+      this.updateJson()
+    }, 20);
     if (this.myJson.name != 'ReportGenerator') {
       window.addEventListener('resize', this.reportWindowSize)
       this.width = window.innerWidth - 2
@@ -339,7 +350,6 @@ export default {
   },
   updated() {
     // Этот метод вызывается после перерендера компонента
-    this.reportWindowSize()
     // console.log('Компонент Main был перерендерен');
   },
 };

@@ -347,14 +347,14 @@ export default createStore({
       //   this.dispatch("updateElems", data.name);
     },
 
-    changemainheight(state, h){
-      state.mainheight = state.mainheight - h
+    changemainheight(state, data){
+      state.mainheight = state.mainheight - data
     },
-    updatemainheight(state, h){
-      state.updatedmainheight = h
+    updatemainheight(state, data){
+      state.updatedmainheight = data
     },
-    mainmultiplier(state, h){
-      state.mainmultiplier = h
+    mainmultiplier(state, data){
+      state.mainmultiplier = data
     },
     async gethistorytime(state, data){
       GetHistoryTime(data,(stateResponse, data)=>{

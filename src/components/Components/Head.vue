@@ -86,7 +86,6 @@ export default {
     Helper,
     ButtonComponent,
   },
-
   computed: {
     ip() {
       return this.$store.getters.ip;
@@ -126,9 +125,9 @@ export default {
       });
     },
     reportWindowSize(){
-      this.$store.dispatch("updatemainheight", this.myJson.canvas.height * this.multiplier )
       const multiplierwindow = ((window.innerWidth -2 )/ this.width)
       this.multiplier = this.multiplierwindow * multiplierwindow
+      this.$store.dispatch("updatemainheight", this.myJson.canvas.height * this.multiplier )
     },
     openButtons(){
       this.showButtons = !this.showButtons

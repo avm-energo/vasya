@@ -28,15 +28,17 @@
       <ButtonComponent class="button_logout" :reverseOrder="true" @click.stop="[changeUser = true, closeButtons()]" :navigationButton="true"
       icon="user" :iconStyle="{ color: '#267dff', width: '25', height: '25' }" />
     </div>
-    <sonica-head v-if="head!=null" :myJson="head" typewindow="head" />
-    <sonica-footer v-if="footer!=null" :myJson="footer" />
-    <sonica-main v-if="mainJson!=null" :myJson="mainJson"/>
-    <sonica-window
-      v-for="elem in elems"
-      :key="elem.name"
-      :myJson="elem"
-      typewindow="modalwindow"
-    />
+    <div class="main_components">
+      <sonica-head v-if="head!=null" :myJson="head" typewindow="head" @change-height="changeHeight"/>
+      <sonica-footer v-if="footer!=null" :myJson="footer" />
+      <sonica-main v-if="mainJson!=null" :myJson="mainJson"/>
+      <sonica-window
+        v-for="elem in elems"
+        :key="elem.name"
+        :myJson="elem"
+        typewindow="modalwindow"
+      />
+    </div>
     <div v-if="linkerShow" class="sonica-linker">
       <sonica-linker @close="linkerClose" />
     </div>
@@ -385,5 +387,10 @@ input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
         -webkit-appearance: none;
         margin: 0;
+}
+.main_components{
+  display: flex;
+  flex-direction: column;
+  height: 100vh; 
 }
 </style>
