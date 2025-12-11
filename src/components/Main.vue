@@ -29,7 +29,7 @@
       icon="user" :iconStyle="{ color: '#267dff', width: '25', height: '25' }" />
     </div>
     <div class="main_components">
-      <sonica-head v-if="head!=null" :myJson="head" typewindow="head" @change-height="changeHeight"/>
+      <sonica-head v-if="head!=null" :myJson="head" typewindow="head"/>
       <sonica-footer v-if="footer!=null" :myJson="footer" />
       <sonica-main v-if="mainJson!=null" :myJson="mainJson"/>
       <sonica-window
@@ -232,6 +232,7 @@ body {
   justify-content: center;
   align-items: center;
   height: v-bind('height');
+  width: 100%;
 }
 
 .sonica-linker {

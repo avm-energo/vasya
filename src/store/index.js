@@ -36,7 +36,7 @@ export default createStore({
     commandwidgetmass: [],
     tick: null,
     ip: null,
-    mainheight: null,
+    mainheight: window.innerHeight,
     updatedmainheight: null,
     historymas: [],
     mainmultiplier: true,
@@ -147,7 +147,6 @@ export default createStore({
     },
 
     async fetchElems(state) {
-      state.mainheight = window.innerHeight
       GetComponentsCurrent('main', (stateBool, data)=>{
         if (stateBool){
           state.tick = data.tick;

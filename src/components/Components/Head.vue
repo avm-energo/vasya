@@ -125,8 +125,9 @@ export default {
       });
     },
     reportWindowSize(){
-      const multiplierwindow = ((window.innerWidth -2 )/ this.width)
+      const multiplierwindow = ((window.innerWidth - 2 ) / this.width)
       this.multiplier = this.multiplierwindow * multiplierwindow
+      // console.log(this.myJson.canvas.height * this.multiplier)
       this.$store.dispatch("updatemainheight", this.myJson.canvas.height * this.multiplier )
     },
     openButtons(){

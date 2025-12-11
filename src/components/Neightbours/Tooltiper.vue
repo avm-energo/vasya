@@ -238,8 +238,8 @@ export default {
     },
     cssPropsIcon() {
       return {
-        "--marginsideicon": [this.params.properties.leftIcon != 'None' ? this.params.properties.width/40 * this.$parent.multiplier + "px" : ''],
-        "--widthbutton": [this.params.properties.angle != 0 ? this.params.properties.width * this.$parent.multiplier  : this.params.properties.height * this.$parent.multiplier] + "px"
+        "--marginsideicon": [this.params.properties.leftIcon != 'None' ? this.params.properties.width/10 * this.$parent.multiplier + "px" : ''],
+        "--widthbutton": [this.params.properties.angle != 0 ? this.params.properties.width * this.$parent.multiplier  : this.params.properties.height * this.$parent.multiplier] * [this.params.properties.scale || 1]/1.2 + "px"
       };
     },
   },
@@ -274,6 +274,7 @@ export default {
   background-color: var(--backgroundColor);
   color: var(--color);
   display: flex;
+  justify-content: var(--textalign);
   gap: 10px;
   padding-left: 5px;
   flex-direction: var(--flexdir);
@@ -321,7 +322,7 @@ p {
   margin: auto;
   writing-mode: var(--vertical-rl);
   width: 100%;
-  text-align: var(--textalign);
+  /* text-align: var(--textalign); */
   line-height: var(--lineheight);
 }
 
