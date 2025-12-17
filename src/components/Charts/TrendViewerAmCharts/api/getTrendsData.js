@@ -3,10 +3,10 @@ import moment from "moment/moment";
 import store from "@/store";
 import {encript} from "@/mixins/encript.js";
 
-export const getTrendsData = async (startDate, endDate, windowPath, name, controller) => {
+export const getTrendsData = async (startDate, endDate, density, windowPath, name, controller) => {
 
     const ip = store.getters.ip;
-    const article = updatedBody(startDate, endDate)
+    const article = updatedBody(startDate, endDate, density)
     const headers = {
         'Content-Type': 'application/json',
         'Authorization': `${localStorage.getItem('token')}`,
@@ -17,7 +17,7 @@ export const getTrendsData = async (startDate, endDate, windowPath, name, contro
             signal: controller.signal
         },)
         .then(response => {
-            // console.log("Вот и ответ 2", response.data)
+            console.log("Вот и ответ 2", response.data)
             return response.data
         })
         .catch(function (error) {
@@ -25,10 +25,11 @@ export const getTrendsData = async (startDate, endDate, windowPath, name, contro
         });
 };
 
-const updatedBody = (start, end) => {
+const updatedBody = (start, end, density) => {
     return `{
           "lowerTime": "${moment(new Date(start).getTime()).format("YYYY-MM-DDTHH:mm:ss")}",
-          "upperTime": "${moment(new Date(end).getTime()).format("YYYY-MM-DDTHH:mm:ss")}"
+          "upperTime": "${moment(new Date(end).getTime()).format("YYYY-MM-DDTHH:mm:ss")}",
+          "density": "${density}" 
       }`
 };
 
