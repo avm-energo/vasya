@@ -97,12 +97,12 @@
       <div style="flex-grow: 6" ></div>
     </div>
     <div id="box_chart">
-      <div id="box_timeframe" @click="changeTimeframe">
-        <span title="Невозможно уменьшить масштаб данного графика" id="timeframe_1" class="timeframe">Мин</span>
-        <span title="Невозможно уменьшить масштаб данного графика" id="timeframe_2" class="timeframe">10 Мин</span>
-        <span title="Невозможно уменьшить масштаб данного графика" id="timeframe_3" class="timeframe">30 Мин</span>
-        <span id="timeframe_4" class="timeframe">Час</span>
-      </div>
+<!--      <div id="box_timeframe" @click="changeTimeframe">-->
+<!--        <span title="Невозможно уменьшить масштаб данного графика" id="timeframe_1" class="timeframe">Мин</span>-->
+<!--        <span title="Невозможно уменьшить масштаб данного графика" id="timeframe_2" class="timeframe">10 Мин</span>-->
+<!--        <span title="Невозможно уменьшить масштаб данного графика" id="timeframe_3" class="timeframe">30 Мин</span>-->
+<!--        <span id="timeframe_4" class="timeframe">Час</span>-->
+<!--      </div>-->
       <div id="chartdiv" ref="chartdiv"></div>
     </div>
   </div>
@@ -161,7 +161,8 @@ export default {
       timeFrame: 1,
       loading_per: 0,
       yAxisVisibleSeriesCount: new Map(),
-      minBaseInterval: 60,
+      minBaseInterval: 1200,
+      // density: 1,
     }
   },
   components: {
@@ -181,9 +182,10 @@ export default {
 
     setTimeFrame(value) {
       console.log(this.minBaseInterval, " Допустимый интервал в минутах")
-      if (this.minBaseInterval <= value)
-        this.timeFrame = value / this.minBaseInterval;
-      else
+      if (this.minBaseInterval <= value) {
+        // this.timeFrame = value / this.minBaseInterval;
+        console.log(this.timeFrame, " Timeframe после изменения");
+      } else
         store.dispatch('AddNotification_action', { text: `Ошибка: Минимально допустимый интервал в минутах: ${this.minBaseInterval}`, type: 'Error', time: 2000 });
       this.xAxis.set("baseInterval", {
         timeUnit: "minute",
@@ -194,16 +196,16 @@ export default {
     changeTimeframe(e) {
       switch (e.target.id) {
         case "timeframe_1":
-          this.setTimeFrame(1); // Одна минута
+          this.setTimeFrame(60); // Одна минута
           break;
         case "timeframe_2":
-          this.setTimeFrame(10); // 10 минут
+          this.setTimeFrame(120); // 10 минут
           break;
         case "timeframe_3":
-          this.setTimeFrame(30); // 30 минут
+          this.setTimeFrame(180); // 30 минут
           break;
         case "timeframe_4":
-          this.setTimeFrame(60); // 60 минут
+          this.setTimeFrame(240); // 60 минут
           break;
         default:
           break;
@@ -318,16 +320,19 @@ export default {
       this.gettingdata()
 
       this.loading_per = 0;
-
+      console.log("Разница временного интервала в часах = ", (this.endtime - this.starttime) / (1000 * 60 * 60));
+      const density = Math.ceil((this.endtime - this.starttime) / (1000 * 60 * 60 * 1920 * 2));
       const intervals = this.divideTimeInterval(this.starttime, this.endtime);
+      console.log(this.starttime, " = Start time ");
       console.log(intervals.length, " = Число интервалов");
+      console.log(density, " = Density");
 
       // this.root.dispose()
       this.clearChart();
 
       for (let j = 0; j < intervals.length; j++) {
         this.loading_per = j / intervals.length * 100;
-        const result = await getTrendsData(intervals[j].start, intervals[j].end, this.$parent.$parent.windowpath, this.name, this.controller);
+        const result = await getTrendsData(intervals[j].start, intervals[j].end, density, this.$parent.$parent.windowpath, this.name, this.controller);
         if (result !== undefined) {
           if (j === 0) this.chartDataArr = result;
           else {
@@ -337,8 +342,15 @@ export default {
           }
         } else break;
 
-        if ( this.chartDataArr.resultData[0]?.points[0] && this.chartDataArr.resultData[0]?.points[1] )
-            this.setTimeFrame((new Date(this.chartDataArr.resultData[0]?.points[1]?.argument).getTime() - new Date(this.chartDataArr.resultData[0]?.points[0]?.argument).getTime()) / 1000 / 60);
+        if (j === 0 ) {
+          if ( this.chartDataArr.resultData[0]?.points[0] && this.chartDataArr.resultData[0]?.points[1] ) {
+            let newBaseInterval = (new Date(this.chartDataArr.resultData[0]?.points[1]?.argument).getTime() - new Date(this.chartDataArr.resultData[0]?.points[0]?.argument).getTime()) / 1000 / 60;
+            console.log("Novyy setTimeFrame", newBaseInterval)
+            if (newBaseInterval < this.minBaseInterval) this.minBaseInterval = newBaseInterval;
+            this.setTimeFrame(newBaseInterval);
+          }
+        }
+
         this.updateChart()
       }
       this.loading_per = 100;
@@ -371,7 +383,7 @@ export default {
 
     // Задаем интервал для загрузки данных
     this.starttime = new Date(Date.now() - 86400000 * 1);
-    this.endtime = new Date(Date.now() + 86400000 * 1)
+    this.endtime = new Date(Date.now())
 
     root.setThemes([
       am5themes_Animated.new(root)
@@ -398,7 +410,7 @@ export default {
 
     let xAxis = chart.xAxes.push(am5xy.DateAxis.new(root, {
       minZoomCount: 3,
-      baseInterval: {timeUnit: "minute", count: 60},
+      baseInterval: {timeUnit: "minute", count: 120},
       renderer: am5xy.AxisRendererX.new(root, {}),
       tooltip: am5.Tooltip.new(root, {}),
       tooltipDateFormat: "dd MMM yyyy, HH:mm",
@@ -409,18 +421,20 @@ export default {
 
     this.xAxis = xAxis
 
+    console.log("Разница временного интервала в часах = ", (this.endtime - this.starttime) / (1000 * 60 * 60));
+
     const intervals = this.divideTimeInterval(this.starttime, this.endtime);
 
     this.getChartsInfo()
 
     // this.chartDataArr = await this.getChartData(intervals[0].start, intervals[0].end, 0);
-    this.chartDataArr = await getTrendsData(intervals[0].start, intervals[0].end, this.$parent.$parent.windowpath, this.name, this.controller);
-    if ( this.chartDataArr.resultData[0]?.points[0] && this.chartDataArr.resultData[0]?.points[1] ) {
-      let newBaseInterval = (new Date(this.chartDataArr.resultData[0]?.points[1]?.argument).getTime() - new Date(this.chartDataArr.resultData[0]?.points[0]?.argument).getTime()) / 1000 / 60;
-      console.log("Novyy setTimeFrame", newBaseInterval)
-      if (newBaseInterval < this.minBaseInterval) this.minBaseInterval = newBaseInterval;
-      this.setTimeFrame(newBaseInterval);
-    }
+    this.chartDataArr = await getTrendsData(intervals[0].start, intervals[0].end, 1, this.$parent.$parent.windowpath, this.name, this.controller);
+    // if ( this.chartDataArr.resultData[0]?.points[0] && this.chartDataArr.resultData[0]?.points[1] ) {
+    //   let newBaseInterval = (new Date(this.chartDataArr.resultData[0]?.points[1]?.argument).getTime() - new Date(this.chartDataArr.resultData[0]?.points[0]?.argument).getTime()) / 1000 / 60; // В минутах а не в часах
+    //   console.log("Novyy setTimeFrame", newBaseInterval)
+    //   if (newBaseInterval < this.minBaseInterval) this.minBaseInterval = newBaseInterval;
+    //   this.setTimeFrame(newBaseInterval);
+    // }
     this.seriesArr = []
 
     // НАЧАЛО ЦИКЛА SERIES ------------------------------------------------------
