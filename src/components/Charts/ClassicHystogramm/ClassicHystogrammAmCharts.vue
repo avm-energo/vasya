@@ -53,6 +53,82 @@ export default {
       }
       this.seriesArr.push(this.series)
     },
+    buildChartData(table) {
+      const sectors = this.params.sectors.$values ?? this.params.sectors;
+      const graphs  = this.params.graphs;
+
+      const data = sectors.map(s => {
+        const row = { period: s.alias };
+        graphs.forEach(g => row[g.name] = 0);
+        return row;
+      });
+
+      const rows = table.$values ?? table;
+
+      rows.forEach(el => {
+        const row = data[el.columnId];
+        if (!row) return;
+
+        row[el.settingEntity.name] = el.currentValue;
+      });
+
+      return data;
+    },
+    renderValueRows(data) {
+      this.tableContainer.children.clear();
+
+      const graphs = this.params.graphs;
+      const root = this.root;
+      const columns = data.length;
+
+      const colWidth = 100 / columns;
+
+      const xRow = this.tableContainer.children.push(
+          am5.Container.new(root, {
+            width: am5.percent(100),
+            layout: am5.HorizontalLayout.new(root, {
+              gap: 0
+            })
+          })
+      );
+
+      data.forEach(d => {
+        xRow.children.push(
+            am5.Label.new(root, {
+              text: String(d.period),
+              fill: am5.color(0x999999),
+              textAlign: "center",
+              centerX: am5.p50,
+              width: am5.percent(colWidth),
+              fontSize: this.params.fontSize * this.multiplier * 0.9
+            })
+        );
+      });
+
+      graphs.forEach(graph => {
+        const row = this.tableContainer.children.push(
+            am5.Container.new(root, {
+              width: am5.percent(100),
+              layout: am5.HorizontalLayout.new(root, {
+                gap: 0
+              })
+            })
+        );
+
+        data.forEach(d => {
+          row.children.push(
+              am5.Label.new(root, {
+                text: d[graph.name] != null ? String(d[graph.name]) : "***",
+                fill: am5.color("#" + graph.back.slice(0, 6)),
+                textAlign: "center",
+                centerX: am5.p50,
+                width: am5.percent(colWidth),
+                fontSize: this.params.fontSize * this.multiplier
+              })
+          );
+        });
+      });
+    },
 
     createData(changedelem) {
       let data = this.data
@@ -109,8 +185,7 @@ export default {
 
     let yAxis = chart.yAxes.push(am5xy.ValueAxis.new(root, {
       min: this.params.min,
-      max: this.params.max,
-      strictMinMax: true,
+      strictMinMax: false,
       renderer: am5xy.AxisRendererY.new(root, {
         minGridDistance: 20,
         stroke: am5.color(0xFFFFFF),
@@ -143,30 +218,19 @@ export default {
       })
     );
     this.legend = legend
-    
-    this.data = [{}];
-    ;(this.params.sectors.$id  == undefined ? this.params.sectors : this.params.sectors.$values).forEach((element, index) => {
-      this.data.push({"period": ''})
-      this.data[index].period = element.alias
-    })
-    this.data.pop()
 
-    let mas = []
-    if (this.params.table.$id == undefined) {
-      var array = this.params.table
-    } else {
-      var array = this.params.table.$values
-    }
-    let j = array.length/this.params.sectors.length
-    for (let i=0; i<j;i++){
-      console.log(1)
-      mas.push({name: '',data: []})
-      mas[i].name = this.params.graphs[i].name
-    }
-    ;(array.$id  == undefined ? array : array.$values).forEach(element => {
-      mas[element.rowId].data.push(element.currentValue);
-    })
+    const tableContainer = chart.children.push(
+        am5.Container.new(this.root, {
+          width: am5.percent(100),
+          layout: this.root.verticalLayout,
+          paddingTop: 10
+        })
+    );
 
+    this.tableContainer = tableContainer;
+
+
+    this.data = this.buildChartData(this.params.table);
     xAxis.data.setAll(this.data);
 
     this.chartName = this.name
@@ -187,15 +251,20 @@ export default {
     ;(this.seriesArr.$id  == undefined ? this.seriesArr : this.seriesArr.$values).forEach(series => {
       series.data.setAll(this.data)
     })
+
+    this.renderValueRows(this.data);
     
     setTimeout(() => {
       setInterval(() => {
         let changedelem= this.$store.getters.elemByName(res)?.properties.table
         if (changedelem) {
-          this.data = this.createData(changedelem)
-          ;(this.seriesArr.$id  == undefined ? this.seriesArr : this.seriesArr.$values).forEach(series => {
-            series.data.setAll(this.data)
-          })
+          this.data = this.buildChartData(changedelem);
+
+          this.seriesArr.forEach(series => {
+            series.data.setAll(this.data);
+          });
+
+          this.renderValueRows(this.data);
         }
       },1000)
     // }, 1000 - Math.abs(500 - currentDateMilliseconds));
