@@ -161,8 +161,7 @@ export default {
       timeFrame: 1,
       loading_per: 0,
       yAxisVisibleSeriesCount: new Map(),
-      minBaseInterval: 1200,
-      // density: 1,
+      baseIntervalMeasurement: "hour",
     }
   },
   components: {
@@ -181,35 +180,10 @@ export default {
   methods: {
 
     setTimeFrame(value) {
-      console.log(this.minBaseInterval, " Допустимый интервал в минутах")
-      if (this.minBaseInterval <= value) {
-        // this.timeFrame = value / this.minBaseInterval;
-        console.log(this.timeFrame, " Timeframe после изменения");
-      } else
-        store.dispatch('AddNotification_action', { text: `Ошибка: Минимально допустимый интервал в минутах: ${this.minBaseInterval}`, type: 'Error', time: 2000 });
       this.xAxis.set("baseInterval", {
-        timeUnit: "minute",
+        timeUnit: this.baseIntervalMeasurement,
         count: value
       });
-    },
-
-    changeTimeframe(e) {
-      switch (e.target.id) {
-        case "timeframe_1":
-          this.setTimeFrame(60); // Одна минута
-          break;
-        case "timeframe_2":
-          this.setTimeFrame(120); // 10 минут
-          break;
-        case "timeframe_3":
-          this.setTimeFrame(180); // 30 минут
-          break;
-        case "timeframe_4":
-          this.setTimeFrame(240); // 60 минут
-          break;
-        default:
-          break;
-      }
     },
 
     async some() {
@@ -307,9 +281,13 @@ export default {
 
     generateDatas(num) {
       let dataArr = [];
+      const points = this.chartDataArr.resultData[num].points;
 
-      for (let i = 0; i < this.chartDataArr.resultData[num].points.length - this.timeFrame; i += this.timeFrame) {
-        dataArr.push(this.generateDataObj(this.chartDataArr.resultData[num].points[i]));
+      for (let i = 0; i < points.length; i += 1) {
+        const p = points[i];
+        if (p.value !== null && p.value !== undefined) {
+          dataArr.push(this.generateDataObj(p));
+        }
       }
       return dataArr
     },
@@ -321,13 +299,11 @@ export default {
 
       this.loading_per = 0;
       console.log("Разница временного интервала в часах = ", (this.endtime - this.starttime) / (1000 * 60 * 60));
-      const density = Math.ceil((this.endtime - this.starttime) / (1000 * 60 * 60 * 1920 * 2));
+      const density = Math.ceil((this.endtime - this.starttime) / (1000 * 60 * 60 * 600));
       const intervals = this.divideTimeInterval(this.starttime, this.endtime);
       console.log(this.starttime, " = Start time ");
       console.log(intervals.length, " = Число интервалов");
       console.log(density, " = Density");
-
-      // this.root.dispose()
       this.clearChart();
 
       for (let j = 0; j < intervals.length; j++) {
@@ -343,12 +319,13 @@ export default {
         } else break;
 
         if (j === 0 ) {
-          if ( this.chartDataArr.resultData[0]?.points[0] && this.chartDataArr.resultData[0]?.points[1] ) {
-            let newBaseInterval = (new Date(this.chartDataArr.resultData[0]?.points[1]?.argument).getTime() - new Date(this.chartDataArr.resultData[0]?.points[0]?.argument).getTime()) / 1000 / 60;
-            console.log("Novyy setTimeFrame", newBaseInterval)
-            if (newBaseInterval < this.minBaseInterval) this.minBaseInterval = newBaseInterval;
-            this.setTimeFrame(newBaseInterval);
-          }
+          this.setTimeFrame(density);
+          // if ( this.chartDataArr.resultData[0]?.points[0] && this.chartDataArr.resultData[0]?.points[1] ) {
+          //   let newBaseInterval = (new Date(this.chartDataArr.resultData[0]?.points[1]?.argument).getTime() - new Date(this.chartDataArr.resultData[0]?.points[0]?.argument).getTime()) / 1000 / 60 / 60;
+          //   console.log("Novyy setTimeFrame", newBaseInterval)
+          //   if (newBaseInterval < this.minBaseInterval) this.minBaseInterval = newBaseInterval;
+          //   this.setTimeFrame(newBaseInterval);
+          // }
         }
 
         this.updateChart()
@@ -382,7 +359,7 @@ export default {
     this.root = root;
 
     // Задаем интервал для загрузки данных
-    this.starttime = new Date(Date.now() - 86400000 * 1);
+    this.starttime = new Date(Date.now() - 86400000 * 7);
     this.endtime = new Date(Date.now())
 
     root.setThemes([
@@ -408,34 +385,40 @@ export default {
 
     this.chart = chart
 
-    let xAxis = chart.xAxes.push(am5xy.DateAxis.new(root, {
-      minZoomCount: 3,
-      baseInterval: {timeUnit: "minute", count: 120},
-      renderer: am5xy.AxisRendererX.new(root, {}),
-      tooltip: am5.Tooltip.new(root, {}),
-      tooltipDateFormat: "dd MMM yyyy, HH:mm",
-      tooltipIntervalOffset: 0,
-      // combineFields: 'category',
-      categoryField: "category",
-    }));
-
-    this.xAxis = xAxis
-
     console.log("Разница временного интервала в часах = ", (this.endtime - this.starttime) / (1000 * 60 * 60));
-
     const intervals = this.divideTimeInterval(this.starttime, this.endtime);
 
     this.getChartsInfo()
 
-    // this.chartDataArr = await this.getChartData(intervals[0].start, intervals[0].end, 0);
     this.chartDataArr = await getTrendsData(intervals[0].start, intervals[0].end, 1, this.$parent.$parent.windowpath, this.name, this.controller);
-    // if ( this.chartDataArr.resultData[0]?.points[0] && this.chartDataArr.resultData[0]?.points[1] ) {
-    //   let newBaseInterval = (new Date(this.chartDataArr.resultData[0]?.points[1]?.argument).getTime() - new Date(this.chartDataArr.resultData[0]?.points[0]?.argument).getTime()) / 1000 / 60; // В минутах а не в часах
-    //   console.log("Novyy setTimeFrame", newBaseInterval)
-    //   if (newBaseInterval < this.minBaseInterval) this.minBaseInterval = newBaseInterval;
-    //   this.setTimeFrame(newBaseInterval);
-    // }
     this.seriesArr = []
+
+    // Выставление либо минутного либо часового интервала
+    if ( this.chartDataArr.resultData[0]?.points[0] && this.chartDataArr.resultData[0]?.points[1] ) {
+      let newBaseInterval = (new Date(this.chartDataArr.resultData[0]?.points[1]?.argument).getTime() - new Date(this.chartDataArr.resultData[0]?.points[0]?.argument).getTime()) / 1000 / 60;
+      if (newBaseInterval === 60) {
+        this.baseIntervalMeasurement = "hour"
+      } else if (newBaseInterval === 1) {
+        this.baseIntervalMeasurement = "minute"
+      }
+      console.log("Интервал данных при инцициализации в минутах", newBaseInterval)
+    }
+
+    let xAxis = chart.xAxes.push(am5xy.DateAxis.new(root, {
+      minZoomCount: 3,
+      baseInterval: {timeUnit: this.baseIntervalMeasurement, count: 1},
+      renderer: am5xy.AxisRendererX.new(root, {}),
+      tooltip: am5.Tooltip.new(root, {
+        labelText: "{valueX.formatDate('dd MMM yyyy, HH:mm')}"
+      }),
+      tooltipDateFormat: "dd MMM yyyy, HH:mm",
+      tooltipIntervalOffset: 0,
+      categoryField: "category",
+    }));
+
+    xAxis.set("groupData", false);
+
+    this.xAxis = xAxis
 
     // НАЧАЛО ЦИКЛА SERIES ------------------------------------------------------
     for (let i = 0; i < this.chartDataArr.resultData.length; i++) {
@@ -484,10 +467,12 @@ export default {
             categoryXField: "category",
             categoryField: "category",
             connect: false,
+            minDistance: 0,
+            autoGapCount: 1,
             fill: linecolor,
             stroke: linecolor,
             tooltip: am5.Tooltip.new(root, {
-              labelText: "{name}: {valueY}",
+              labelText: "[bold]{name}[/]\n{valueX.formatDate('dd MMM yyyy, HH:mm')}\n{valueY}",
               getFillFromSprite: false,
               getStrokeFromSprite: false,
               autoTextColor: false,
@@ -516,9 +501,11 @@ export default {
       series.uid = this.chartInfo[i].uid
 
       series.data.processor = am5.DataProcessor.new(root, {
-        dateFormat: "yyyy-MM-dd",
-        dateFields: ["date"]
+        dateFormat: "MM/dd/yyyy HH:mm:ss",
+        dateFields: ["argument"]
       });
+
+      series.set("simplifiedProcessing", false);
 
       series.strokes.template.setAll({strokeWidth: 1});
 
@@ -527,6 +514,17 @@ export default {
         stroke: 'white',
         strokeOpacity: 1,
         opacity: 1
+      });
+
+      series.bullets.push(function(root, series, dataItem) {
+        return am5.Bullet.new(root, {
+          sprite: am5.Circle.new(root, {
+            radius: 2,
+            fill: series.get("stroke"),     // цвет как у линии
+            stroke: root.interfaceColors.get("background"),
+            strokeWidth: 1
+          })
+        });
       });
 
       if (!this.yAxisVisibleSeriesCount.get(yAxis.uid)) this.yAxisVisibleSeriesCount.set(yAxis.uid, 1);
@@ -542,8 +540,11 @@ export default {
       behavior: "zoomX",
       snapToSeries: [],
       xAxis: xAxis,
-      yAxis: yAxis
+      // yAxis: yAxis
     }));
+
+
+
     cursor.lineY.set("visible", false);
     cursor.lineX.setAll({
       stroke: am5.color(0xf75394),
@@ -706,7 +707,7 @@ export default {
       exporting.download("png");
     }
 
-    cursor.snapToSeries = series;
+    // cursor.snapToSeries = series;
 
 
   },
