@@ -320,19 +320,11 @@ export default {
 
         if (j === 0 ) {
           this.setTimeFrame(density);
-          // if ( this.chartDataArr.resultData[0]?.points[0] && this.chartDataArr.resultData[0]?.points[1] ) {
-          //   let newBaseInterval = (new Date(this.chartDataArr.resultData[0]?.points[1]?.argument).getTime() - new Date(this.chartDataArr.resultData[0]?.points[0]?.argument).getTime()) / 1000 / 60 / 60;
-          //   console.log("Novyy setTimeFrame", newBaseInterval)
-          //   if (newBaseInterval < this.minBaseInterval) this.minBaseInterval = newBaseInterval;
-          //   this.setTimeFrame(newBaseInterval);
-          // }
         }
 
         this.updateChart()
       }
       this.loading_per = 100;
-      // if ( this.chartDataArr.resultData[0]?.points[0] && this.chartDataArr.resultData[0]?.points[1] )
-      //   console.log("Разница во времени в минутах", (new Date(this.chartDataArr.resultData[0]?.points[1]?.argument).getTime() - new Date(this.chartDataArr.resultData[0]?.points[0]?.argument).getTime()) / 1000 / 60 );
       this.gettingdata()
 
     },
@@ -420,11 +412,20 @@ export default {
 
     this.xAxis = xAxis
 
+    function boostColor(baseColor, factor = 1.2, index = 0) {
+      let color = baseColor;
+      if (index % 2 === 0) {
+        color = am5.Color.lighten(color, 0.1 * index);
+      } else {
+        color = am5.Color.brighten(color, 1 / (1 + 0.1 * index)); // уменьшение яркости
+      }
+      return color;
+    }
     // НАЧАЛО ЦИКЛА SERIES ------------------------------------------------------
     for (let i = 0; i < this.chartDataArr.resultData.length; i++) {
 
       var linecolor = am5.color("#" + this.chartInfo[i].sColor.slice(0, 6))
-
+      const axisColor = boostColor(linecolor, 1.75, i * 1.2); // i — индекс серии
       const parentID = this.params.strends[i]["parentID"];
       const saxes = this.params.saxes.filter(item => item.id === parentID);
 
@@ -441,8 +442,8 @@ export default {
               renderer: yRenderer,
             })
         );
-        //   Теперь надписи
 
+        //   Теперь надписи единиц измерения к шкалам справа
         var label = yAxis.children.push(
             am5.Label.new(root, {
               text: saxes[0].uom ?? "",
@@ -468,11 +469,11 @@ export default {
             valueXField: "argument",
             categoryXField: "category",
             categoryField: "category",
-            connect: false,
+            connect: true,
             minDistance: 0,
             autoGapCount: 1,
-            fill: linecolor,
-            stroke: linecolor,
+            fill: axisColor,
+            stroke: axisColor,
             tooltip: am5.Tooltip.new(root, {
               labelText: "[bold]{name}[/]\n{valueX.formatDate('dd MMM yyyy, HH:mm')}\n{valueY}",
               getFillFromSprite: false,
