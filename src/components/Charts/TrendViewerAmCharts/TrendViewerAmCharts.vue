@@ -457,9 +457,11 @@ export default {
         //
       }
 
+      const uom = saxes[0].uom ?? "";
+
       var series = chart.series.push(
           am5xy.LineSeries.new(root, {
-            name: this.chartInfo[i].name,
+            name: `${this.chartInfo[i].name}${uom ? ", " + uom : ""}`,
             xAxis: xAxis,
             yAxis: yAxis,
             valueYField: "value",
