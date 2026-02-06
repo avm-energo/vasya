@@ -365,8 +365,9 @@ export default {
         am5xy.XYChart.new(root, {
           panX: true,
           panY: true,
-          wheelY: "zoomXY",
-          pinchZoomX: true,
+          wheelX: "panX",
+          wheelY: "panY",
+          pinchZoomX: false,
           "valueAxes": [
             {
               "title": "Axis title"
@@ -374,6 +375,16 @@ export default {
           ],
         })
     );
+
+    chart.set("scrollbarX", am5.Scrollbar.new(root, {
+      orientation: "horizontal",
+      height: 12
+    }));
+
+    chart.set("scrollbarY", am5.Scrollbar.new(root, {
+      orientation: "vertical",
+      width: 12
+    }));
 
     this.chart = chart
 
@@ -440,6 +451,7 @@ export default {
               min: saxes[0].yLowerLimit,
               max: saxes[0].yUpperLimit,
               renderer: yRenderer,
+              strictMinMax: true,
             })
         );
 
@@ -540,7 +552,7 @@ export default {
 
     // КУРСОР
     let cursor = chart.set("cursor", am5xy.XYCursor.new(root, {
-      behavior: "zoomX",
+      behavior: "none",
       snapToSeries: [],
       xAxis: xAxis,
       // yAxis: yAxis
