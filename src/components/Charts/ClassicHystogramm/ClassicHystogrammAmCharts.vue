@@ -28,30 +28,32 @@ export default {
   },
   methods: {
     makeSeries(xAxis, yAxis, name, fieldName, index) {
+      const seriesColor = am5.color('#' + this.params.graphs[index].back.slice(0,6).toLowerCase());
+
       this.series = this.chart.series.push(am5xy.ColumnSeries.new(this.root, {
         name: name,
         xAxis: xAxis,
         yAxis: yAxis,
         valueYField: fieldName,
         categoryXField: "period",
-        fill: am5.color('#' + this.params.graphs[index].back.slice(0,6).toLowerCase()),
+        fill: seriesColor,
       }));
 
-      this.series.columns.template.setAll({
+      const columnsTemplate = this.series.columns.template;
+      columnsTemplate.setAll({
         width: am5.percent(90),
-        tooltipY: 0
+        tooltipY: 0,
+        tooltipText: this.params.graphs.length > 1 ? "{name}, {categoryX} : {valueY}" : "{valueY}",
       });
-      if (this.params.graphs.length > 1) {
-        this.series.columns.template.setAll({
-          tooltipText: "{name}, {categoryX} : {valueY}",
-        });
-        this.legend.data.push(this.series);
-      } else {
-        this.series.columns.template.setAll({
-          tooltipText: "{valueY}",
-        });
-      }
-      this.seriesArr.push(this.series)
+
+      columnsTemplate.events.on("pointerover", function(ev) {
+        ev.target.set("fill", am5.color(0x333333));
+      });
+
+      columnsTemplate.events.on("pointerout", function(ev) {
+        ev.target.set("fill", seriesColor);
+      });
+      this.seriesArr.push(this.series);
     },
     buildChartData(table) {
       const sectors = this.params.sectors.$values ?? this.params.sectors;
@@ -253,7 +255,7 @@ export default {
     })
 
     this.renderValueRows(this.data);
-    
+
     setTimeout(() => {
       setInterval(() => {
         let changedelem= this.$store.getters.elemByName(res)?.properties.table
