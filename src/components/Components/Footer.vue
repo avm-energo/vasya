@@ -332,7 +332,7 @@ export default {
     historymas(newValue) {
       this.updateContainerWidth()
       this.isLoading = false;
-      this.$store.dispatch('AddNotification_action', { text: 'Events uploaded ' + newValue.length, type: 'Success', time: 10000 })
+      this.$store.dispatch('AddNotification_action', { text: 'Events uploaded ' + newValue.length, type: 'Success', time: 3000 })
     },
     selectedId(newValue){
       console.log(newValue)
@@ -498,11 +498,11 @@ export default {
     },
     clickfooter() {
       this.tablestate = !this.tablestate;
-      // if (this.tablestate){
-      //   this.$store.dispatch("changemainheight", 170)
-      // } else {
-      //   this.$store.dispatch("changemainheight", -170)
-      // }
+      if (this.tablestate){
+        this.$store.dispatch("footerIsOpen", true)
+      } else {
+        this.$store.dispatch("footerIsOpen", false)
+      }
       
     },
     clickhistory() {
@@ -737,7 +737,7 @@ tbody{
   background-color: #212121;
 }
 #history_background {
-  z-index: 2;
+  z-index: 999;
   background-color: black;
   display: flex;
   flex-direction: column;

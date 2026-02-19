@@ -109,6 +109,7 @@ export default {
     };
   },
   created() {
+    // this.name == 'Tooltiper#3' ? console.log(this.params) : ''
     this.widgetType = this.params.type == 'neightbours/Navigator' ? 'navigator' : 'tooltiper'
     // // if (this.params.name == 'Navigator#5') {
     //   console.log(this.params.properties)
@@ -136,7 +137,6 @@ export default {
   },
   methods: {
     updateIndo(){
-      this.button.Name = this.params.name
       this.button.value = this.params.properties.text
       // this.button.ForegroundColor = this.params.properties.foreground
       // this.button.BackgroundColor = this.params.properties.background
@@ -165,8 +165,7 @@ export default {
         } else {
           this.$store.dispatch("addElems", this.params);
         }
-      PostTooltiperAck(this.$parent.windowpath, this.button.Name, this.widgetType, ()=>{
-       
+      PostTooltiperAck(this.$parent.windowpath, this.params.name, this.widgetType, ()=>{
       })
     },
     UpdateFlahingState(isButtonEnabled, neightbourState, sFlashBehaviour, isAcknowledged, stateChangingBehaviour){
@@ -238,7 +237,7 @@ export default {
     },
     cssPropsIcon() {
       return {
-        "--marginsideicon": [this.params.properties.leftIcon != 'None' ? this.params.properties.width/10 * this.$parent.multiplier + "px" : ''],
+        "--marginsideicon": [this.params.properties.leftIcon != 'None' ? this.params.properties.width/30 * this.$parent.multiplier + "px" : ''],
         "--widthbutton": [this.params.properties.angle != 0 ? this.params.properties.width * this.$parent.multiplier  : this.params.properties.height * this.$parent.multiplier] * [this.params.properties.scale || 1]/1.2 + "px"
       };
     },
@@ -249,9 +248,11 @@ export default {
       deep: true
     },
     cssProps: {
-      handler(newVal) {
+      handler(newVal) { //for what?
         const width = parseFloat(newVal["--width"])
-        this.isSmall = width < 155
+        const height = parseFloat(newVal["--height"])
+        if (width > height) this.isSmall = width < 20
+        else this.isSmall = height < 20
       },
       immediate: true,
       deep: true

@@ -17,7 +17,6 @@
         <duval v-for="elem in duval" :key="elem.name" :params="elem.properties" :name="elem.name" :ip="this.ip"/>
         <meters v-for="elem in meter" :key="elem.name" :params="elem.properties" :name="elem.name"/>
         <horizontals v-for="elem in horizontal" :key="elem.name" :params="elem.properties" :name="elem.name"/>
-
       </div>
     </div>
   </div>
@@ -151,7 +150,7 @@ export default {
         '--backgroundArea3': parseInt(this.myJson.canvas.backgroundArea.slice(4,6), 16),
         '--backgroundArea4': (parseInt(this.myJson.canvas.backgroundArea.slice(6,8), 16))/255,
         '--fontsize' :  15 + 'px',
-        '--backgroundheight': [this.updatedmainheight ? window.innerHeight - (this.updatedmainheight) - 24 : this.mainheight] + 'px',
+        '--backgroundheight': [this.updatedmainheight ? window.innerHeight - (this.updatedmainheight) - (this.footerIsOpen ? 243 : 24) : this.mainheight] + 'px',
         "--zindex": '',
       };
     },
@@ -160,6 +159,10 @@ export default {
     },
     updatedmainheight(){
       return this.$store.getters.updatedmainheight
+    },
+    footerIsOpen(){
+      // return this.$store.getters.footerState
+      return false
     },
 
   },
@@ -170,6 +173,11 @@ export default {
         if (oldVal) this.updateJson()
       }
     },
+    footerIsOpen:{
+      handler(oldV, newV){
+        this.updateMultiplier(this.adjustMultiplierForWidth(this.calculateMultiplier()));
+      }
+    }
     
     // mainheight(newMainHeight, oldMainHeight) {
     //   console.log('dsdsdsafg')
@@ -270,17 +278,14 @@ export default {
     },
     reportWindowSize() {
       // console.log(this.updatedmainheight)
-      this.updateMultiplier(this.adjustMultiplierForWidth(this.calculateMultiplier()));
+      setTimeout(()=>{
+        this.updateMultiplier(this.adjustMultiplierForWidth(this.calculateMultiplier()));
+      },2)
     },
 
     calculateMultiplier() {
-      if (this.updatedmainheight !== null) {
-        const availableHeight = window.innerHeight - this.updatedmainheight - 24 - 10;
-        return availableHeight / this.myJson.canvas.height;
-      } else {
-        const availableHeight = this.mainheight - 10;
-        return availableHeight / this.myJson.canvas.height;
-      }
+      if (this.updatedmainheight !== null) return (window.innerHeight - this.updatedmainheight - (this.footerIsOpen ? 243 : 24) - 0) / this.myJson.canvas.height
+      else return (this.mainheight - 0) / this.myJson.canvas.height;
     },
 
     adjustMultiplierForWidth(multiplier) {
@@ -292,6 +297,7 @@ export default {
       if (multiplierwindow * this.myJson.canvas.width > window.innerWidth) {
         multiplierwindow =  window.innerWidth / ( this.myJson.canvas.width) - 0.005;
       }
+
       if (multiplier * canvasWidth > maxWidth) {
         return maxWidth / canvasWidth - 0.005;
       }

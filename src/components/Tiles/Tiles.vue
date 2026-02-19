@@ -32,7 +32,7 @@ export default {
     };
   },
   created(){
-    // this.name == 'Number#34' ? console.log(this.params) : ''
+    // this.name == 'Tooltiper#3' ? console.log(this.params) : ''
     // console.log(this.name + this.params.text)
     this.updateIndo()
     if (this.$parent.subscreenname){ 

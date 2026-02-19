@@ -43,6 +43,7 @@ export default createStore({
     afkTimer: null,
     prevMainWindow: null,
     version: null,
+    footerState: false,
   },
   getters: {
     ip: (state) => state.ip,
@@ -69,8 +70,12 @@ export default createStore({
     commandwidgets: (state) => (res) =>
       state.commandwidgetmass.find((s)=> s.namewindow === res)?.widgets,
     GetDefaultIp: (state) => state.ip,
+    footerState: (state) => state.footerState
   },
   mutations:{
+    ChangeFooterState(state, payload){
+      state.footerState = payload
+    },
     AddNotification(state, payload) {
       state.notifications.push({
         id: new Date().getTime(),
@@ -347,7 +352,7 @@ export default createStore({
     },
 
     changemainheight(state, data){
-      state.mainheight = state.mainheight - data
+      state.mainheight = state.mainheight - data 
     },
     updatemainheight(state, data){
       state.updatedmainheight = data
@@ -410,7 +415,7 @@ export default createStore({
     },
 
     async changeMainWindow(state, data){
-      console.log(state.tickmas)
+      // console.log(state.tickmas)
       GetComponentsCurrent(data.properties.path, (stateResponse, dataResponse)=>{
         if (stateResponse) {
           if (state.prevMainWindow != data.properties.path) {
@@ -478,6 +483,9 @@ export default createStore({
     },
     clearcommandwidgets({ commit }, elems) {
       commit("clearcommandwidgets", elems);
+    },
+    footerIsOpen({ commit }, elems) {
+      commit("ChangeFooterState", elems);
     },
     setIsLoading_action({ commit }, payload) { commit('SetIsLoading', payload) },
     setIsAuth_action({ commit }, payload) { commit('SetIsAuth', payload) },

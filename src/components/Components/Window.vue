@@ -64,8 +64,7 @@ export default {
   data() {
     return {
       multiplierwindow: 1,
-      multiplierwindoww : 1,
-      multiplierwindowww : 1,
+      baseMultiplier : 1,
       multiplier: 1,
       resize: [],
       info: null,
@@ -172,22 +171,22 @@ export default {
       this.updateJson()
     },
     mainmultiplier(newVal, oldVal) {
-      this.multiplier = this.multiplierwindow * (this.mainmultiplier[1]/this.multiplierwindowww)
+      this.multiplier = this.multiplierwindow * (this.mainmultiplier[1]/this.baseMultiplier)
     },
   },
 
   methods: {
     reportWindowSize(){
-      this.multiplier = window.innerWidth * window.innerHeight * this.multiplier / (this.width * this.height);
       this.width = window.innerWidth
       this.height = window.innerHeight
-      this.multiplier = this.multiplierwindow * (this.mainmultiplier[1]/this.multiplierwindowww)
+      // this.multiplier = window.innerWidth * window.innerHeight * this.multiplier / (this.width * this.height);
+      // this.multiplier = this.multiplierwindow * (this.mainmultiplier[1]/this.baseMultiplier)
       if (this.typewindow == "modalwindow") {
-        if (this.myJson.canvas.width * this.multiplier + 30 > window.innerWidth) {
-          this.multiplier = this.multiplier / ((this.myJson.canvas.width * this.multiplier)/window.innerWidth)
-        }
+        // if (this.myJson.canvas.width * this.multiplier + 30 > window.innerWidth) {
+        //   this.multiplier = this.multiplier / ((this.myJson.canvas.width * this.multiplier)/window.innerWidth)
+        // }
+        this.calculateMultiplier()
       }
-
     },
     closejson(){
       this.$store.dispatch('closewindow', this.windowname)
@@ -251,11 +250,6 @@ export default {
           this.horizontal.push(res)
         }
       });
-      this.multiplierwindow = 1
-      this.multiplierwindoww = 1
-      this.multiplierwindowww = 1
-      this.multiplier = 1
-      this.multiplierwindow = this.multiplierwindow * this.subscreensize
       if (this.infoFromTooltiper) {
         this.windowname = this.infoFromTooltiper?.path.split('\\').join('')
       } else {
@@ -266,23 +260,24 @@ export default {
       } else {
         this.windowpath = this.namewindow
       }
+      this.width = window.innerWidth
+      this.height = window.innerHeight
+
+      this.calculateMultiplier()
+    },
+    calculateMultiplier(){
+      this.multiplierwindow = this.multiplierwindow * this.subscreensize
       if (this.myJson.screenPercentage){
-        let ss = ((window.innerHeight - 100) * (this.myJson.screenPercentage/100))/this.myJson.canvas.height
-        this.multiplierwindow = this.multiplierwindow * ss
+        this.multiplierwindow = this.multiplierwindow * ((window.innerHeight - 100) * (this.myJson.screenPercentage/100))/this.myJson.canvas.height
       }
-
-      this.width = window.innerWidth;
-      this.height = window.innerHeight;
-
+      
       if (this.myJson.canvas.width * this.multiplierwindow > window.innerWidth) {
-        this.multiplierwindow = window.innerWidth / (this.myJson.canvas.width + 100)
+        this.multiplierwindow = (window.innerWidth) / (this.myJson.canvas.width + 20) 
       }
 
       this.multiplier = this.multiplierwindow
-      this.multiplierwindoww = this.multiplier
-      this.multiplierwindowww = this.mainmultiplier[1]
-
-    }
+      this.baseMultiplier = this.mainmultiplier[1]
+    },
   },
   created() {
     this.updateJson()

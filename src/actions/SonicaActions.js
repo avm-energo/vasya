@@ -36,11 +36,11 @@ export async function PutLogout(callback) {
             callback()
         } else {
             callback()
-            store.dispatch('AddError_action', `${response.status} ${response.statusText}`)
+            // store.dispatch('AddError_action', `${response.status} ${response.statusText}`)
         }
     } catch (error) {
         const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-        store.dispatch('AddError_action', errorMessage);
+        // store.dispatch('AddError_action', errorMessage);
         callback();
     } 
 }
@@ -57,11 +57,11 @@ export async function PutAdminActive(callback) {
             callback(true, json.status)
         } else {
             callback(false)
-            store.dispatch('AddError_action', `${response.status} ${response.statusText}`)
+            // store.dispatch('AddError_action', `${response.status} ${response.statusText}`)
         }
     } catch (error) {
         const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-        store.dispatch('AddError_action', errorMessage);
+        // store.dispatch('AddError_action', errorMessage);
         callback(false);
     } 
 } 
@@ -93,11 +93,11 @@ export async function GetReportGenerator(mas, pathName, callback) {
             callback(true)
         } else {
             callback(false)
-            store.dispatch('AddError_action', `${response.status} ${response.statusText}`)
+            // store.dispatch('AddError_action', `${response.status} ${response.statusText}`)
         }
     } catch (error) {
         const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-        store.dispatch('AddError_action', errorMessage);
+        // store.dispatch('AddError_action', errorMessage);
         callback(false);
     } 
 } 
@@ -118,11 +118,11 @@ export async function PostAcknowledge(id, callback) {
             callback(true, json.status)
         } else {
             callback(false)
-            store.dispatch('AddError_action', `${response.status} ${response.statusText}`)
+            // store.dispatch('AddError_action', `${response.status} ${response.statusText}`)
         }
     } catch (error) {
         const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-        store.dispatch('AddError_action', errorMessage);
+        // store.dispatch('AddError_action', errorMessage);
         callback(false);
     } 
 }
@@ -141,11 +141,11 @@ export async function GetLogOutTime(callback) {
             callback(true, json.userLogOutClient)
         } else {
             callback(false)
-            store.dispatch('AddError_action', `${response.status} ${response.statusText}`)
+            // store.dispatch('AddError_action', `${response.status} ${response.statusText}`)
         }
     } catch (error) {
         const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-        store.dispatch('AddError_action', errorMessage);
+        // store.dispatch('AddError_action', errorMessage);
         callback(false);
     } 
 }
@@ -192,11 +192,11 @@ export async function PostApplyForm(windowPath, widgetName, body, callback) {
             callback(true)
         } else   {
             callback(false)
-            store.dispatch('AddError_action', `${response.status} ${response.statusText}`)
+            // store.dispatch('AddError_action', `${response.status} ${response.statusText}`)
         }
     } catch (error) {
         const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-        store.dispatch('AddError_action', errorMessage);
+        // store.dispatch('AddError_action', errorMessage);
         callback(false);
     } 
 }
@@ -230,7 +230,7 @@ export async function PostApplyCommand(windowPath, widgetName, body, callback) {
         callback (text)
     } catch (error) {
         const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-        store.dispatch('AddError_action', errorMessage);
+        // store.dispatch('AddError_action', errorMessage);
         callback('Истекло время ожидания команды');
     } 
 }
@@ -250,11 +250,11 @@ export async function PostWriteArg(windowPath, widgetName, body, callback) {
             callback(true)
         } else {
             callback(false)
-            store.dispatch('AddError_action', `${response.status} ${response.statusText}`)
+            // store.dispatch('AddError_action', `${response.status} ${response.statusText}`)
         }
     } catch (error) {
         const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-        store.dispatch('AddError_action', errorMessage);
+        // store.dispatch('AddError_action', errorMessage);
         callback('Истекло время ожидания команды');
     } 
 }
@@ -281,7 +281,7 @@ export async function GetComponentsCurrent(name, callback) {
             // store.dispatch('AddError_action', `${response.status} ${name} ${response.statusText}`)
         } else {
            callback(false)
-            store.dispatch('AddError_action', `${response.status} ${response.statusText}`)
+            // store.dispatch('AddError_action', `${response.status} ${response.statusText}`)
         }
     } catch (error) {
         // const errorMessage = error instanceof Error ? error.message : 'Unknown error';
@@ -312,11 +312,11 @@ export async function GetComponentsDelta(name, tick, callback) {
             callback(true, json)
         } else  {
             callback(false, '')
-            store.dispatch('AddError_action', `${response.status} ${response.statusText}`)
+            // store.dispatch('AddError_action', `${response.status} ${response.statusText}`)
         }
     } catch (error) {
         const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-        store.dispatch('AddError_action', errorMessage);
+        // store.dispatch('AddError_action', errorMessage);
         callback('Истекло время ожидания команды');
     }
 }
@@ -325,21 +325,21 @@ export async function PostTooltiperAck(windowPath, widgetName, widgetType, callb
     try {
         const myHeaders = new Headers();
         myHeaders.append("Authorization", `${localStorage.getItem('token')}`);
-        const response = await fetch(`http://${store.getters.GetDefaultIp}/api/nodes/${encript((new TextEncoder()).encode(windowPath))}/widget/${encript((new TextEncoder()).encode(widgetName))}/query/${widgetType + '-acknowledge'}`,
+        const response = await fetch(`http://${store.getters.GetDefaultIp}/api/nodes/${encript((new TextEncoder()).encode(windowPath))}/widget/${encript((new TextEncoder()).encode(widgetName))}/query/${widgetType + '-acknowledge'}/${localStorage.getItem('userId')}`,
             {
                 headers: myHeaders,
                 method: "GET",
             })
-        let json = await response.json()
+        // let json = await response.json()
         if (response.status == 200 || response.status == 204) {
             callback(true)
         } else {
             callback(false)
-            store.dispatch('AddError_action', `${response.status} ${response.statusText}`)
+            // store.dispatch('AddError_action', `${response.status} ${response.statusText}`)
         }
     } catch (error) {
         const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-        store.dispatch('AddError_action', errorMessage);
+        // store.dispatch('AddError_action', errorMessage);
         callback('Истекло время ожидания команды');
     }
 }
@@ -358,11 +358,11 @@ export async function GetHistoryTime(data, callback) {
             callback(true, json)
         } else {
             callback(false, '')
-            store.dispatch('AddError_action', `${response.status} ${response.statusText}`)
+            // store.dispatch('AddError_action', `${response.status} ${response.statusText}`)
         }
     } catch (error) {
         const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-        store.dispatch('AddError_action', errorMessage);
+        // store.dispatch('AddError_action', errorMessage);
         callback('Истекло время ожидания команды');
     }
 }
