@@ -301,7 +301,6 @@ export default {
       const maxWidth = window.innerWidth;
       let multiplierwindow;
       multiplierwindow = ( this.mainheight - 10 ) / (this.myJson.canvas.height);
-      console.log(this.mainheight)
 
       if (multiplierwindow * this.myJson.canvas.width > window.innerWidth) {
         multiplierwindow =  window.innerWidth / ( this.myJson.canvas.width) - 0.005;

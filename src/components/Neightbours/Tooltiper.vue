@@ -164,6 +164,8 @@ export default {
           this.$store.dispatch("changeMainWindow", this.params);
         } else {
           this.$store.dispatch("addElems", this.params);
+          this.$store.dispatch("setIsLoading_action", true);
+
         }
       PostTooltiperAck(this.$parent.windowpath, this.params.name, this.widgetType, ()=>{
       })
@@ -237,7 +239,7 @@ export default {
     },
     cssPropsIcon() {
       return {
-        "--marginsideicon": [this.params.properties.leftIcon != 'None' ? this.params.properties.width/30 * this.$parent.multiplier + "px" : ''],
+        "--marginsideicon": [this.params.properties.leftIcon != 'None' ? this.params.properties.width/60 * this.$parent.multiplier + "px" : ''],
         "--widthbutton": [this.params.properties.angle != 0 ? this.params.properties.width * this.$parent.multiplier  : this.params.properties.height * this.$parent.multiplier] * [this.params.properties.scale || 1]/1.2 + "px"
       };
     },

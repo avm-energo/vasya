@@ -275,6 +275,7 @@ export default createStore({
           console.log('ошибка подключения к ' + name)
         }
       })
+      state.isLoading = false
     },
 
     async addElems(state, data) {
@@ -415,26 +416,28 @@ export default createStore({
     },
 
     async changeMainWindow(state, data){
-      // console.log(state.tickmas)
-      GetComponentsCurrent(data.properties.path, (stateResponse, dataResponse)=>{
-        if (stateResponse) {
-          if (state.prevMainWindow != data.properties.path) {
-            this.dispatch("closewindow", state.tickmas.find((el)=> el.name == state.prevMainWindow.split('\\').join('')).name);
-            // if (state.tickmas.find(res => res.name == data.properties.path.split('\\').join(''))) this.dispatch("closewindow", state.tickmas[state.tickmas.length-1].name); 
+      if (state.tickmas.findIndex((el)=> el.name == data.properties.path.split('\\').join('')) == -1) {
+        state.isLoading = true
+        GetComponentsCurrent(data.properties.path, (stateResponse, dataResponse)=>{
+          if (stateResponse) {
+            if (state.prevMainWindow != data.properties.path) {
+              this.dispatch("closewindow", state.tickmas.find((el)=> el.name == state.prevMainWindow.split('\\').join('')).name);
+              // if (state.tickmas.find(res => res.name == data.properties.path.split('\\').join(''))) this.dispatch("closewindow", state.tickmas[state.tickmas.length-1].name); 
+            }
+            state.prevMainWindow = data.properties.path
+            dataResponse.infoFromTooltiper = data
+            state.main = dataResponse;
+            this.dispatch("updateElems", data.properties.path);
+          } else {
+            state.notifications.push({
+              id: state.notifications.length ? state.notifications.reverse()[0].id + 1 : 0,
+              text:'Ваш уровень доступа недостаточен для выполнения данной операции',
+              type: 'Warning',
+              time: 5000
+            });
           }
-          state.prevMainWindow = data.properties.path
-          dataResponse.infoFromTooltiper = data
-          state.main = dataResponse;
-          this.dispatch("updateElems", data.properties.path);
-        } else {
-          state.notifications.push({
-            id: state.notifications.length ? state.notifications.reverse()[0].id + 1 : 0,
-            text:'Ваш уровень доступа недостаточен для выполнения данной операции',
-            type: 'Warning',
-            time: 5000
-          });
-        }
-      })
+        })
+      }
     },
     changeDefaultMainWindowName(state, name){
       state.prevMainWindow = name
@@ -442,51 +445,21 @@ export default createStore({
 
   },
   actions: {
-    changeDefaultMainWindowName({ commit }, elems) {
-      commit("changeDefaultMainWindowName", elems);
-    },
-    changeMainWindow({ commit }, elems) {
-      commit("changeMainWindow", elems);
-    },
-    fetchElems({ commit }, elems) {
-      commit("fetchElems", elems);
-    },
-    updateElems({ commit }, elems) {
-      commit("updateElems", elems);
-    },
-    addElems({ commit }, elems) {
-      commit("addElems", elems);
-    },
-    addElemsfromStorage({ commit }, elems) {
-      commit("addElemsfromStorage", elems);
-    },
-    closewindow({ commit }, elems) {
-      commit("closewindow", elems);
-    },
-    changemainheight({ commit }, elems) {
-      commit("changemainheight", elems);
-    },
-    updatemainheight({ commit }, elems) {
-      commit("updatemainheight", elems);
-    },
-    innactivereset({ commit }, elems) {
-      commit("innactivereset", elems);
-    },
-    gethistorytime({ commit }, elems) {
-      commit("gethistorytime", elems);
-    },
-    mainmultiplier({ commit }, elems) {
-      commit("mainmultiplier", elems);
-    },
-    addcommandwidgetmass({ commit }, elems) {
-      commit("addcommandwidgetmass", elems);
-    },
-    clearcommandwidgets({ commit }, elems) {
-      commit("clearcommandwidgets", elems);
-    },
-    footerIsOpen({ commit }, elems) {
-      commit("ChangeFooterState", elems);
-    },
+    changeDefaultMainWindowName({ commit }, payload) { commit("changeDefaultMainWindowName", payload); },
+    changeMainWindow({ commit }, payload) { commit("changeMainWindow", payload); },
+    fetchElems({ commit }, payload) { commit("fetchElems", payload); },
+    updateElems({ commit }, payload) { commit("updateElems", payload); },
+    addElems({ commit }, payload) { commit("addElems", payload); },
+    addElemsfromStorage({ commit }, payload) { commit("addElemsfromStorage", payload); },
+    closewindow({ commit }, payload) { commit("closewindow", payload); },
+    changemainheight({ commit }, payload) { commit("changemainheight", payload); },
+    updatemainheight({ commit }, payload) { commit("updatemainheight", payload); },
+    innactivereset({ commit }, payload) { commit("innactivereset", payload); },
+    gethistorytime({ commit }, payload) { commit("gethistorytime", payload); },
+    mainmultiplier({ commit }, payload) { commit("mainmultiplier", payload); },
+    addcommandwidgetmass({ commit }, payload) { commit("addcommandwidgetmass", payload); },
+    clearcommandwidgets({ commit }, payload) { commit("clearcommandwidgets", payload); },
+    footerIsOpen({ commit }, payload) { commit("ChangeFooterState", payload); },
     setIsLoading_action({ commit }, payload) { commit('SetIsLoading', payload) },
     setIsAuth_action({ commit }, payload) { commit('SetIsAuth', payload) },
     setRole_action({ commit }, payload) { commit('SetRole', payload) },
