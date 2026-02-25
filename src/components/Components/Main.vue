@@ -92,6 +92,8 @@ export default {
       windowname: null,
       namewindow: null,
       windowpath: null,
+      lastWidth: window.innerWidth,
+      lastHeight: window.innerHeight
     };
   },
 
@@ -176,6 +178,12 @@ export default {
     footerIsOpen:{
       handler(oldV, newV){
         this.updateMultiplier(this.adjustMultiplierForWidth(this.calculateMultiplier()));
+      }
+    },
+    updatedmainheight:{
+      immediate: true,
+      handler(newVal, oldVal){
+        this.reportWindowSize(newVal)
       }
     }
     
@@ -266,7 +274,7 @@ export default {
         }
       });
 
-      this.updateMultiplier(this.adjustMultiplierForWidth(this.calculateMultiplier()));
+      this.updateMultiplier(this.adjustMultiplierForWidth(this.calculateMultiplier(this.updatedmainheight)));
 
       this.namewindow = this.myJson.path
       this.windowname = this.namewindow.split('\\').join('')
@@ -276,15 +284,13 @@ export default {
         this.windowpath = this.namewindow
       }
     },
-    reportWindowSize() {
+    reportWindowSize(updatedmainheight = this.updatedmainheight) {
       // console.log(this.updatedmainheight)
-      setTimeout(()=>{
-        this.updateMultiplier(this.adjustMultiplierForWidth(this.calculateMultiplier()));
-      },2)
+      this.updateMultiplier(this.adjustMultiplierForWidth(this.calculateMultiplier(updatedmainheight)));
     },
 
-    calculateMultiplier() {
-      if (this.updatedmainheight !== null) return (window.innerHeight - this.updatedmainheight - (this.footerIsOpen ? 243 : 24) - 0) / this.myJson.canvas.height
+    calculateMultiplier(updatedmainheight) {
+      if (updatedmainheight !== null) return (window.innerHeight - updatedmainheight - (this.footerIsOpen ? 243 : 24) - 0) / this.myJson.canvas.height
       else return (this.mainheight - 0) / this.myJson.canvas.height;
     },
 
@@ -312,7 +318,7 @@ export default {
 
     closejson(){
       this.$store.dispatch('closewindow', this.windowname)
-      window.removeEventListener('resize', this.reportWindowSize)
+      // window.removeEventListener('resize', this.reportWindowSize)
     },
     openModal(){
       // let mas = JSON.parse(JSON.stringify(this.myJson.myBindings));
@@ -338,7 +344,19 @@ export default {
     reportCancel(){
       this.reportMas = []
       this.showModal = false
-    }
+    },
+    handleResize() {
+      // Теперь внутри handleResize this указывает на компонент
+      const newWidth = window.innerWidth;
+      const newHeight = window.innerHeight;
+
+      if (newWidth === this.lastWidth && newHeight !== this.lastHeight) {
+        this.reportWindowSize()
+      }
+
+      this.lastWidth = newWidth;
+      this.lastHeight = newHeight;
+    },
   },
 
   created() {
@@ -346,7 +364,9 @@ export default {
       this.updateJson()
     }, 20);
     if (this.myJson.name != 'ReportGenerator') {
-      window.addEventListener('resize', this.reportWindowSize)
+      // window.addEventListener('resize', ()=>{
+      //    this.reportWindowSize()
+      // })
       this.width = window.innerWidth - 2
       this.height = window.innerHeight ;
     } else {
@@ -358,6 +378,12 @@ export default {
     // Этот метод вызывается после перерендера компонента
     // console.log('Компонент Main был перерендерен');
   },
+  mounted(){
+    window.addEventListener('resize', this.handleResize);
+  },
+  unmounted(){
+    window.removeEventListener('resize', this.handleResize);
+  }
 };
 </script>
 
