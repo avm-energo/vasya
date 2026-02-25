@@ -352,7 +352,7 @@ export default createStore({
     },
 
     changemainheight(state, data){
-      state.mainheight = state.mainheight - data 
+      state.mainheight = state.mainheight - data
     },
     updatemainheight(state, data){
       state.updatedmainheight = data

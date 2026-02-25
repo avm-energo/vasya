@@ -168,7 +168,7 @@ export default {
 
   watch: {
     myJson(){
-      this.updateJson()
+      // this.updateJson()
     },
     mainmultiplier(newVal, oldVal) {
       this.multiplier = this.multiplierwindow * (this.mainmultiplier[1]/this.baseMultiplier)
@@ -268,13 +268,19 @@ export default {
     calculateMultiplier(){
       this.multiplierwindow = this.multiplierwindow * this.subscreensize
       if (this.myJson.screenPercentage){
-        this.multiplierwindow = this.multiplierwindow * ((window.innerHeight - 100) * (this.myJson.screenPercentage/100))/this.myJson.canvas.height
+        console.log(this.myJson.screenPercentage)
+        // this.multiplierwindow = this.multiplierwindow * ((window.innerHeight - 20) * (this.myJson.screenPercentage/100))/this.myJson.canvas.height
+        this.multiplierwindow = ((window.innerWidth - 20) * (this.myJson.screenPercentage/100))/this.myJson.canvas.width
       }
-      
       if (this.myJson.canvas.width * this.multiplierwindow > window.innerWidth) {
-        this.multiplierwindow = (window.innerWidth) / (this.myJson.canvas.width + 20) 
+        this.multiplierwindow = (window.innerWidth) / (this.myJson.canvas.width*1.1) 
+        console.log('tut dd')
+      } else if (this.myJson.canvas.height * this.multiplierwindow + 40 > window.innerHeight ) {
+        this.multiplierwindow = (window.innerHeight) / (this.myJson.canvas.height*1.1)
+                console.log('tut')
       }
-
+      console.log(this.myJson.canvas.height * this.multiplierwindow)
+      console.log(window.innerHeight)
       this.multiplier = this.multiplierwindow
       this.baseMultiplier = this.mainmultiplier[1]
     },

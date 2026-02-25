@@ -93,7 +93,8 @@ export default {
       namewindow: null,
       windowpath: null,
       lastWidth: window.innerWidth,
-      lastHeight: window.innerHeight
+      lastHeight: window.innerHeight,
+      updatedmainheight: null,
     };
   },
 
@@ -159,9 +160,6 @@ export default {
     mainheight(){
       return this.$store.getters.mainheight
     },
-    updatedmainheight(){
-      return this.$store.getters.updatedmainheight
-    },
     footerIsOpen(){
       // return this.$store.getters.footerState
       return false
@@ -169,6 +167,13 @@ export default {
 
   },
   watch:{
+    "$store.getters.updatedmainheight":{
+      immediate: true,
+      handler(newVal){
+        this.updatedmainheight = newVal
+        this.reportWindowSize()
+      }
+    },
     myJson:{
       immediate: true,
       handler(newVal, oldVal){
@@ -180,13 +185,12 @@ export default {
         this.updateMultiplier(this.adjustMultiplierForWidth(this.calculateMultiplier()));
       }
     },
-    updatedmainheight:{
+    mainheight:{
       immediate: true,
-      handler(newVal, oldVal){
-        this.reportWindowSize(newVal)
+      handler(newVal){
+        this.reportWindowSize()
       }
     }
-    
     // mainheight(newMainHeight, oldMainHeight) {
     //   console.log('dsdsdsafg')
     //   let multiplierwindow;
@@ -274,7 +278,7 @@ export default {
         }
       });
 
-      this.updateMultiplier(this.adjustMultiplierForWidth(this.calculateMultiplier(this.updatedmainheight)));
+      this.reportWindowSize()
 
       this.namewindow = this.myJson.path
       this.windowname = this.namewindow.split('\\').join('')
@@ -284,21 +288,20 @@ export default {
         this.windowpath = this.namewindow
       }
     },
-    reportWindowSize(updatedmainheight = this.updatedmainheight) {
+    reportWindowSize() {
       // console.log(this.updatedmainheight)
-      this.updateMultiplier(this.adjustMultiplierForWidth(this.calculateMultiplier(updatedmainheight)));
+      this.updateMultiplier(this.adjustMultiplierForWidth(this.calculateMultiplier()));
     },
-
-    calculateMultiplier(updatedmainheight) {
-      if (updatedmainheight !== null) return (window.innerHeight - updatedmainheight - (this.footerIsOpen ? 243 : 24) - 0) / this.myJson.canvas.height
+    calculateMultiplier() {
+      if (this.updatedmainheight !== null) return (window.innerHeight - this.updatedmainheight - (this.footerIsOpen ? 243 : 24) - 0) / this.myJson.canvas.height
       else return (this.mainheight - 0) / this.myJson.canvas.height;
     },
-
     adjustMultiplierForWidth(multiplier) {
       const canvasWidth = this.myJson.canvas.width;
       const maxWidth = window.innerWidth;
       let multiplierwindow;
       multiplierwindow = ( this.mainheight - 10 ) / (this.myJson.canvas.height);
+      console.log(this.mainheight)
 
       if (multiplierwindow * this.myJson.canvas.width > window.innerWidth) {
         multiplierwindow =  window.innerWidth / ( this.myJson.canvas.width) - 0.005;
@@ -318,7 +321,6 @@ export default {
 
     closejson(){
       this.$store.dispatch('closewindow', this.windowname)
-      // window.removeEventListener('resize', this.reportWindowSize)
     },
     openModal(){
       // let mas = JSON.parse(JSON.stringify(this.myJson.myBindings));
@@ -346,7 +348,6 @@ export default {
       this.showModal = false
     },
     handleResize() {
-      // Теперь внутри handleResize this указывает на компонент
       const newWidth = window.innerWidth;
       const newHeight = window.innerHeight;
 
@@ -375,8 +376,6 @@ export default {
     }
   },
   updated() {
-    // Этот метод вызывается после перерендера компонента
-    // console.log('Компонент Main был перерендерен');
   },
   mounted(){
     window.addEventListener('resize', this.handleResize);
