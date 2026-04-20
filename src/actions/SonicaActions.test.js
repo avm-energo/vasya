@@ -289,10 +289,15 @@ describe('api/nodes/footer/query/acknowledge', () => {
       expectedUrl,
       expect.objectContaining({
         method: 'POST',
-        headers: { Authorization: 'Bearer-ABC123' },
+        headers: expect.any(Headers),
         body: `[${testId}]`
       })
     );
+
+    const call = mockFetch.mock.calls[0];
+    const headers = call[1].headers;
+    expect(headers.get('Content-Type')).toBe('application/json');
+    expect(headers.get('Authorization')).toBe('Bearer-ABC123' );
 
     expect(callback).toHaveBeenCalledWith(true, 'acknowledged');
     expect(callback).toHaveBeenCalledTimes(1);
