@@ -165,7 +165,6 @@ export default {
         } else {
           this.$store.dispatch("addElems", this.params);
           this.$store.dispatch("setIsLoading_action", true);
-
         }
       PostTooltiperAck(this.$parent.windowpath, this.params.name, this.widgetType, ()=>{
       })
@@ -182,7 +181,7 @@ export default {
         activeStateUpdated = true
       } else if (neightbourState == 'Yellow') {
         this.flashingColor = 'Yellow'
-        this.button.ForegroundColor = 'White'
+        this.button.ForegroundColor = 'Black'
         activeStateUpdated = true
       } else if (neightbourState == 'Blue' && stateChangingBehaviour == 1) {
         this.flashingColor = '#257CF9'

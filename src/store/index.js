@@ -296,6 +296,7 @@ export default createStore({
               type: 'Warning',
               time: 5000
             });
+            this.dispatch("setIsLoading_action", false);
           }
         })
 

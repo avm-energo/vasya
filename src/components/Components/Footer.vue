@@ -576,7 +576,7 @@ export default {
   min-width: 130px;
 }
 #footer {
-  z-index: 200;
+  z-index: 20;
   position: absolute;
   left: 0;
   bottom: 0;
@@ -737,7 +737,7 @@ tbody{
   background-color: #212121;
 }
 #history_background {
-  z-index: 999;
+  z-index: 30;
   background-color: black;
   display: flex;
   flex-direction: column;

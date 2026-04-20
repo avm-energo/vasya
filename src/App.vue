@@ -206,7 +206,7 @@ export default {
   position: absolute;
   top: 20px;
   right: 20px;
-  z-index: 4;
+  z-index: 40;
 }
 
 .notification_list {
@@ -216,7 +216,7 @@ export default {
   transform: translate(-50%, -30px);
   bottom: 0;
   width: 45%;
-  z-index: 4;
+  z-index: 40;
 }
 
 .warnings_list {
@@ -227,7 +227,7 @@ export default {
   transform: translate(-50%, 1%);
   top: 0;
   width: 45%;
-  z-index: 4;
+  z-index: 40;
 }
 .list-warnings-enter,
 .list-warnings-leave-to{

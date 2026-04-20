@@ -104,12 +104,12 @@ export async function GetReportGenerator(mas, pathName, callback) {
 
 export async function PostAcknowledge(id, callback) {
     try {
-        // const myHeaders = new Headers();
-        // myHeaders.append("Content-Type", "application/json");
-        // myHeaders.append("Authorization", `${localStorage.getItem('token')}`);
+        const myHeaders = new Headers();
+        myHeaders.append("Content-Type", "application/json");
+        myHeaders.append("Authorization", `${localStorage.getItem('token')}`);
         const response = await fetch(`http://${store.getters.GetDefaultIp}/api/nodes/footer/widget/6MXB7RKGFTT5RNKE/query/acknowledge`,
         {
-            headers: { Authorization: `${localStorage.getItem('token')}` },
+            headers: myHeaders,
             method: "POST",
             body: `[${id}]`,
         })
