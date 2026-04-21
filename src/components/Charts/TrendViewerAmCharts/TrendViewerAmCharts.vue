@@ -351,8 +351,10 @@ export default {
     this.root = root;
 
     // Задаем интервал для загрузки данных
-    this.starttime = new Date(Date.now() - 86400000 * 7);
+    this.starttime = new Date(Date.now() - 86400000 * 1);
     this.endtime = new Date(Date.now())
+    console.log(this.starttime, " = Start time ");
+    console.log(this.endtime, " = End time ");
 
     root.setThemes([
       am5themes_Animated.new(root)
@@ -390,6 +392,7 @@ export default {
 
     console.log("Разница временного интервала в часах = ", (this.endtime - this.starttime) / (1000 * 60 * 60));
     const intervals = this.divideTimeInterval(this.starttime, this.endtime);
+    console.log(intervals, ' = intervals');
 
     this.getChartsInfo()
 
