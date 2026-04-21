@@ -303,7 +303,12 @@ export default {
 
       this.loading_per = 0;
       console.log("Разница временного интервала в часах = ", (this.endtime - this.starttime) / (1000 * 60 * 60));
-      const density = Math.ceil((this.endtime - this.starttime) / (1000 * 60 * 60 * 600));
+      let density = 1;
+      if (this.baseIntervalMeasurement === "hour") {
+        density = Math.ceil((this.endtime - this.starttime) / (1000 * 60 * 60 * 500));
+      } else if (this.baseIntervalMeasurement === "minute") {
+        density = Math.ceil((this.endtime - this.starttime) / (1000 * 60 * 500));
+      }
       const intervals = this.divideTimeInterval(this.starttime, this.endtime);
       console.log(this.starttime, " = Start time ");
       console.log(intervals.length, " = Число интервалов");
@@ -483,6 +488,16 @@ export default {
       }
       console.log("Интервал данных при инцициализации в минутах", newBaseInterval)
     }
+
+    let density = 1;
+    if (this.baseIntervalMeasurement === "hour") {
+      density = Math.ceil((this.endtime - this.starttime) / (1000 * 60 * 60 * 500));
+    } else if (this.baseIntervalMeasurement === "minute") {
+      density = Math.ceil((this.endtime - this.starttime) / (1000 * 60 * 500));
+    }
+
+    this.chartDataArr = await getTrendsData(intervals[0].start, intervals[0].end, density, this.$parent.$parent.windowpath, this.name, this.controller);
+
 
     let xAxis = chart.xAxes.push(am5xy.DateAxis.new(root, {
       minZoomCount: 3,
