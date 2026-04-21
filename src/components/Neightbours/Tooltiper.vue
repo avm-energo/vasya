@@ -93,7 +93,7 @@ export default {
   data() {
     return {
       button: {
-        Name: null,
+        Name: this.params.name,
         value: this.params.properties.text,
         ForegroundColor: this.params.properties.foreground,
         BackgroundColor: this.params.properties.background,
@@ -109,6 +109,7 @@ export default {
     };
   },
   created() {
+    console.log(this.params)
     // this.name == 'Tooltiper#3' ? console.log(this.params) : ''
     this.widgetType = this.params.type == 'neightbours/Navigator' ? 'navigator' : 'tooltiper'
     // // if (this.params.name == 'Navigator#5') {
@@ -118,16 +119,17 @@ export default {
     if (this.params.properties.text == 'Главный экран' && this.tooltiperFromHeader) this.$store.dispatch("changeDefaultMainWindowName", this.params.properties.path);
     if (this.$parent.subscreenname){ 
       this.button.Name += '/' + this.$parent.subscreenname
-    }
+    } else {}
     const today = new Date();
     var currentDateMilliseconds = today.getMilliseconds();
     const res = {'namewidget': this.button.Name, 'namewindow': this.$parent.windowname}
+    console.log(res)
     setTimeout(() => {
       setInterval(() => {
         let changedelem = this.$store.getters.elemByName(res)?.properties
         // console.log(this.$store.state.tickmas)
         if (changedelem) {
-          // console.log(changedelem)
+          console.log(changedelem)
           this.UpdateFlahingState(changedelem.isButtonEnabled, changedelem.neightbourState, changedelem.sFlashBehaviour, changedelem.isAcknowledged, changedelem.stateChangingBehaviour)
           // if (changedelem.neightbourState) this.button.neightbourState = changedelem.neightbourState
         }
@@ -216,8 +218,8 @@ export default {
         '--backgroundFlashingColorFirst': '#' + this.params.properties.background,
         '--backgroundFlashingColorSecond': this.flashingColor,
         "--backgroundColorHover": '#16466C',
-        "--colorYellow": [this.button.neightbourState == "Yellow" ? "Black": this.button.ForegroundColor,],
-        "--color": '#' + this.button.ForegroundColor,
+        "--colorYellow": [this.button.neightbourState == "Yellow" ? "White": this.button.ForegroundColor,],
+        "--color": [/^#?([A-Fa-f0-9]{3}|[A-Fa-f0-9]{4}|[A-Fa-f0-9]{6}|[A-Fa-f0-9]{8})$/.test(this.button.ForegroundColor) ? '#' : '' ] + this.button.ForegroundColor,
         "--borderThickness": [this.params.properties.windowBorderBrush ? this.$parent.multiplier + 'px' : '0px'],
         "--borderBrush": this.params.properties.borderBrush ? this.params.properties.borderBrush : 'transparent',
         "--flexdir":  [this.params.properties.angle != 0 ? 'column' : 'row'],
@@ -329,8 +331,8 @@ p {
 }
 
 .button:hover {
-  background-color: var(--backgroundColorHover) !important;
-  /* filter: brightness(80%); */
+  /* background-color: var(--backgroundColorHover) !important; */
+  filter: brightness(80%);
   /* background-blend-mode: da; */
 }
 .button:active {
@@ -341,11 +343,11 @@ p {
 @keyframes glowing {
   0%,50% {
     background-color: var(--backgroundFlashingColorFirst);
-    color:var(--color);
+    color:var(--colorYellow);
   }
   50.01%,100% {
     background-color: var(--backgroundFlashingColorSecond);
-    color: var(--colorYellow);
+    color: var(--color);
   }
 }
 .flash {
