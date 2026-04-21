@@ -217,7 +217,7 @@ export default {
         '--backgroundFlashingColorSecond': this.flashingColor,
         "--backgroundColorHover": '#16466C',
         "--colorYellow": [this.button.neightbourState == "Yellow" ? "Black": this.button.ForegroundColor,],
-        "--color": this.button.ForegroundColor,
+        "--color": '#' + this.button.ForegroundColor,
         "--borderThickness": [this.params.properties.windowBorderBrush ? this.$parent.multiplier + 'px' : '0px'],
         "--borderBrush": this.params.properties.borderBrush ? this.params.properties.borderBrush : 'transparent',
         "--flexdir":  [this.params.properties.angle != 0 ? 'column' : 'row'],
