@@ -90,9 +90,12 @@
             </g>
             </svg>
           </exportexcel>
-          <!--          <button @click="createWorkers(4)">4 Воркера</button>-->
         </div>
-        <!-- <button @click="some()">dsa</button> -->
+        <div class ="button" @click="toggleFullscreen()" :class="[!this.viewlive ? 'button_hover': '']" :title="[!this.viewlive ? 'На весь экран': '']">
+          <svg width="90%" height="100%" viewBox="0 0 52 52" xmlns="http://www.w3.org/2000/svg">
+            <path :fill="[!this.viewlive ? '#FFFFFF' : '#696969']" d="M6.5 45.5V34.6667H10.8333V41.1667H17.3333V45.5H6.5ZM34.6667 45.5V41.1667H41.1667V34.6667H45.5V45.5H34.6667ZM6.5 17.3333V6.5H17.3333V10.8333H10.8333V17.3333H6.5ZM41.1667 17.3333V10.8333H34.6667V6.5H45.5V17.3333H41.1667Z" />
+          </svg>
+        </div>
       </div>
       <div style="flex-grow: 6" ></div>
     </div>
@@ -162,6 +165,7 @@ export default {
       loading_per: 0,
       yAxisVisibleSeriesCount: new Map(),
       baseIntervalMeasurement: "hour",
+      isFullscreen: false,
     }
   },
   components: {
@@ -343,7 +347,19 @@ export default {
 
     handleKeyUp(e) {
       this.chart.set("wheelY", "zoomX"); // сброс к дефолту
-    }
+    },
+    toggleFullscreen() {
+      console.log("toggleFullscreen");
+      const el = this.$refs.chartdiv; // весь виджет
+
+      if (!this.isFullscreen) {
+        if (el.requestFullscreen) el.requestFullscreen();
+        else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
+        else if (el.msRequestFullscreen) el.msRequestFullscreen();
+      } else {
+        if (document.exitFullscreen) document.exitFullscreen();
+      }
+    },
   },
 
   async mounted() {
@@ -378,15 +394,73 @@ export default {
         })
     );
 
-    chart.set("scrollbarX", am5.Scrollbar.new(root, {
+    const scrollbarX = am5.Scrollbar.new(root, {
       orientation: "horizontal",
       height: 12
-    }));
+    });
 
-    chart.set("scrollbarY", am5.Scrollbar.new(root, {
+    const scrollbarY = am5.Scrollbar.new(root, {
       orientation: "vertical",
       width: 12
-    }));
+    });
+
+    const sbTooltipX = am5.Tooltip.new(root, {
+      getFillFromSprite: false,
+      getStrokeFromSprite: false,
+      autoTextColor: false
+    });
+
+    sbTooltipX.get("background").setAll({
+      fill: am5.color(0x333333),
+      fillOpacity: 0.95,
+      stroke: am5.color(0xffffff),
+      strokeOpacity: 0.2
+    });
+
+    sbTooltipX.label.setAll({
+      fill: am5.color(0xffffff),
+      fontSize: 12
+    });
+
+    const sbTooltipY = am5.Tooltip.new(root, {
+      getFillFromSprite: false,
+      getStrokeFromSprite: false,
+      autoTextColor: false
+    });
+
+    sbTooltipY.get("background").setAll({
+      fill: am5.color(0x333333),
+      fillOpacity: 0.95,
+      stroke: am5.color(0xffffff),
+      strokeOpacity: 0.2
+    });
+
+    sbTooltipY.label.setAll({
+      fill: am5.color(0xffffff),
+      fontSize: 12
+    });
+
+    scrollbarX.set("tooltip", sbTooltipX);
+    scrollbarY.set("tooltip", sbTooltipY);
+
+    scrollbarX.startGrip.set("tooltipText", "Изменение левой границы по оси X");
+    scrollbarX.endGrip.set("tooltipText", "Изменение правой границы по оси X");
+
+    scrollbarY.startGrip.set("tooltipText", "Изменение нижней границы по оси Y");
+    scrollbarY.endGrip.set("tooltipText", "Изменение верхней границы по оси Y");
+
+    scrollbarX.thumb.setAll({
+      tooltipText: "Прокрутка трендов по оси X",
+      interactive: true
+    });
+
+    scrollbarY.thumb.setAll({
+      tooltipText: "Прокрутка трендов по оси Y",
+      interactive: true
+    });
+
+    chart.set("scrollbarX", scrollbarX);
+    chart.set("scrollbarY", scrollbarY);
 
     this.chart = chart
 
