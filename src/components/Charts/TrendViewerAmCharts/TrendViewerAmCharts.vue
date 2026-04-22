@@ -24,7 +24,7 @@
             <path d="M18 9L13 13.9999L10.5 11.4998L7 14.9998" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
         </div>
-        <div class="box_title_update_icon" @click="[!this.viewlive ? updateChartSeries() : '']" :class="[!this.viewlive ? 'button_hover': '']" :title="[!this.viewlive ? 'Обновить данные': '']">
+        <div class="box_title_update_icon" @click="[!this.viewlive ? updateChartSeriesByTimeInterval() : '']" :class="[!this.viewlive ? 'button_hover': '']" :title="[!this.viewlive ? 'Обновить данные': '']">
           <svg width="80%" height="100%" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M7.83334 13.6C8.25804 14.4031 8.97945 15.0676 9.88888 15.4934C10.7983 15.9191 11.8465 16.083 12.8755 15.9604C13.9045 15.8378 14.8586 15.4353 15.594 14.8136L17 13.7451M17 16V13.6H14.5M16.1667 10.4C15.742 9.59687 15.0206 8.93238 14.1111 8.50664C13.2017 8.08091 12.1535 7.91699 11.1245 8.03959C10.0955 8.16219 9.1414 8.56467 8.40599 9.18637L7 10.2549M7 8V10.4H9.5M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z" :stroke="[!this.viewlive ? '#FFFFFF' : '#696969']" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
@@ -100,12 +100,72 @@
       <div style="flex-grow: 6" ></div>
     </div>
     <div id="box_chart">
-<!--      <div id="box_timeframe" @click="changeTimeframe">-->
-<!--        <span title="Невозможно уменьшить масштаб данного графика" id="timeframe_1" class="timeframe">Мин</span>-->
-<!--        <span title="Невозможно уменьшить масштаб данного графика" id="timeframe_2" class="timeframe">10 Мин</span>-->
-<!--        <span title="Невозможно уменьшить масштаб данного графика" id="timeframe_3" class="timeframe">30 Мин</span>-->
-<!--        <span id="timeframe_4" class="timeframe">Час</span>-->
-<!--      </div>-->
+      <div v-if="baseIntervalMeasurement === 'minute'" id="box_timeframe">
+        <span>Краткосрочные тренды:</span>
+<!--        <span-->
+<!--            @click="updateChartSeriesByTimeFrame(1)"-->
+<!--            :title="this.density === 1 ? 'Интервал установлен в 1 минуту' : 'Установить интервал между точками в 1 минуту'"-->
+<!--            :class="this.density === 1 ? 'timeframe_active' : 'timeframe'">-->
+<!--          1m-->
+<!--        </span>-->
+        <span
+            @click="updateChartSeriesByTimeFrame(5)"
+            :title="this.density === 5 ? 'Интервал установлен в 5 минут' : 'Установить интервал между точками в 5 минут'"
+            :class="this.density === 5 ? 'timeframe_active' : 'timeframe'">
+          5m
+        </span>
+        <span
+            @click="updateChartSeriesByTimeFrame(15)"
+            :title="this.density === 15 ? 'Интервал установлен в 15 минут' : 'Установить интервал между точками в 15 минут'"
+            :class="this.density === 15 ? 'timeframe_active' : 'timeframe'">
+          15m
+        </span>
+        <span
+            @click="updateChartSeriesByTimeFrame(30)"
+            :title="this.density === 30 ? 'Интервал установлен в 30 минут' : 'Установить интервал между точками в 30 минут'"
+            :class="this.density === 30 ? 'timeframe_active' : 'timeframe'">
+          30m
+        </span>
+        <span
+            @click="updateChartSeriesByTimeFrame(60)"
+            :title="this.density === 60 ? 'Интервал установлен в 60 минут' : 'Установить интервал между точками в 60 минут'"
+            :class="this.density === 60 ? 'timeframe_active' : 'timeframe'">
+          1H
+        </span>
+      </div>
+      <div v-else-if="baseIntervalMeasurement === 'hour'" id="box_timeframe">
+        <span>Долгосрочные тренды:</span>
+        <span
+            @click="updateChartSeriesByTimeFrame(1)"
+            :title="this.density === 1 ? 'Интервал установлен в 1 час' : 'Установить интервал между точками в 1 час'"
+            :class="this.density === 1 ? 'timeframe_active' : 'timeframe'">
+          1H
+        </span>
+        <span
+            @click="updateChartSeriesByTimeFrame(4)"
+            :title="this.density === 4 ? 'Интервал установлен в 4 часа' : 'Установить интервал между точками в 4 часа'"
+            :class="this.density === 4 ? 'timeframe_active' : 'timeframe'">
+          4H
+        </span>
+        <span
+            @click="updateChartSeriesByTimeFrame(12)"
+            :title="this.density === 12 ? 'Интервал установлен в 12 часов' : 'Установить интервал между точками в 12 часов'"
+            :class="this.density === 12 ? 'timeframe_active' : 'timeframe'">
+          12H
+        </span>
+        <span
+            @click="updateChartSeriesByTimeFrame(24)"
+            :title="this.density === 24 ? 'Интервал установлен в 1 день' : 'Установить интервал между точками в 1 день'"
+            :class="this.density === 24 ? 'timeframe_active' : 'timeframe'">
+          1D
+        </span>
+<!--        <span-->
+<!--            @click="updateChartSeriesByTimeFrame(168)"-->
+<!--            :title="this.density === 168 ? 'Интервал установлен в 1 неделю' : 'Установить интервал между точками в 1 неделю'"-->
+<!--            :class="this.density === 168 ? 'timeframe_active' : 'timeframe'">-->
+<!--          1W-->
+<!--        </span>-->
+      </div>
       <div id="chartdiv" ref="chartdiv"></div>
     </div>
   </div>
@@ -153,7 +213,6 @@ export default {
       viewlive: false,
       legendbool: true,
       legend: null,
-      // path: this.$parent.$parent.windowpath,
       seriesArr: null,
       starttimeexcel: null,
       endtimeexcel: null,
@@ -161,10 +220,10 @@ export default {
       interval: null,
       locale: ru,
       saxes: [],
-      timeFrame: 1,
       loading_per: 0,
       yAxisVisibleSeriesCount: new Map(),
       baseIntervalMeasurement: "hour",
+      density: 1,
       isFullscreen: false,
     }
   },
@@ -176,10 +235,7 @@ export default {
   created() {
     const controller = new AbortController();
     this.controller = controller
-    // this.interval = this.params["trends-interval"]
-    this.interval = 60000 * this.timeFrame;
-    // document.tooltip({show:null})
-    // console.log(this.params)
+    this.interval = 1000;
   },
   methods: {
 
@@ -295,29 +351,27 @@ export default {
       }
       return dataArr
     },
-
-    async updateChartSeries() {
-      console.log("Происходит Update CHart Series")
+    async updateChartSeriesByTimeFrame (newDensity) {
+      console.log("Происходит Update Chart Series By Time Frame");
       // Indicator
       this.gettingdata()
-
       this.loading_per = 0;
-      console.log("Разница временного интервала в часах = ", (this.endtime - this.starttime) / (1000 * 60 * 60));
-      let density = 1;
+
+      // Задаем интервал для загрузки данных
       if (this.baseIntervalMeasurement === "hour") {
-        density = Math.ceil((this.endtime - this.starttime) / (1000 * 60 * 60 * 500));
+        this.starttime = new Date(Date.now() - (1000 * 60 * 60 * 500 * newDensity));
       } else if (this.baseIntervalMeasurement === "minute") {
-        density = Math.ceil((this.endtime - this.starttime) / (1000 * 60 * 500));
+        this.starttime = new Date(Date.now() - (1000 * 60 * 500 * newDensity));
       }
+
+      this.endtime = new Date(Date.now());
+      this.density = newDensity;
       const intervals = this.divideTimeInterval(this.starttime, this.endtime);
-      console.log(this.starttime, " = Start time ");
-      console.log(intervals.length, " = Число интервалов");
-      console.log(density, " = Density");
       this.clearChart();
 
       for (let j = 0; j < intervals.length; j++) {
         this.loading_per = j / intervals.length * 100;
-        const result = await getTrendsData(intervals[j].start, intervals[j].end, density, this.$parent.$parent.windowpath, this.name, this.controller);
+        const result = await getTrendsData(intervals[j].start, intervals[j].end, this.density, this.$parent.$parent.windowpath, this.name, this.controller);
         if (result !== undefined) {
           if (j === 0) this.chartDataArr = result;
           else {
@@ -328,7 +382,43 @@ export default {
         } else break;
 
         if (j === 0 ) {
-          this.setTimeFrame(density);
+          this.setTimeFrame(this.density);
+        }
+
+        this.updateChart()
+      }
+      this.loading_per = 100;
+      this.gettingdata()
+    },
+    async updateChartSeriesByTimeInterval() {
+      console.log("Происходит Update Chart Series by Time Interval")
+      // Indicator
+      this.gettingdata()
+      this.loading_per = 0;
+
+      // let density = 1;
+      if (this.baseIntervalMeasurement === "hour") {
+        this.density = this.normalizeHourTimeFrame(Math.ceil((this.endtime - this.starttime) / (1000 * 60 * 60 * 500)));
+      } else if (this.baseIntervalMeasurement === "minute") {
+        this.density = this.normalizeMinuteTimeFrame(Math.ceil((this.endtime - this.starttime) / (1000 * 60 * 500)));
+      }
+      const intervals = this.divideTimeInterval(this.starttime, this.endtime);
+      this.clearChart();
+
+      for (let j = 0; j < intervals.length; j++) {
+        this.loading_per = j / intervals.length * 100;
+        const result = await getTrendsData(intervals[j].start, intervals[j].end, this.density, this.$parent.$parent.windowpath, this.name, this.controller);
+        if (result !== undefined) {
+          if (j === 0) this.chartDataArr = result;
+          else {
+            for (let i = 0; i < result.resultData.length; i++) {
+              this.chartDataArr.resultData[i].points = [...this.chartDataArr.resultData[i].points, ...result.resultData[i].points]
+            }
+          }
+        } else break;
+
+        if (j === 0 ) {
+          this.setTimeFrame(this.density);
         }
 
         this.updateChart()
@@ -365,6 +455,20 @@ export default {
         if (document.exitFullscreen) document.exitFullscreen();
       }
     },
+    normalizeMinuteTimeFrame(value) {
+      if (value > 30) return 60;
+      if (value > 15) return 30
+      if (value > 5) return 15;
+      if (value > 1) return 5;
+      return 1;
+    },
+    normalizeHourTimeFrame(value) {
+      if (value > 24) return 168;
+      if (value > 12) return 24;
+      if (value > 4) return 12;
+      if (value > 1) return 4;
+      return 1;
+    }
   },
 
   async mounted() {
@@ -372,7 +476,7 @@ export default {
     this.root = root;
 
     // Задаем интервал для загрузки данных
-    this.starttime = new Date(Date.now() - 86400000 * 1);
+    this.starttime = new Date(Date.now() - 86400000 * 1); // Устанавливаем в один день ровно
     this.endtime = new Date(Date.now())
     console.log(this.starttime, " = Start time ");
     console.log(this.endtime, " = End time ");
@@ -478,7 +582,7 @@ export default {
     this.chartDataArr = await getTrendsData(intervals[0].start, intervals[0].end, 1, this.$parent.$parent.windowpath, this.name, this.controller);
     this.seriesArr = []
 
-    // Выставление либо минутного либо часового интервала
+    // Первоначальный расчет, краткосрочные или долгосрочные тренды
     if ( this.chartDataArr.resultData[0]?.points[0] && this.chartDataArr.resultData[0]?.points[1] ) {
       let newBaseInterval = (new Date(this.chartDataArr.resultData[0]?.points[1]?.argument).getTime() - new Date(this.chartDataArr.resultData[0]?.points[0]?.argument).getTime()) / 1000 / 60;
       if (newBaseInterval === 60) {
@@ -489,19 +593,19 @@ export default {
       console.log("Интервал данных при инцициализации в минутах", newBaseInterval)
     }
 
-    let density = 1;
     if (this.baseIntervalMeasurement === "hour") {
-      density = Math.ceil((this.endtime - this.starttime) / (1000 * 60 * 60 * 500));
+      this.density = this.normalizeHourTimeFrame(Math.ceil((this.endtime - this.starttime) / (1000 * 60 * 60 * 500)));
     } else if (this.baseIntervalMeasurement === "minute") {
-      density = Math.ceil((this.endtime - this.starttime) / (1000 * 60 * 500));
+      this.density = this.normalizeMinuteTimeFrame(Math.ceil((this.endtime - this.starttime) / (1000 * 60 * 500)));
     }
+    console.log(this.density, " density при инициализации")
 
-    this.chartDataArr = await getTrendsData(intervals[0].start, intervals[0].end, density, this.$parent.$parent.windowpath, this.name, this.controller);
+    this.chartDataArr = await getTrendsData(intervals[0].start, intervals[0].end, this.density, this.$parent.$parent.windowpath, this.name, this.controller);
 
 
     let xAxis = chart.xAxes.push(am5xy.DateAxis.new(root, {
       minZoomCount: 3,
-      baseInterval: {timeUnit: this.baseIntervalMeasurement, count: 1},
+      baseInterval: {timeUnit: this.baseIntervalMeasurement, count: this.density},
       renderer: am5xy.AxisRendererX.new(root, {}),
       tooltip: am5.Tooltip.new(root, {
         labelText: "{valueX.formatDate('dd MMM yyyy, HH:mm')}"
@@ -1045,6 +1149,10 @@ export default {
 .timeframe {
   padding: 10px;
   cursor: pointer;
+}
+
+.timeframe_active {
+  color: red;
 }
 
 .timeframe:hover {
