@@ -655,7 +655,11 @@ export default {
               min: axisConfig.yLowerLimit,
               max: axisConfig.yUpperLimit,
               renderer: yRenderer,
-              strictMinMax: true,
+              // strictMinMax: true,
+              autoZoom: false,
+              extraMin: 0,
+              extraMax: 0,
+              maxDeviation: 1,
             })
         );
 
