@@ -219,7 +219,7 @@ export default {
       controller: null,
       interval: null,
       locale: ru,
-      saxes: [],
+      // saxes: [],
       loading_per: 0,
       yAxisVisibleSeriesCount: new Map(),
       baseIntervalMeasurement: "hour",
@@ -629,32 +629,39 @@ export default {
       return color;
     }
     // НАЧАЛО ЦИКЛА SERIES ------------------------------------------------------
+    const axisByParentId = new Map();
     for (let i = 0; i < this.chartDataArr.resultData.length; i++) {
 
-      var linecolor = am5.color("#" + this.chartInfo[i].sColor.slice(0, 6))
-      const axisColor = boostColor(linecolor, 1.75, i * 1.2); // i — индекс серии
+      const lineColor = am5.color("#" + this.chartInfo[i].sColor.slice(0, 6))
+      const axisColor = boostColor(lineColor, 1.75, i * 1.2); // i — индекс серии
       const parentID = this.params.strends[i]["parentID"];
       const saxes = this.params.saxes.filter(item => item.id === parentID);
+      const axisConfig = saxes[0];
 
-      if (this.saxes.filter(item => item.id === saxes[0].id).length === 0) {
-        this.saxes.push(saxes[0]);
+      if (!axisConfig) {
+        console.error("Не найдена ось для parentID =", parentID);
+        continue;
+      }
 
-        var yRenderer = am5xy.AxisRendererY.new(root, {
+      let yAxis = axisByParentId.get(parentID);
+
+      if (!yAxis) {
+        const yRenderer = am5xy.AxisRendererY.new(root, {
           opposite: true,
         });
-        var yAxis = chart.yAxes.push(
+
+        yAxis = chart.yAxes.push(
             am5xy.ValueAxis.new(root, {
-              min: saxes[0].yLowerLimit,
-              max: saxes[0].yUpperLimit,
+              min: axisConfig.yLowerLimit,
+              max: axisConfig.yUpperLimit,
               renderer: yRenderer,
               strictMinMax: true,
             })
         );
 
-        //   Теперь надписи единиц измерения к шкалам справа
-        var label = yAxis.children.push(
+        const label = yAxis.children.push(
             am5.Label.new(root, {
-              text: saxes[0].uom ?? "",
+              text: axisConfig.uom ?? "",
               textAlign: 'center',
               y: -40,
               x: 0,
@@ -663,12 +670,20 @@ export default {
         );
 
         yAxis.set("customLabel", label);
-        //
+
+        yRenderer.grid.template.set("strokeOpacity", 0.05);
+        yRenderer.setAll({
+          stroke: "white",
+          strokeOpacity: 1,
+          opacity: 1,
+        });
+
+        axisByParentId.set(parentID, yAxis);
       }
 
-      const uom = saxes[0].uom ?? "";
+      const uom = axisConfig.uom ?? "";
 
-      var series = chart.series.push(
+      const series = chart.series.push(
           am5xy.LineSeries.new(root, {
             name: `${this.chartInfo[i].name}${uom ? ", " + uom : ""}`,
             xAxis: xAxis,
@@ -720,14 +735,7 @@ export default {
 
       series.strokes.template.setAll({strokeWidth: 1});
 
-      yRenderer.grid.template.set("strokeOpacity", 0.05);
-      yRenderer.setAll({
-        stroke: 'white',
-        strokeOpacity: 1,
-        opacity: 1
-      });
-
-      series.bullets.push(function(root, series, dataItem) {
+      series.bullets.push(function(root, series) {
         return am5.Bullet.new(root, {
           sprite: am5.Circle.new(root, {
             radius: 2,
