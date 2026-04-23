@@ -76,8 +76,8 @@
           </svg>
         </div>
         <div class ="button" @click="exporttoexcel()" :class="[!this.viewlive ? 'button_hover': '']" :title="[!this.viewlive ? 'Экспортировать в формате таблицы': '']">
-          <exportexcel :data="this.datajson" :header ="[this.params.header, this.starttimeexcel + ' - ' + this.endtimeexcel]" :name="this.params.header + ' ' + this.starttimeexcel + '-' + this.endtimeexcel + '.xls'" style="width: 100%; height: 100%">
-            <svg height="100%" width="65%" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+          <!-- <exportexcel :data="this.datajson" :header ="[this.params.header, this.starttimeexcel + ' - ' + this.endtimeexcel]" :name="this.params.header + ' ' + this.starttimeexcel + '-' + this.endtimeexcel + '.xls'" style="width: 100%; height: 100%"> -->
+          <svg height="100%" width="65%" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
                  viewBox="0 0 26 26" xml:space="preserve">
             <g>
               <path :fill="[!this.viewlive ? '#FFFFFF' : '#696969']" d="M25.162,3H16v2.984h3.031v2.031H16V10h3v2h-3v2h3v2h-3v2h3v2h-3v3h9.162
@@ -89,7 +89,7 @@
                 L9.488,18.08L9.488,18.08z"/>
             </g>
             </svg>
-          </exportexcel>
+          <!-- </exportexcel> -->
         </div>
         <div class ="button" @click="toggleFullscreen()" :class="[!this.viewlive ? 'button_hover': '']" :title="[!this.viewlive ? 'На весь экран': '']">
           <svg width="90%" height="100%" viewBox="0 0 52 52" xmlns="http://www.w3.org/2000/svg">
@@ -193,7 +193,8 @@ import { getTrendsData } from './api/getTrendsData'
 
 import Datepicker from "@vuepic/vue-datepicker";
 import moment from "moment";
-import exportexcel from "vue-json-excel3"
+import * as XLSX from 'xlsx'
+import { saveAs } from 'file-saver'
 
 import axios from 'axios'
 import store from "@/store";
@@ -230,7 +231,6 @@ export default {
   components: {
     moment,
     Datepicker,
-    exportexcel,
   },
   created() {
     const controller = new AbortController();
@@ -276,11 +276,48 @@ export default {
       this.controller.abort()
       this.controller = new AbortController();
     },
+    calcColumnWidths(data) {
+      if (!data.length) return []
 
+      // Порядок колонок – берём из первого объекта
+      const cols = Object.keys(data[0])
+      const maxLengths = cols.map(col => col.length) // стартуем с длины заголовка
+
+      data.forEach(row => {
+        cols.forEach((col, i) => {
+          const cell = row[col]
+          // Если в ячейке число, превращаем в строку, чтобы измерить длину
+          const len = cell == null ? 0 : cell.toString().length
+          if (len > maxLengths[i]) maxLengths[i] = len
+        })
+      })
+
+      // Добавляем «запас» (2–3 символа) и возвращаем массив { wch }
+      return maxLengths.map(len => ({ wch: len + 2 }))
+    },
     exporttoexcel() {
-      if (this.datajson.length !== 0)
+      if (this.datajson.length !== 0) {
         console.log('Export To Excel is in Progress!');
-      else
+        // const header = [this.params.header, this.starttimeexcel + ' - ' + this.endtimeexcel]
+        // const ws = XLSX.utils.json_to_sheet(this.datajson, { header })
+        const ws = XLSX.utils.json_to_sheet(this.datajson)
+        const colWidths = this.calcColumnWidths(this.datajson)
+
+
+        ws['!cols'] = colWidths
+        const wb = XLSX.utils.book_new()
+        XLSX.utils.book_append_sheet(wb, ws, 'Лист1')
+
+        // 4️⃣ Генерируем бинарный файл
+        const wbout = XLSX.write(wb, {
+          bookType: 'xlsx',    // формат .xlsx
+          type: 'array'        // возвращаем Uint8Array
+        })
+
+        // 5️⃣ Сохраняем через FileSaver
+        const blob = new Blob([wbout], { type: 'application/octet-stream' })
+        saveAs(blob, `${this.params.header + ' ' + this.starttimeexcel + '-' + this.endtimeexcel}.xls`)
+      } else
         store.dispatch('AddNotification_action', { text: `Ошибка: Остутствуют данные для формирования отчета Excel`, type: 'Error', time: 5000 });
     },
 

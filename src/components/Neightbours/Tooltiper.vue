@@ -109,7 +109,6 @@ export default {
     };
   },
   created() {
-    console.log(this.params)
     // this.name == 'Tooltiper#3' ? console.log(this.params) : ''
     this.widgetType = this.params.type == 'neightbours/Navigator' ? 'navigator' : 'tooltiper'
     // // if (this.params.name == 'Navigator#5') {
@@ -123,7 +122,6 @@ export default {
     const today = new Date();
     var currentDateMilliseconds = today.getMilliseconds();
     const res = {'namewidget': this.button.Name, 'namewindow': this.$parent.windowname}
-    console.log(res)
     setTimeout(() => {
       setInterval(() => {
         let changedelem = this.$store.getters.elemByName(res)?.properties
