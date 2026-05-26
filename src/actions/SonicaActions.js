@@ -304,6 +304,7 @@ export async function GetComponentsDelta(name, tick, callback) {
         })()
         const response = await fetch(`http://${store.getters.GetDefaultIp}/api/nodes/${componentName}/delta/0/${tick ? tick : -1}`,
             {
+                cache: 'no-store',
                 headers: myHeaders,
                 method: "GET",
             })

@@ -1039,12 +1039,14 @@ export default {
     },
 
     datajson() {
-      if (this.seriesArr) {
+      if (this.seriesArr != null) {
         var items = [];
         var sum
-        for (let i = 0; i < this.seriesArr[0].data.values.length; i++) {
+        const notNullMassive = this.seriesArr.findIndex(subArray => subArray.data.values && subArray.data.values.length > 0);
+        this.seriesArr.some(subArray => subArray.data.values && subArray.data.values.length > 0)
+        for (let i = 0; i < this.seriesArr[notNullMassive].data.values.length; i++) {
           let element = new Object()
-          element["Time"] = moment(this.seriesArr[0].data.values[i].argument).format(`YYYY.MM.DD`) + " " + moment(this.seriesArr[0].data.values[i].argument).format(`HH:mm:ss`)
+          element["Time"] = moment(this.seriesArr[notNullMassive].data.values[i].argument).format(`YYYY.MM.DD`) + " " + moment(this.seriesArr[notNullMassive].data.values[i].argument).format(`HH:mm:ss`)
           sum = 0
           for (let j = 0; j < this.seriesArr.length; j++) {
             if (this.seriesArr[j].data._values[i]?.value) {
