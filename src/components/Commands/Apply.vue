@@ -88,9 +88,8 @@ export default {
     setTimeout(() => {
       setInterval(() => {
         let changedelem = this.$store.getters.elemByName(ress)?.properties
-        // console.log(changedelem)
         if (changedelem) {
-          this.isEnabled = changedelem.isEnabled
+          this.isEnabled = changedelem.isEnabled !== undefined ? changedelem.isEnabled : true
         }
       },1000)
     // }, 1000 - Math.abs(500 - currentDateMilliseconds));
