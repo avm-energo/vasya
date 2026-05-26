@@ -65,7 +65,8 @@
       </div>
     </div>
     <!-- <p class="p" :style="cssProps" v-if="((this.params.properties.width!=this.params.properties.height & this.params.properties.text != 'Navigator') && this.params.properties.leftIcon == 'None')">{{button.value}}</p>     -->
-    <div v-if="isSmall === false" class="button_text">
+    <!-- <div v-if="isSmall === false" class="button_text"> -->
+    <div v-if="!(isSmall != false || (this.params.properties.leftIcon == 'Info' && button.value == 'Инфо'))" class="button_text">
       <p class="p" :style="cssProps">{{button.value}}</p>
     </div>
     <!-- <p class="p" :style="cssProps" v-if="((this.params.properties.width!=this.params.properties.height & this.params.properties.text != 'Navigator') || this.params.properties.leftIcon == 'None') && (this.params.properties.text.toLowerCase() != 'tooltiper')">{{button.value}}</p>     -->
@@ -112,7 +113,7 @@ export default {
     // this.name == 'Tooltiper#3' ? console.log(this.params) : ''
     this.widgetType = this.params.type == 'neightbours/Navigator' ? 'navigator' : 'tooltiper'
     // // if (this.params.name == 'Navigator#5') {
-    //   console.log(this.params.properties)
+      // console.log(this.params.properties)
     // }
     this.updateIndo()
     if (this.params.properties.text == 'Главный экран' && this.tooltiperFromHeader) this.$store.dispatch("changeDefaultMainWindowName", this.params.properties.path);
@@ -127,7 +128,6 @@ export default {
         let changedelem = this.$store.getters.elemByName(res)?.properties
         // console.log(this.$store.state.tickmas)
         if (changedelem) {
-          console.log(changedelem)
           this.UpdateFlahingState(changedelem.isButtonEnabled, changedelem.neightbourState, changedelem.sFlashBehaviour, changedelem.isAcknowledged, changedelem.stateChangingBehaviour)
           // if (changedelem.neightbourState) this.button.neightbourState = changedelem.neightbourState
         }
@@ -286,6 +286,7 @@ export default {
   border-style: solid;
   font-size: var(--fontSize);
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  overflow: hidden;
   
 }
 
@@ -306,7 +307,7 @@ img {
   height: 80%;
 }
 .button_icon{
-  width: var(--widthbutton);
+  min-width: var(--widthbutton);
   height: 100%;
   display: flex;
   justify-content: center;
