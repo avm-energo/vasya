@@ -1,4 +1,4 @@
-
+// store/index.js
 import { createStore } from "vuex";
 // import ip from '../assets/ip.json'
 import moment from "moment";
@@ -236,46 +236,79 @@ export default createStore({
     async updateElems(state, name) {
       const today = new Date();
       var currentDateMilliseconds = today.getMilliseconds();
-      let ticknumber = state.tickmas.length
-      let con = {'tick': state.tick, 'name': name.split('\\').join(''), 'mas': [1]}
+      let ticknumber = state.tickmas.length;
+      let con = { 'tick': state.tick, 'name': name.split('\\').join(''), 'mas': [1] };
       state.tickmas.push(con)
-      GetComponentsDelta(name, state.tickmas[ticknumber].tick, (stateResponse, data)=>{
+
+      GetComponentsDelta(name, state.tickmas[ticknumber].tick, (stateResponse, data) => {
         if (stateResponse) {
-          var zyx = setTimeout(() => {
-            var xyz = setInterval(async () => {
-              ticknumber = state.tickmas.findIndex((el => el.name == name.split('\\').join('')))
-              state.tickmas[ticknumber].mas = []
-              try {
-                // console.log(state.tickmas[ticknumber].tick)
-                GetComponentsDelta(name, state.tickmas[ticknumber].tick, (stateResponse, data)=>{
-                  state.tickmas[ticknumber].tick = data.tick
-                  ;(data.widgets.$id  == undefined ? data.widgets : data.widgets.$values).forEach(element => {
-                    if (element.name.startsWith("Sub") || element.name.startsWith("Ren")) {
-                      // element.properties.screen.widgets.forEach((elements) => {
-                        (element.properties.screen.widgets.$id  == undefined ? element.properties.screen.widgets : element.properties.screen.widgets.$values).forEach(elements => {
-                          elements.name += '/' + element.name
-                          state.tickmas[ticknumber].mas.push(elements)
-                      });
-                    } else {
-                      state.tickmas[ticknumber].mas.push(element)
+
+          function scheduleNext(idx) {
+            let expectedAt = Date.now() + 1000;
+
+            const timeoutId = setTimeout(async function tick() {
+              if (!document.hidden) {
+                try {
+                  idx = state.tickmas.findIndex((el) => el.name === name.split('\\').join(''));
+                  if (idx === -1) return;
+                  state.tickmas[idx].mas = [];
+                  GetComponentsDelta(name, state.tickmas[idx].tick, (stateResponse, data) => {
+                    if (!stateResponse) {
+                      state.warning[state.warning.findIndex(e => e.name === 'adminja')].state = true;
+                      return;
                     }
+                    state.tickmas[idx].tick = data.tick;
+                    (data.widgets.$id == undefined ? data.widgets : data.widgets.$values)
+                        .forEach(element => {
+                          if (element.name.startsWith("Sub") || element.name.startsWith("Ren")) {
+                            (element.properties.screen.widgets.$id == undefined
+                                    ? element.properties.screen.widgets
+                                    : element.properties.screen.widgets.$values
+                            ).forEach(elements => {
+                              elements.name += '/' + element.name;
+                              state.tickmas[idx].mas.push(elements);
+                            });
+                          } else {
+                            state.tickmas[idx].mas.push(element);
+                          }
+                        });
+                    state.warning[state.warning.findIndex(e => e.name === 'adminja')].state = false;
                   });
-                })
-                state.warning[state.warning.findIndex(elem => elem.name == 'adminja')].state = false
+                } catch {
+                  state.warning[state.warning.findIndex(e => e.name === 'adminja')].state = true;
+                }
               }
-              catch {
-                state.warning[state.warning.findIndex(elem => elem.name == 'adminja')].state = true
+
+              const drift = Date.now() - expectedAt;
+              const nextDelay = Math.max(0, 1000 - drift);
+
+              idx = state.tickmas.findIndex((el) => el.name === name.split('\\').join(''));
+              if (idx === -1) return; // окно закрыто
+
+              state.tickmas[idx].timeoutId = setTimeout(tick, nextDelay);
+
+              expectedAt = Date.now() + nextDelay;
+            }, 1000 - currentDateMilliseconds);
+
+            state.tickmas[ticknumber].timeoutId = timeoutId;
+          }
+          scheduleNext(ticknumber);
+          const visHandler = () => {
+            if (!document.hidden) {
+              const idx = state.tickmas.findIndex((el) => el.name === name.split('\\').join(''));
+              if (idx !== -1) {
+                clearTimeout(state.tickmas[idx].timeoutId);
+                scheduleNext(idx);
               }
-            }, 1000);
-            state.tickmas[ticknumber].interval = xyz
-            
-          }, 1000 - Math.abs(500 - currentDateMilliseconds));
-          state.tickmas[ticknumber].timeout = zyx
+            }
+          };
+          state.tickmas[ticknumber].visHandler = visHandler;
+          document.addEventListener('visibilitychange', visHandler);
         } else {
-          console.log('ошибка подключения к ' + name)
+          console.log('ошибка подключения к ' + name);
         }
-      })
-      state.isLoading = false
+      });
+      state.isLoading = false;
     },
 
     async addElems(state, data) {
@@ -405,15 +438,22 @@ export default createStore({
     },
 
     closewindow(state, name) {
-      state.commandwidgetmass.splice(state.commandwidgetmass.findIndex((t) => t.namewindow === name), 1)
-      const index = state.tickmas.findIndex((t) => t.name === name)
+      state.commandwidgetmass.splice(
+          state.commandwidgetmass.findIndex((t) => t.namewindow === name), 1
+      );
+      const index = state.tickmas.findIndex((t) => t.name === name);
+      if (index === -1) return;
+
+      if (state.tickmas[index].interval) clearInterval(state.tickmas[index].interval);
+      if (state.tickmas[index].timeout)  clearTimeout(state.tickmas[index].timeout);
+
+      if (state.tickmas[index].timeoutId) clearTimeout(state.tickmas[index].timeoutId);
+
+      if (state.tickmas[index].visHandler) {
+        document.removeEventListener('visibilitychange', state.tickmas[index].visHandler);
+      }
       state.elems.pop();
-      clearInterval(state.tickmas[index].interval);
-      clearTimeout(state.tickmas[index].timeout)
-      state.tickmas.splice(index,1)
-      // var localArray = JSON.parse(sessionStorage.getItem("localArray"))
-      // localArray.pop()
-      // sessionStorage.setItem('localArray', JSON.stringify(localArray))
+      state.tickmas.splice(index, 1);
     },
 
     async changeMainWindow(state, data){

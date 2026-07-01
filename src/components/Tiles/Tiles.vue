@@ -32,34 +32,9 @@ export default {
     };
   },
   created(){
-    // this.name == 'Tooltiper#3' ? console.log(this.params) : ''
-    // console.log(this.name + this.params.text)
     this.updateIndo()
     if (this.$parent.subscreenname){ 
       this.tiles.Name += '/' + this.$parent.subscreenname
-    }
-    // костыль на пробелы
-    // if (this.params.text.startsWith('        ')) {
-    //   this.tiles.value = this.params.text.replace(/ /g, '\u00A0')
-    // } else {
-    //   this.tiles.value = this.params.text
-    // }
-    // this.tiles.tooltip = "подсказка!"
-    if( this.type.startsWith("tiles") || (this.$parent.typewindow == 'head' ) || this.name.startsWith("Number") || this.name.startsWith("Flag")) {
-      const today = new Date();
-      var currentDateMilliseconds = today.getMilliseconds();
-      const res = {'namewidget': this.tiles.Name, 'namewindow': this.$parent.windowname}
-      setTimeout(() => {
-        this.intervalId = setInterval(() => {
-          let changedelem= this.$store.getters.elemByName(res)?.properties
-          if (changedelem) {
-            if (changedelem.text) this.tiles.value = changedelem.text
-            if (changedelem.background) this.tiles.BackgroundColor = changedelem.background
-            if (changedelem.foreground) this.tiles.ForegroundColor = changedelem.foreground
-          }
-        },1000)
-      // }, 1000 - Math.abs(500 - currentDateMilliseconds));
-      }, 1000 - currentDateMilliseconds);
     }
   },
   methods:{
@@ -86,6 +61,13 @@ export default {
     }
   },
   computed: {
+    storeElem() {
+      const res = {
+        'namewidget': this.tiles.Name,
+        'namewindow': this.$parent.windowname
+      };
+      return this.$store.getters.elemByName(res)?.properties;
+    },
     cssProps() {
       return {
         "--x": this.params.x * this.$parent.multiplier + "px",
@@ -110,6 +92,12 @@ export default {
     },
   },
   watch: {
+    storeElem(changedelem) {
+      if (!changedelem) return;
+      if (changedelem.text)       this.tiles.value = changedelem.text;
+      if (changedelem.background) this.tiles.BackgroundColor = changedelem.background;
+      if (changedelem.foreground) this.tiles.ForegroundColor = changedelem.foreground;
+    },
     'tiles.value'(newValue){
       if (parseFloat(newValue)) {
         this.tiles.value = newValue.replace(',','.')
@@ -120,7 +108,6 @@ export default {
     }
   },
   unmounted(){
-    clearInterval(this.intervalId)
   }
 };
 </script>
